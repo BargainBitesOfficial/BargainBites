@@ -1,8 +1,11 @@
 import 'package:bargainbites/app.dart';
 import 'package:bargainbites/utils/theme/theme.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const App());
 
   // Todo: Add widgets binding
