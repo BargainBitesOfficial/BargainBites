@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "89131630501",
+    "project_id": "bargainbites-f6682",
+    "storage_bucket": "bargainbites-f6682.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:89131630501:android:e8fbcc0bd459569640324c",
+        "android_client_info": {
+          "package_name": "com.example.bargainbites"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "89131630501-qg83hmehibl40ideoupfqjfhgq8ofn3t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIKCQo4cGPwE8SlmmVh00ZWCFZyXstU7c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "89131630501-qg83hmehibl40ideoupfqjfhgq8ofn3t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
