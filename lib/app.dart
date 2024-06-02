@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bargainbites/utils/theme/theme.dart';
+import 'features/authentication/screens/user/login.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -7,9 +8,12 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      themeMode: ThemeMode.system,
+      debugShowCheckedModeBanner: false,
+      title: 'Bargain Bites',
+      themeMode: ThemeMode.light,
       theme: TAppTheme.lightTheme,
-      darkTheme: TAppTheme.darkTheme,
+      // darkTheme: TAppTheme.darkTheme,
+      home: const Login(),
     );
   }
 }

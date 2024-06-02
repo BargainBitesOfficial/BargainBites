@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 class TColors {
-  TColors._();
+  TColors._(); // in Dart for creating constructors we need to put '.' followed by a name but in this case the name is private '_' and
+  // therefore it is considered as private constructor. In dart '_' is used for private.
 
   // app basic colors
-  static const Color primary = Color(0xFF4B68FF); // example color
-  static const Color secondary = Color(0xFF4B68FF); // example color
-  static const Color accent = Color(0xFF4B68FF); // example color
+  static const Color primary = Color(0xFF31CB0D); // example color
+  static const Color secondary = Color(0xFF0FCC00); // example color
+  static const Color accent = Color(0xFF187200); // example color
 
   // Gradient Colors
   static const Gradient linerGradient = LinearGradient(  // example
@@ -26,6 +27,7 @@ class TColors {
   // Background Container Colors
 
   // Button Colors
+  static const Color buttonPrimary = Color(0xFF059471); // example color
 
   // Border Colors
 

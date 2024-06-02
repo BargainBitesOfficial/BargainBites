@@ -1,13 +1,11 @@
 name: bargainbites
 description: "Marketplace that helps reducing food waste"
 
-
 publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.4.1 <4.0.0'
-
+  sdk: ^3.4.1
 
 #------------------ PACKAGES -------------------------#
 
@@ -29,34 +27,48 @@ dependencies:
   # State Management (GetX)
   get: ^4.6.6
   get_storage: ^2.1.1
+  google_sign_in: ^6.2.1
 
   # Product Specific
 
-
-
-  #------------------- ./ PACKAGES END --------------------#
+#------------------- ./ PACKAGES END --------------------#
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^3.0.0
-
+  flutter_lints: ^4.0.0
 
 flutter:
   uses-material-design: true
 
-  #------------------ LOCAL ASSETS -------------------------#
+#------------------ LOCAL ASSETS -------------------------#
 
   assets:
     - assets/logos/
-    - assets/icons/
-    - assets/images/
+#    - assets/icons/
+#    - assets/images/
 
-  #------------------ LOCAL FONTS -------------------------#
+#------------------ LOCAL FONTS -------------------------#
 
-  fonts:
-    - family: Poppins
-      fonts:
-        - asset: assets/fonts/Poppins/Poppins-Thin.ttf
-          weight: 100
+fonts:
+  - family: Poppins
+    fonts:
+      - asset: assets/fonts/Poppins/Poppins-Thin.ttf
+        weight: 100
+      - asset: assets/fonts/Poppins/Poppins-ExtraLight.ttf
+        weight: 200
+      - asset: assets/fonts/Poppins/Poppins-Light.ttf
+        weight: 300
+      - asset: assets/fonts/Poppins/Poppins-Regular.ttf
+        weight: 400
+      - asset: assets/fonts/Poppins/Poppins-Medium.ttf
+        weight: 500
+      - asset: assets/fonts/Poppins/Poppins-SemiBold.ttf
+        weight: 600
+      - asset: assets/fonts/Poppins/Poppins-Bold.ttf
+        weight: 700
+      - asset: assets/fonts/Poppins/Poppins-ExtraBold.ttf
+        weight: 800
+      - asset: assets/fonts/Poppins/Poppins-Black.ttf
+        weight: 900

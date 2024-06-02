@@ -11,4 +11,26 @@ class TTexts {
   // -- Home
   static const String homeAppbarTitle = "Good for your wallet, great for the planet";
 
+
+
+  static const String loginTitle = "Login";
+  static const String loginSubTitle = "Welcome back!";
+  static const String email = "E-Mail";
+  static const String password = "Password";
+  static const String newPassword = "New Password";
+  static const String username = "Username";
+  static const String phoneNo = "Phone Number";
+  static const String forgotPassword = "Forget Password";
+  static const String signIn = "Sign In";
+  static const String forgetPasswordTitle = "Forget Password";
+  static const String rememberMe = "Remember Me";
+  static const String forgetPassword = "Forget Password?";
+  static const String orSignInWith = "or sign in with";
+  static const String orLoginUsing = "or Login Using";
+
+
+  // check this
+static const String createAccount = "Create Account";
+
+
 }

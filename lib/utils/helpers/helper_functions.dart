@@ -1,8 +1,6 @@
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 class THelperFunctions {
 
@@ -11,6 +9,7 @@ class THelperFunctions {
     if (value == 'Green') {
       return Colors.green;
     }
+    return null;
   }
 
   static bool isDarkMode(BuildContext context) {
