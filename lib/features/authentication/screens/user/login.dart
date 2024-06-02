@@ -76,6 +76,7 @@ class Login extends StatelessWidget {
                         child: TextField(
                           controller: emailController,
                           decoration: InputDecoration(
+                            icon: const Icon(Icons.email),
                             hintText: "Required",
                             hintStyle: const TextStyle(color: Colors.grey),
                             border: InputBorder.none,
@@ -101,6 +102,7 @@ class Login extends StatelessWidget {
                           controller: passwordController,
                           obscureText: _obscureText,
                           decoration: InputDecoration(
+                            icon: const Icon(Icons.password),
                             hintText: "●●●●●●●●●●",
                             hintStyle: const TextStyle(color: Colors.grey),
                             border: InputBorder.none,
@@ -146,6 +148,7 @@ class Login extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),
+                            side: BorderSide.none
                           ),
                           child: const Text(TTexts.login),
                         ),
