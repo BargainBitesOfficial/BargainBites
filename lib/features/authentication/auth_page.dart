@@ -2,7 +2,7 @@ import 'package:bargainbites/features/authentication/screens/user/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'home_page.dart';
+import 'screens/user/home_page.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
@@ -20,7 +20,7 @@ class AuthPage extends StatelessWidget {
 
           // user is not logged in
           else {
-            return Login();
+            return const Login();
           }
         },
       ),

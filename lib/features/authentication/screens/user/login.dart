@@ -1,24 +1,16 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../../common/styles/spacing_styles.dart';
-import '../../../../utils/constants/colors.dart';
-import '../../../../utils/constants/sizes.dart';
-import '../../../../utils/constants/text_strings.dart';
+import 'package:bargainbites/common/styles/spacing_styles.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
+import 'package:bargainbites/utils/constants/sizes.dart';
+import 'package:bargainbites/utils/constants/text_strings.dart';
+import 'package:bargainbites/features/authentication/controllers/user/login.dart';
 
 class Login extends StatelessWidget {
-  Login({super.key});
+  const Login({super.key});
 
   final bool _obscureText = true;
-
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-
-  void signUserIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text, password: passwordController.text);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +66,7 @@ class Login extends StatelessWidget {
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: TextField(
-                          controller: emailController,
+                          controller: LoginController.emailController,
                           decoration: InputDecoration(
                             icon: const Icon(Icons.email),
                             hintText: "Required",
@@ -99,7 +91,7 @@ class Login extends StatelessWidget {
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: TextFormField(
-                          controller: passwordController,
+                          controller: LoginController.passwordController,
                           obscureText: _obscureText,
                           decoration: InputDecoration(
                             icon: const Icon(Icons.password),
@@ -141,7 +133,7 @@ class Login extends StatelessWidget {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            signUserIn();
+                            LoginController.signUserIn();
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: TColors.buttonPrimary,
