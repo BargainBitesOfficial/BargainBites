@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -7,16 +8,25 @@ import '../../../../utils/constants/sizes.dart';
 import '../../../../utils/constants/text_strings.dart';
 
 class Login extends StatelessWidget {
-  const Login({super.key});
+  Login({super.key});
 
   final bool _obscureText = true;
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  void signUserIn() async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text, password: passwordController.text);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text("Login", style: TextStyle(fontSize: 25, fontFamily: 'Poppins', fontWeight: FontWeight.w700)),
+        title: const Text("Login", style: TextStyle(
+            fontSize: 25, fontFamily: 'Poppins', fontWeight: FontWeight.w700)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -34,7 +44,10 @@ class Login extends StatelessWidget {
             children: [
               const Text(
                 TTexts.loginSubTitle,
-                style: TextStyle(fontSize: 30, fontFamily: "Poppins", fontWeight: FontWeight.w400, color: TColors.buttonPrimary),
+                style: TextStyle(fontSize: 30,
+                    fontFamily: "Poppins",
+                    fontWeight: FontWeight.w400,
+                    color: TColors.buttonPrimary),
               ),
 
               /// Form
@@ -48,7 +61,10 @@ class Login extends StatelessWidget {
 
                       /// Email
                       const Text('Email',
-                          style: TextStyle(fontSize: 16, color: Colors.grey, fontFamily: "Poppins", fontWeight: FontWeight.w400)),
+                          style: TextStyle(fontSize: 16,
+                              color: Colors.grey,
+                              fontFamily: "Poppins",
+                              fontWeight: FontWeight.w400)),
                       const SizedBox(height: 8),
                       Container(
                         width: double.infinity,
@@ -58,6 +74,7 @@ class Login extends StatelessWidget {
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: TextField(
+                          controller: emailController,
                           decoration: InputDecoration(
                             hintText: "Required",
                             hintStyle: const TextStyle(color: Colors.grey),
@@ -81,6 +98,7 @@ class Login extends StatelessWidget {
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: TextFormField(
+                          controller: passwordController,
                           obscureText: _obscureText,
                           decoration: InputDecoration(
                             hintText: "●●●●●●●●●●",
@@ -116,18 +134,20 @@ class Login extends StatelessWidget {
                       ),
                       const SizedBox(height: TSizes.spaceBtwSections),
 
-                      /// Sign In Button
+                      /// Login Button
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            signUserIn();
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: TColors.buttonPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),
                           ),
-                          child: const Text(TTexts.signIn),
+                          child: const Text(TTexts.login),
                         ),
                       ),
                     ],
@@ -149,7 +169,10 @@ class Login extends StatelessWidget {
                   ),
                   Text(
                     TTexts.orLoginUsing.capitalize!,
-                    style: Theme.of(context).textTheme.labelLarge,
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .labelLarge,
                   ),
                   const Flexible(
                     child: Divider(
@@ -185,7 +208,10 @@ class Login extends StatelessWidget {
                           )),
                       label: const Text(
                         'Sign in with Google',
-                        style: TextStyle(color: Colors.black, fontFamily: "Poppins", fontWeight: FontWeight.w400, fontSize: 16),
+                        style: TextStyle(color: Colors.black,
+                            fontFamily: "Poppins",
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16),
                       ),
                     ),
                   ),
