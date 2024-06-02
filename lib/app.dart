@@ -1,4 +1,3 @@
-import 'package:bargainbites/features/authentication/auth_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bargainbites/utils/theme/theme.dart';
 
