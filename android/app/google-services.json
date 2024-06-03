@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "89131630501-dkmmkjuikk0s2p1rnapu3blq6snk07gp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bargainbites",
+            "certificate_hash": "45846507bed272d70fbf8b06af81b901d9593bc2"
+          }
+        },
+        {
           "client_id": "89131630501-qg83hmehibl40ideoupfqjfhgq8ofn3t.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "89131630501-qg83hmehibl40ideoupfqjfhgq8ofn3t.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "89131630501-e8b21356dm8il3p4148iscf4ptdue9pq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.bargainbites"
+              }
             }
           ]
         }
