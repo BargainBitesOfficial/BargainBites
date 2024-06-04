@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
 
-import '../../../constants/colors.dart';
+class OnboardingMerchant extends StatelessWidget {
+  const OnboardingMerchant({super.key});
 
-class UserType extends StatelessWidget {
-  const UserType({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
+      appBar: AppBar(
+        title: const Text('Welcome'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // Implement your back button functionality here
+          },
+        ),
+        centerTitle: true,
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -27,41 +36,30 @@ class UserType extends StatelessWidget {
 
           ),
           const Text(
-            'Select one to get started',
+            'Already a partner with Bargain Bites?',
             style: TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 10),
-          Container(
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.only(left: 26),
-            child: const Text(
-            'I am a....',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: TColors.greyText),
-            ),
-          ),
-          const SizedBox(height: 10),
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
-            child: ElevatedButton.icon(
+            padding: EdgeInsets.fromLTRB(24, 0, 24, 10),
+            child: ElevatedButton(
               onPressed: () {
-              // Add your onPressed code here!
+                // Implement your login functionality here
               },
-              icon: const Icon(Icons.store),
-              label: const Text('Merchant', style: TextStyle(fontSize: 16, fontFamily: 'Poppins', fontWeight: FontWeight.w400, letterSpacing: 1),),
               style: ElevatedButton.styleFrom(
                 backgroundColor: TColors.primaryBtn,
-                minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
-
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 13),
-                side: BorderSide.none
+                minimumSize: const Size(double.infinity, 50),
               ),
-
+              child: const Text(
+                'Login to merchant account',
+                style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'Poppins'),
               ),
             ),
-
+          ),
           const SizedBox(height: 10),
           const Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -74,8 +72,9 @@ class UserType extends StatelessWidget {
                 ),
               ),
               Text(
-                'Or',
-                style: TextStyle(fontSize: 16, fontFamily: 'Poppins', fontWeight: FontWeight.w400, letterSpacing: 1)),
+                'Want to partner with us?',
+                style: TextStyle(fontSize: 16, fontFamily: 'Poppins', fontWeight: FontWeight.w400),
+              ),
               Expanded(
                 child: Divider(
                   thickness: 1,
@@ -88,20 +87,21 @@ class UserType extends StatelessWidget {
           const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 10, 24, 15),
-            child: ElevatedButton.icon(
+            child: OutlinedButton(
               onPressed: () {
-                // Add your onPressed code here!
+                // Implement your account creation functionality here
               },
-              icon: const Icon(Icons.shopping_bag),
-              label: const Text('Customer',style: TextStyle(fontSize: 16, fontFamily: 'Poppins', fontWeight: FontWeight.w400, letterSpacing: 1)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: TColors.primaryBtn,
-                minimumSize: const Size(double.infinity, 50),
+              style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: BorderRadius.circular(30),
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 13),
-                side: BorderSide.none
+                side: const BorderSide(color: Colors.black),
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: const Text(
+                'Create a merchant account',
+                style: TextStyle(fontSize: 16, color: Colors.black),
               ),
             ),
           ),

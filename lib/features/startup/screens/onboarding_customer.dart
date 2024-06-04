@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
 
-class Onboardingcustomer extends StatelessWidget {
-  const Onboardingcustomer({super.key});
+class OnboardingCustomer extends StatelessWidget {
+  const OnboardingCustomer({super.key});
 
   @override
   Widget build(BuildContext context) {
