@@ -39,7 +39,7 @@ class Login extends StatelessWidget {
                 style: TextStyle(fontSize: 30,
                     fontFamily: "Poppins",
                     fontWeight: FontWeight.w400,
-                    color: TColors.buttonPrimary),
+                    color: TColors.primaryBtn),
               ),
 
               /// Form
@@ -136,7 +136,7 @@ class Login extends StatelessWidget {
                             LoginController.signUserIn();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: TColors.buttonPrimary,
+                            backgroundColor: TColors.primaryBtn,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),

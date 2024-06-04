@@ -1,11 +1,13 @@
 name: bargainbites
 description: "Marketplace that helps reducing food waste"
 
+
 publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.4.1
+  sdk: '>=3.4.1 <4.0.0'
+
 
 #------------------ PACKAGES -------------------------#
 
@@ -27,11 +29,13 @@ dependencies:
   # State Management (GetX)
   get: ^4.6.6
   get_storage: ^2.1.1
-  google_sign_in: ^6.2.1
+  pin_code_fields: ^8.0.1
 
   # Product Specific
 
-#------------------- ./ PACKAGES END --------------------#
+
+
+  #------------------- ./ PACKAGES END --------------------#
 
 dev_dependencies:
   flutter_test:
@@ -42,14 +46,14 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-#------------------ LOCAL ASSETS -------------------------#
+  #------------------ LOCAL ASSETS -------------------------#
 
   assets:
     - assets/logos/
-#    - assets/icons/
-#    - assets/images/
+    - assets/icons/
+    - assets/images/
 
-#------------------ LOCAL FONTS -------------------------#
+  #------------------ LOCAL FONTS -------------------------#
 
 fonts:
   - family: Poppins
