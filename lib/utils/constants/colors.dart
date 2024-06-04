@@ -46,6 +46,7 @@ class TColors {
   // Background Colors
 
   // Background Container Colors
+  static const Color backgroundContainerColor = Color(0xFFE8E8E8);
 
   // Button Colors
   static const Color primaryBtn = Color(0xFF059471);// primary color
