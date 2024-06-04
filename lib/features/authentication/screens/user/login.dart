@@ -1,3 +1,4 @@
+import 'package:bargainbites/features/authentication/controllers/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -5,7 +6,9 @@ import 'package:bargainbites/common/styles/spacing_styles.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:bargainbites/utils/constants/sizes.dart';
 import 'package:bargainbites/utils/constants/text_strings.dart';
-import 'package:bargainbites/features/authentication/controllers/user/login.dart';
+import 'package:bargainbites/features/authentication/controllers/user/login_controller.dart';
+
+import '../forgot_password.dart';
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -17,12 +20,16 @@ class Login extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text("Login", style: TextStyle(
-            fontSize: 25, fontFamily: 'Poppins', fontWeight: FontWeight.w700)),
+        title: const Text("Login",
+            style: TextStyle(
+                fontSize: 25,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w700)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             // Implement back functionality
+            Navigator.pop(context);
           },
         ),
         centerTitle: true,
@@ -36,7 +43,8 @@ class Login extends StatelessWidget {
             children: [
               const Text(
                 TTexts.loginSubTitle,
-                style: TextStyle(fontSize: 30,
+                style: TextStyle(
+                    fontSize: 30,
                     fontFamily: "Poppins",
                     fontWeight: FontWeight.w400,
                     color: TColors.buttonPrimary),
@@ -50,10 +58,10 @@ class Login extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
                       /// Email
                       const Text('Email',
-                          style: TextStyle(fontSize: 16,
+                          style: TextStyle(
+                              fontSize: 16,
                               color: Colors.grey,
                               fontFamily: "Poppins",
                               fontWeight: FontWeight.w400)),
@@ -121,7 +129,13 @@ class Login extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ForgotPassword()));
+                            },
                             child: const Text(TTexts.forgetPassword),
                           ),
                         ],
@@ -136,12 +150,11 @@ class Login extends StatelessWidget {
                             LoginController.signUserIn();
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: TColors.buttonPrimary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            side: BorderSide.none
-                          ),
+                              backgroundColor: TColors.buttonPrimary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                              side: BorderSide.none),
                           child: const Text(TTexts.login),
                         ),
                       ),
@@ -164,10 +177,7 @@ class Login extends StatelessWidget {
                   ),
                   Text(
                     TTexts.orLoginUsing.capitalize!,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .labelLarge,
+                    style: Theme.of(context).textTheme.labelLarge,
                   ),
                   const Flexible(
                     child: Divider(
@@ -192,7 +202,9 @@ class Login extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: TextButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        AuthService().signInWithGoogle();
+                      },
                       icon: const SizedBox(
                           width: 14,
                           height: 14,
@@ -203,7 +215,8 @@ class Login extends StatelessWidget {
                           )),
                       label: const Text(
                         'Sign in with Google',
-                        style: TextStyle(color: Colors.black,
+                        style: TextStyle(
+                            color: Colors.black,
                             fontFamily: "Poppins",
                             fontWeight: FontWeight.w400,
                             fontSize: 16),
