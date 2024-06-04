@@ -1,10 +1,9 @@
-import 'package:bargainbites/features/authentication/screens/user/signup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/signup_model.dart';
-import '../../screens/user/signup_address.dart';
+import 'package:bargainbites/features/authentication/models/signup_model.dart';
+import 'package:bargainbites/features/authentication/screens/user/signup_address.dart';
 
 class SignupController extends ChangeNotifier {
   final nameController = TextEditingController();
@@ -17,8 +16,6 @@ class SignupController extends ChangeNotifier {
   bool _isPasswordValid = false;
   bool _isConfirmPasswordValid = false;
 
-
-
   SignupController() {
     nameController.addListener(_validateName);
     emailController.addListener(_validateEmail);
@@ -26,12 +23,11 @@ class SignupController extends ChangeNotifier {
     confirmPasswordController.addListener(_validatePasswords);
   }
 
-  bool get isFormValid => _isNameValid && _isEmailValid && _isPasswordValid && _isConfirmPasswordValid ;
-
-
-
-
-
+  bool get isFormValid =>
+      _isNameValid &&
+      _isEmailValid &&
+      _isPasswordValid &&
+      _isConfirmPasswordValid;
 
   void _validateName() {
     _isNameValid = validateName();
@@ -67,18 +63,23 @@ class SignupController extends ChangeNotifier {
   bool validatePasswords() {
     String password = passwordController.text;
     String confirmPassword = confirmPasswordController.text;
-    return password.isNotEmpty && confirmPassword.isNotEmpty && password == confirmPassword;
+    return password.isNotEmpty &&
+        confirmPassword.isNotEmpty &&
+        password == confirmPassword;
   }
 
   Future<void> createUser(SignupModel signupModel) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: signupModel.email,
         password: signupModel.password,
       );
 
-
-      await FirebaseFirestore.instance.collection('Users').doc(userCredential.user!.uid).set({
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userCredential.user!.uid)
+          .set({
         'name': signupModel.name,
         'email': signupModel.email,
         'country': signupModel.country,
@@ -87,7 +88,7 @@ class SignupController extends ChangeNotifier {
 
       reset();
     } on FirebaseAuthException catch (e) {
-      print('Error: $e');
+      print('Error: $e'); // Dont invoke print in production code
     }
   }
 
@@ -103,6 +104,7 @@ class SignupController extends ChangeNotifier {
     notifyListeners();
   }
 
+  @override
   void dispose() {
     nameController.dispose();
     emailController.dispose();
@@ -114,22 +116,21 @@ class SignupController extends ChangeNotifier {
   void submitForm(BuildContext context) {
     if (!validateName()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Name must be longer than 4 characters."),
           backgroundColor: Colors.red,
         ),
       );
-    }
-    else if (!validateEmail()) {
+    } else if (!validateEmail()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Invalid email format. Please enter a valid email."),
           backgroundColor: Colors.red,
         ),
       );
-    } else if (!validatePasswords()){
+    } else if (!validatePasswords()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("The passwords do not match. Please try again."),
           backgroundColor: Colors.red,
         ),
@@ -144,16 +145,16 @@ class SignupController extends ChangeNotifier {
     //   );
     // }
     else {
-    Navigator.push(
-    context,
-    MaterialPageRoute(
-    builder: (context) => SignupAddress(
-    name: nameController.text,
-    email: emailController.text,
-    password: passwordController.text,
-    ),
-    ),
-    );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SignupAddress(
+            name: nameController.text,
+            email: emailController.text,
+            password: passwordController.text,
+          ),
+        ),
+      );
     }
   }
 }

@@ -10,10 +10,15 @@ import 'package:bargainbites/features/authentication/controllers/user/login_cont
 
 import '../forgot_password.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   const Login({super.key});
 
-  final bool _obscureText = true;
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +52,7 @@ class Login extends StatelessWidget {
                     fontSize: 30,
                     fontFamily: "Poppins",
                     fontWeight: FontWeight.w400,
-                    color: TColors.buttonPrimary),
+                    color: TColors.primaryBtn),
               ),
 
               /// Form
@@ -115,9 +120,9 @@ class Login extends StatelessWidget {
                                     : Icons.visibility,
                               ),
                               onPressed: () {
-                                // setState(() {
-                                //   _obscureText = !_obscureText;
-                                // });
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
                               },
                             ),
                           ),
@@ -136,7 +141,14 @@ class Login extends StatelessWidget {
                                       builder: (context) =>
                                           const ForgotPassword()));
                             },
-                            child: const Text(TTexts.forgetPassword),
+                            child: const Text(
+                              TTexts.forgetPassword,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: "Poppins",
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12),
+                            ),
                           ),
                         ],
                       ),
@@ -150,7 +162,7 @@ class Login extends StatelessWidget {
                             LoginController.signUserIn();
                           },
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: TColors.buttonPrimary,
+                              backgroundColor: TColors.primaryBtn,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
@@ -177,7 +189,11 @@ class Login extends StatelessWidget {
                   ),
                   Text(
                     TTexts.orLoginUsing.capitalize!,
-                    style: Theme.of(context).textTheme.labelLarge,
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontFamily: "Poppins",
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12),
                   ),
                   const Flexible(
                     child: Divider(

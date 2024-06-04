@@ -7,7 +7,7 @@ class VerificationScreen extends StatefulWidget {
   //const VerificationScreen({super.key});
 
   final String email; // Email address to be displayed
-  VerificationScreen({required this.email});
+  const VerificationScreen({super.key, required this.email});
 
   @override
   _VerificationScreenState createState() => _VerificationScreenState();
@@ -44,12 +44,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
     timer?.cancel();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             //Navigator.of(context).pop();
           },
@@ -67,7 +68,10 @@ class _VerificationScreenState extends State<VerificationScreen> {
             const SizedBox(height: 30),
             const Text(
               'Enter code',
-              style: TextStyle(fontSize: 22, fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  fontSize: 22,
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 10),
             // Text(
@@ -82,10 +86,12 @@ class _VerificationScreenState extends State<VerificationScreen> {
                   color: TColors.bBlack,
                 ),
                 children: [
-                  const TextSpan(text: 'We’ve sent an email with an activation code to '),
+                  const TextSpan(
+                      text: 'We’ve sent an email with an activation code to '),
                   TextSpan(
                     text: widget.email,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
                   ),
                 ],
               ),
@@ -103,7 +109,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 borderRadius: BorderRadius.circular(15),
                 fieldHeight: 55,
                 fieldWidth: 55,
-                activeFillColor: hasError ? Colors.red.shade100 : TColors.bWhite,
+                activeFillColor:
+                    hasError ? Colors.red.shade100 : TColors.bWhite,
                 inactiveFillColor: TColors.bWhite,
                 selectedFillColor: TColors.bWhite,
                 activeColor: hasError ? TColors.primaryErr : TColors.bGrey,
@@ -112,7 +119,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 borderWidth: 1,
                 errorBorderColor: TColors.bRed,
               ),
-              animationDuration: const Duration(milliseconds:200),
+              animationDuration: const Duration(milliseconds: 200),
               backgroundColor: Colors.transparent,
               enableActiveFill: true,
               controller: textEditingController,
@@ -141,11 +148,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
             ),
             const SizedBox(height: 10),
             if (hasError)
-              Container(
-                child: const Text(
+              const Text(
                 'Wrong code, please try again',
                 style: TextStyle(color: TColors.primaryErr, fontSize: 14),
-                )
               ),
             const SizedBox(height: 80),
             Row(
@@ -158,7 +163,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 const SizedBox(width: 5),
                 Text(
                   '00:${remainingSeconds.toString().padLeft(2, '0')}',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ],
             ),

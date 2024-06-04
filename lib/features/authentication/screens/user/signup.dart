@@ -1,13 +1,10 @@
 import 'package:bargainbites/utils/constants/sizes.dart';
 import 'package:bargainbites/features/authentication/screens/user/signup_address.dart';
-import 'package:bargainbites/utils/helpers/helper_functions.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../controllers/user/signup_controller.dart';
+import 'package:bargainbites/features/authentication/controllers/user/signup_controller.dart';
 import 'package:provider/provider.dart';
-import '../../models/signup_model.dart';
 
 class UserSignupScreen extends StatefulWidget {
   const UserSignupScreen({super.key});
@@ -27,14 +24,15 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final dark = THelperFunctions.isDarkMode(context);
+    // final dark = THelperFunctions.isDarkMode(context);
 
     return ChangeNotifierProvider(
       create: (_) => _signupController,
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Create Your Account",
-              style: TextStyle(fontFamily: "Poppins", fontWeight: FontWeight.w700)),
+              style: TextStyle(
+                  fontFamily: "Poppins", fontWeight: FontWeight.w700)),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {},
@@ -53,7 +51,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                       // Name
                       Container(
                         alignment: Alignment.centerLeft,
-                        child: Text(
+                        child: const Text(
                           'Name',
                           style: TextStyle(
                             fontSize: 16,
@@ -63,49 +61,50 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                           ),
                         ),
                       ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Consumer<SignupController>(
-                            builder: (context, controller, child) {
-                              return TextFormField(
-                                controller: controller.nameController,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    borderSide: BorderSide.none,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Consumer<SignupController>(
+                              builder: (context, controller, child) {
+                                return TextFormField(
+                                  controller: controller.nameController,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    filled: true,
+                                    fillColor: TColors.backgroundContainerColor,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 12.0),
                                   ),
-                                  filled: true,
-                                  fillColor: TColors.backgroundContainerColor,
-                                  contentPadding: EdgeInsets.symmetric(
-                                      vertical: 10.0, horizontal: 12.0),
-                                ),
-                                style: TextStyle(
-                                  color: Colors.black,
-                                ),
-                                autovalidateMode: AutovalidateMode.onUserInteraction,
-                                validator: (value) {
-                                  return controller.validateName()
-                                      ? null
-                                      : "Name must be longer than 4 characters";
-                                },
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.allow(
-                                    RegExp(r'[a-zA-Z]'),
+                                  style: const TextStyle(
+                                    color: Colors.black,
                                   ),
-                                ],
-                                keyboardType: TextInputType.text,
-                              );
-                            },
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (value) {
+                                    return controller.validateName()
+                                        ? null
+                                        : "Name must be longer than 4 characters";
+                                  },
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(r'[a-zA-Z]'),
+                                    ),
+                                  ],
+                                  keyboardType: TextInputType.text,
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
                       const SizedBox(height: TSizes.spaceBtwInputFields),
                       // Email
                       Container(
                         alignment: Alignment.centerLeft,
-                        child: Text(
+                        child: const Text(
                           'Email',
                           style: TextStyle(
                             fontSize: 16,
@@ -126,13 +125,14 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                               ),
                               filled: true,
                               fillColor: TColors.backgroundContainerColor,
-                              contentPadding: EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 12.0),
                             ),
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black,
                             ),
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               return controller.validateEmail()
                                   ? null
@@ -145,7 +145,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                       // Password
                       Container(
                         alignment: Alignment.centerLeft,
-                        child: Text(
+                        child: const Text(
                           'Password',
                           style: TextStyle(
                             fontSize: 16,
@@ -167,16 +167,19 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                               ),
                               filled: true,
                               fillColor: TColors.backgroundContainerColor,
-                              contentPadding: EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 12.0),
                             ),
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black,
                             ),
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               return value != null && value.isNotEmpty
-                                  ? value.length<8?"Password Cannot be Less than 8":null
+                                  ? value.length < 8
+                                      ? "Password Cannot be Less than 8"
+                                      : null
                                   : "Password cannot be empty";
                             },
                           );
@@ -208,13 +211,14 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                               ),
                               filled: true,
                               fillColor: TColors.backgroundContainerColor,
-                              contentPadding: EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 12.0),
                             ),
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black,
                             ),
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               return controller.validatePasswords()
                                   ? null
@@ -233,25 +237,33 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                                 children: [
                                   TextSpan(
                                     text: 'By continuing you agree to our ',
-                                    style: Theme.of(context).textTheme.bodySmall,
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
                                   ),
                                   TextSpan(
                                     text: 'Terms of Use ',
-                                    style: Theme.of(context).textTheme.bodyMedium!.apply(
-                                      color: Colors.green,
-                                      decoration: TextDecoration.underline,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .apply(
+                                          color: Colors.green,
+                                          decoration: TextDecoration.underline,
+                                        ),
                                   ),
                                   TextSpan(
                                     text: 'and ',
-                                    style: Theme.of(context).textTheme.bodySmall,
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
                                   ),
                                   TextSpan(
                                     text: 'Privacy Policy.',
-                                    style: Theme.of(context).textTheme.bodyMedium!.apply(
-                                      color: Colors.green,
-                                      decoration: TextDecoration.underline,
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .apply(
+                                          color: Colors.green,
+                                          decoration: TextDecoration.underline,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -268,24 +280,28 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                             child: ElevatedButton(
                               onPressed: controller.isFormValid
                                   ? () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => SignupAddress(
-                                    name: controller.nameController.text,
-                                    email: controller.emailController.text,
-                                    password: controller.passwordController.text,
-                                  )),
-                                );
-                              }
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => SignupAddress(
+                                                  name: controller
+                                                      .nameController.text,
+                                                  email: controller
+                                                      .emailController.text,
+                                                  password: controller
+                                                      .passwordController.text,
+                                                )),
+                                      );
+                                    }
                                   : null,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Colors.green,
+                                backgroundColor: Colors.green,
                                 minimumSize: const Size(double.infinity, 50),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(25),
                                 ),
-                                padding: const EdgeInsets.symmetric(vertical: 13),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 13),
                                 side: BorderSide.none,
                               ),
                               child: const Row(
@@ -301,8 +317,12 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                                       color: Colors.white,
                                     ),
                                   ),
-                                  SizedBox(width: 8), // Adjust the width as needed
-                                  Icon(Icons.arrow_forward,color: Colors.white,),
+                                  SizedBox(width: 8),
+                                  // Adjust the width as needed
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: Colors.white,
+                                  ),
                                 ],
                               ),
                             ),
