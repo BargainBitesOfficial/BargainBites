@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:bargainbites/features/authentication/controllers/user/signup_controller.dart';
 import 'package:bargainbites/features/authentication/models/signup_model.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_svg/flutter_svg.dart';
 import 'login.dart';
 
 class SignupAddress extends StatefulWidget {
@@ -127,6 +127,21 @@ class _SignupAddressState extends State<SignupAddress> {
           padding: const EdgeInsets.all(TSizes.defaultSpace),
           child: Column(
             children: [
+              Center(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    double size = constraints.maxWidth * 0.7; // Scale to 50% of the parent's width
+                    return Container(
+                      width: size,
+                      height: size,
+                      child: SvgPicture.asset(
+                        'assets/images/signup_address.svg', // Ensure this path matches your SVG asset
+                        fit: BoxFit.contain,
+                      ),
+                    );
+                  },
+                ),
+              ),
               const SizedBox(height: TSizes.spaceBtwSections),
               Form(
                 child: Column(
