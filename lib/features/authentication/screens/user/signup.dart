@@ -30,6 +30,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
       create: (_) => _signupController,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.white,
           title: const Text("Create Your Account",
               style: TextStyle(
                   fontFamily: "Poppins", fontWeight: FontWeight.w700)),
