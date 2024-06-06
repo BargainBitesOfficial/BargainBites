@@ -4,7 +4,7 @@ class TColors {
   TColors._();
 
   // app basic colors
-  static const Color primary = Color(0x00059471);// example color
+  static const Color primary = Color(0xFF059471);// primary color
   static const Color secondary = Color(0xFF4B68FF); // example color
   static const Color accent = Color(0xFF4B68FF); // example color
 
@@ -41,6 +41,7 @@ class TColors {
 
   // text colors
   static const Color greyText = Color(0xFF757373);// primary color
+  static const Color primaryText = Color(0xFF059471);// primary color
 
 
   // Background Colors

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import '../../../utils/constants/colors.dart';
 class UserType extends StatelessWidget {
   const UserType({super.key});
@@ -11,15 +12,17 @@ class UserType extends StatelessWidget {
         children: <Widget>[
           Expanded(
             child: Center(
-              child: Container(
-                width: 250,
-                height: 250,
-                color: Colors.grey[300], // Placeholder for the image
-                child: Icon(
-                  Icons.image,
-                  size: 100,
-                  color: Colors.grey[400],
-                ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Center(
+                    child: SvgPicture.asset(
+                      'assets/images/welcome_img.svg',
+                      width: constraints.maxWidth * 0.8,
+                      height: constraints.maxHeight * 0.8,
+                      fit: BoxFit.contain,
+                    ),
+                  );
+                },
               ),
             ),
 

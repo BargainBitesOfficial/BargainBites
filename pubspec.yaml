@@ -26,19 +26,18 @@ dependencies:
 
   # Icons
   cupertino_icons: ^1.0.6
-  firebase_core: ^2.32.0
-  firebase_auth: ^4.20.0
-  cloud_firestore: ^4.3.0
   google_sign_in: ^6.2.1
   font_awesome_flutter: ^10.7.0
 
   # State Management (GetX)
   get: ^4.6.6
   get_storage: ^2.1.1
-  pin_code_fields: ^8.0.1
 
   # Product Specific
-
+  firebase_core: ^2.32.0
+  firebase_auth: ^4.20.0
+  cloud_firestore: ^4.3.0
+  pin_code_fields: ^8.0.1
 
 
   #------------------- ./ PACKAGES END --------------------#
@@ -48,6 +47,7 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^4.0.0
+
 
 flutter:
   uses-material-design: true

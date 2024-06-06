@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
+import 'package:flutter_svg/svg.dart';
 
 class OnboardingMerchant extends StatelessWidget {
   const OnboardingMerchant({super.key});
@@ -20,17 +21,41 @@ class OnboardingMerchant extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          const SizedBox(height: 20),
+          RichText(
+            textAlign: TextAlign.center,
+            text: const TextSpan(
+
+              style: TextStyle(
+                fontSize: 14,
+                fontFamily: 'Poppins',
+                color: TColors.bBlack,
+              ),
+              children: [
+                TextSpan(
+                    text: 'Tired of throwing away unsold/expired items?',
+                    style: TextStyle(fontSize: 20, fontFamily: 'Poppins', fontWeight: FontWeight.w400)
+                ),
+                TextSpan(
+                  text: ' Join BargainBites',
+                  style: TextStyle(fontSize:20, fontWeight: FontWeight.bold, fontFamily: 'Poppins', color: TColors.primaryText),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: Center(
-              child: Container(
-                width: 250,
-                height: 250,
-                color: Colors.grey[300], // Placeholder for the image
-                child: Icon(
-                  Icons.image,
-                  size: 100,
-                  color: Colors.grey[400],
-                ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Center(
+                    child: SvgPicture.asset(
+                      'assets/images/onboarding_merchant_img.svg',
+                      width: constraints.maxWidth * 0.7,
+                      height: constraints.maxHeight * 0.7,
+                      fit: BoxFit.contain,
+                    ),
+                  );
+                },
               ),
             ),
 
@@ -56,7 +81,7 @@ class OnboardingMerchant extends StatelessWidget {
               ),
               child: const Text(
                 'Login to merchant account',
-                style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'Poppins'),
+                style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Poppins'),
               ),
             ),
           ),
@@ -72,7 +97,7 @@ class OnboardingMerchant extends StatelessWidget {
                 ),
               ),
               Text(
-                'Want to partner with us?',
+                'Or Partner Now',
                 style: TextStyle(fontSize: 16, fontFamily: 'Poppins', fontWeight: FontWeight.w400),
               ),
               Expanded(
@@ -96,12 +121,12 @@ class OnboardingMerchant extends StatelessWidget {
                   borderRadius: BorderRadius.circular(30),
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 13),
-                side: const BorderSide(color: Colors.black),
+                side: const BorderSide(color: TColors.primary, width: 1.8),
                 minimumSize: const Size(double.infinity, 50),
               ),
               child: const Text(
                 'Create a merchant account',
-                style: TextStyle(fontSize: 16, color: Colors.black),
+                style: TextStyle(fontSize: 18, color: TColors.primaryText),
               ),
             ),
           ),
