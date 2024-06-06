@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
+import 'package:flutter_svg/svg.dart';
 
 class OnboardingCustomer extends StatelessWidget {
   const OnboardingCustomer({super.key});
@@ -20,28 +21,35 @@ class OnboardingCustomer extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          SizedBox(height: 20),
+          const Text(
+            'Ready For Some Bargains?',
+            style: TextStyle(fontSize: 24, color:TColors.primaryText, fontWeight: FontWeight.w700, fontFamily: 'Poppins'),
+          ),
           Expanded(
             child: Center(
-              child: Container(
-                width: 250,
-                height: 250,
-                color: Colors.grey[300], // Placeholder for the image
-                child: Icon(
-                  Icons.image,
-                  size: 100,
-                  color: Colors.grey[400],
-                ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Center(
+                    child: SvgPicture.asset(
+                      'assets/images/onboarding_customer_img.svg',
+                      width: constraints.maxWidth * 0.7,
+                      height: constraints.maxHeight * 0.8,
+                      fit: BoxFit.contain,
+                    ),
+                  );
+                },
               ),
             ),
 
           ),
           const Text(
             'Already registered on Bargain Bites?',
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 18),
           ),
           const SizedBox(height: 10),
           Padding(
-            padding: EdgeInsets.fromLTRB(24, 0, 24, 10),
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
             child: ElevatedButton(
               onPressed: () {
                 // Implement your login functionality here
@@ -56,7 +64,7 @@ class OnboardingCustomer extends StatelessWidget {
               ),
               child: const Text(
                 'Login to existing account',
-                style: TextStyle(fontSize: 15, color: Colors.white, fontFamily: 'Poppins'),
+                style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Poppins'),
               ),
             ),
           ),
@@ -97,12 +105,12 @@ class OnboardingCustomer extends StatelessWidget {
                   borderRadius: BorderRadius.circular(30),
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 13),
-                side: const BorderSide(color: Colors.black),
+                side: const BorderSide(color: TColors.primary, width: 1.8),
                 minimumSize: const Size(double.infinity, 50),
               ),
               child: const Text(
                 'Create account',
-                style: TextStyle(fontSize: 16, color: Colors.black),
+                style: TextStyle(fontSize: 18, color: TColors.primaryText, fontWeight: FontWeight.w400),
               ),
             ),
           ),

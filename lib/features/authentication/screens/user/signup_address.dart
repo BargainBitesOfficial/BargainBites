@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:bargainbites/utils/constants/sizes.dart';
+import 'package:bargainbites/utils/helpers/helper_functions.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:flutter/services.dart';
 import 'package:bargainbites/features/authentication/controllers/user/signup_controller.dart';
@@ -8,6 +9,8 @@ import 'package:bargainbites/features/authentication/models/signup_model.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'login.dart';
+
+
 
 class SignupAddress extends StatefulWidget {
   final String name;
@@ -78,14 +81,13 @@ class _SignupAddressState extends State<SignupAddress> {
       postalCode: postalCodeController.text,
     );
 
-    final signupController =
-        Provider.of<SignupController>(context, listen: false);
+    final signupController = Provider.of<SignupController>(context, listen: false);
 
     try {
       await signupController.createUser(signupModel);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text("User created successfully."),
           backgroundColor: Colors.green,
         ),
@@ -107,13 +109,13 @@ class _SignupAddressState extends State<SignupAddress> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Create Your Account",
-            style:
-                TextStyle(fontFamily: "Poppins", fontWeight: FontWeight.w700)),
+        title: const Text("Create Account",
+            style: TextStyle(fontFamily: "Poppins", fontWeight: FontWeight.w700)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -174,7 +176,7 @@ class _SignupAddressState extends State<SignupAddress> {
                               fillColor: TColors.backgroundContainerColor,
                               contentPadding: const EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 12.0),
-                              prefixIcon: const Icon(Icons.location_city),
+                              //prefixIcon: const Icon(Icons.location_city),
                             ),
                             style: const TextStyle(
                               color: Colors.black,
