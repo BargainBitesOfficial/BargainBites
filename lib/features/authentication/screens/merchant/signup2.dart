@@ -5,6 +5,8 @@ import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:bargainbites/utils/constants/sizes.dart';
 import 'package:bargainbites/utils/validators/validation.dart';
 
+import '../../../startup/screens/new_merchant_info.dart';
+
 class MerchantSignupPageTwo extends StatefulWidget {
   const MerchantSignupPageTwo({super.key});
 
@@ -190,7 +192,10 @@ class _MerchantSignupStatePageTwo extends State<MerchantSignupPageTwo> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    /// Controller here
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                        builder: (context) => NewMerchantInfo()));
                     // LoginController.signUserIn();
                   },
                   style: ElevatedButton.styleFrom(

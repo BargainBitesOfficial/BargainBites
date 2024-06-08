@@ -1,3 +1,5 @@
+import 'package:bargainbites/features/startup/screens/onboarding_customer.dart';
+import 'package:bargainbites/features/startup/screens/onboarding_merchant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../../utils/constants/colors.dart';
@@ -42,26 +44,27 @@ class UserType extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
+            padding: const EdgeInsets.fromLTRB(24, 10, 24, 15),
             child: ElevatedButton.icon(
               onPressed: () {
-              // Add your onPressed code here!
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => OnboardingCustomer()));
               },
-              icon: const Icon(Icons.store),
-              label: const Text('Merchant', style: TextStyle(fontSize: 16, fontFamily: 'Poppins', fontWeight: FontWeight.w400, letterSpacing: 1),),
+              icon: const Icon(Icons.shopping_bag,color:TColors.bWhite),
+              label: const Text('Customer',style: TextStyle(color:TColors.bWhite ,fontSize: 16, fontFamily: 'Poppins', fontWeight: FontWeight.w400, letterSpacing: 1)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: TColors.primaryBtn,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 13),
-                side: BorderSide.none
-              ),
-
+                  backgroundColor: TColors.primaryBtn,
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  side: BorderSide.none
               ),
             ),
+          ),
 
           const SizedBox(height: 10),
           const Row(
@@ -88,22 +91,27 @@ class UserType extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 10, 24, 15),
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
             child: ElevatedButton.icon(
               onPressed: () {
-                // Add your onPressed code here!
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => OnboardingMerchant()));
               },
-              icon: const Icon(Icons.shopping_bag),
-              label: const Text('Customer',style: TextStyle(fontSize: 16, fontFamily: 'Poppins', fontWeight: FontWeight.w400, letterSpacing: 1)),
+              icon: const Icon(Icons.store,color:TColors.bWhite),
+              label: const Text('Merchant', style: TextStyle(color:TColors.bWhite,fontSize: 16, fontFamily: 'Poppins', fontWeight: FontWeight.w400, letterSpacing: 1),),
               style: ElevatedButton.styleFrom(
-                backgroundColor: TColors.primaryBtn,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 13),
-                side: BorderSide.none
+                  backgroundColor: TColors.primaryBtn,
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  side: BorderSide.none
               ),
+
             ),
           ),
           const SizedBox(height: 20), // Adjust this value as needed

@@ -1,6 +1,9 @@
+import 'package:bargainbites/features/authentication/screens/user/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:flutter_svg/svg.dart';
+
+import '../../authentication/screens/user/login.dart';
 
 class OnboardingCustomer extends StatelessWidget {
   const OnboardingCustomer({super.key});
@@ -13,7 +16,7 @@ class OnboardingCustomer extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // Implement your back button functionality here
+            Navigator.pop(context);
           },
         ),
         centerTitle: true,
@@ -52,7 +55,10 @@ class OnboardingCustomer extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
             child: ElevatedButton(
               onPressed: () {
-                // Implement your login functionality here
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Login()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: TColors.primaryBtn,
@@ -98,7 +104,10 @@ class OnboardingCustomer extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(24, 10, 24, 15),
             child: OutlinedButton(
               onPressed: () {
-                // Implement your account creation functionality here
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => UserSignupScreen()));
               },
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(

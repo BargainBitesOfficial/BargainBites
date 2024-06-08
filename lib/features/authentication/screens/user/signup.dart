@@ -36,7 +36,9 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                   fontFamily: "Poppins", fontWeight: FontWeight.w700)),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
           centerTitle: true,
         ),

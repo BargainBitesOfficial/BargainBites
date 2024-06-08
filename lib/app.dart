@@ -33,7 +33,7 @@ class App extends StatelessWidget {
             )
         ),
         // darkTheme: TAppTheme.darkTheme,
-        home: const UserSignupScreen(),
+        home: const UserType(),
       ),
     );
   }

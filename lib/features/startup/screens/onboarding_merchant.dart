@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../authentication/screens/merchant/merchant_login.dart';
+import '../../authentication/screens/merchant/signup.dart';
+
 class OnboardingMerchant extends StatelessWidget {
   const OnboardingMerchant({super.key});
 
@@ -13,7 +16,7 @@ class OnboardingMerchant extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // Implement your back button functionality here
+            Navigator.pop(context);
           },
         ),
         centerTitle: true,
@@ -69,7 +72,7 @@ class OnboardingMerchant extends StatelessWidget {
             padding: EdgeInsets.fromLTRB(24, 0, 24, 10),
             child: ElevatedButton(
               onPressed: () {
-                // Implement your login functionality here
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const MerchantLogin()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: TColors.primaryBtn,
@@ -114,6 +117,7 @@ class OnboardingMerchant extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(24, 10, 24, 15),
             child: OutlinedButton(
               onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const MerchantSignup()));
                 // Implement your account creation functionality here
               },
               style: OutlinedButton.styleFrom(
