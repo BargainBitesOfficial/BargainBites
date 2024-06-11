@@ -1,3 +1,4 @@
+import 'package:bargainbites/features/startup/screens/user_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -72,7 +73,10 @@ class NewMerchantInfo extends StatelessWidget {
                   SizedBox(height: 32),
                   ElevatedButton(
                   onPressed: () {
-                    // Implement your login functionality here
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => UserType()));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: TColors.primaryBtn,
@@ -83,7 +87,7 @@ class NewMerchantInfo extends StatelessWidget {
                     minimumSize: const Size(double.infinity, 50),
                   ),
                   child: const Text(
-                    'Log out',
+                    'Go To Home',
                     style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Poppins'),
                   ),
                 ),

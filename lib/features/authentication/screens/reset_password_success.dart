@@ -74,7 +74,7 @@ class ResetPasswordSuccess extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        TTexts.backtohome,
+                        TTexts.backToHome,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,

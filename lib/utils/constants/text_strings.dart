@@ -27,7 +27,8 @@ class TTexts {
   static const String forgetPassword = "Forget Password?";
   static const String orSignInWith = "or sign in with";
   static const String orLoginUsing = "or Login Using";
-
+  static const String merchantAccess = "Access Your Merchant Portal";
+  static const String backToHome = "Back To Home";
 
   // check this
 static const String createAccount = "Create Account";
