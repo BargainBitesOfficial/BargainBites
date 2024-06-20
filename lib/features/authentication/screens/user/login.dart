@@ -8,7 +8,8 @@ import 'package:bargainbites/utils/constants/sizes.dart';
 import 'package:bargainbites/utils/constants/text_strings.dart';
 import 'package:bargainbites/features/authentication/controllers/user/login_controller.dart';
 
-import '../forgot_password.dart';
+import 'package:bargainbites/utils/validators/validation.dart';
+import 'package:bargainbites/features/authentication/screens/forgot_password.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -71,30 +72,50 @@ class _LoginState extends State<Login> {
                               fontFamily: "Poppins",
                               fontWeight: FontWeight.w400)),
                       const SizedBox(height: 8),
-                      Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: TextField(
-                          controller: LoginController.emailController,
-                          decoration: InputDecoration(
-                            icon: const Icon(Icons.email),
-                            hintText: "Required",
-                            hintStyle: const TextStyle(color: Colors.grey),
-                            border: InputBorder.none,
-                            filled: true,
-                            fillColor: Colors.grey[200],
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: TextFormField(
+                              controller: LoginController.emailController,
+                              decoration: InputDecoration(
+                                icon: const Icon(Icons.email),
+                                hintText: "Required",
+                                hintStyle: const TextStyle(color: Colors.grey),
+                                border: InputBorder.none,
+                                filled: true,
+                                fillColor: Colors.grey[200],
+                              ),
+                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              validator: TValidator.validateEmail,
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 5.0), // Add space between text field and error message
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10.0), // Adjust left padding as needed
+                            child: Text(
+                              LoginController.emailController.text.isNotEmpty ? TValidator.validateEmail(LoginController.emailController.text) ?? '' : '',
+                              style: const TextStyle(color: Colors.red)
+                              ,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 16),
 
                       /// Password
                       const Text('Password',
-                          style: TextStyle(fontSize: 16, color: Colors.grey)),
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                              fontFamily: "Poppins",
+                              fontWeight: FontWeight.w400)),
                       const SizedBox(height: 8),
                       Container(
                         width: double.infinity,
@@ -126,6 +147,8 @@ class _LoginState extends State<Login> {
                               },
                             ),
                           ),
+                          // autovalidateMode: AutovalidateMode.onUserInteraction,
+                          // validator: TValidator.validatePassword,
                         ),
                       ),
 
@@ -167,7 +190,7 @@ class _LoginState extends State<Login> {
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
                               side: BorderSide.none),
-                          child: const Text(TTexts.login),
+                          child: const Text(TTexts.login, style: TextStyle(fontFamily: 'Poppins', color: Colors.white),),
                         ),
                       ),
                     ],
