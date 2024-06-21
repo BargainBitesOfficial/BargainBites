@@ -1,21 +1,39 @@
-import 'package:bargainbites/features/authentication/screens/user/login.dart';
-import 'package:bargainbites/features/authentication/screens/verification_screen.dart';
-import 'package:bargainbites/features/startup/screens/new_merchant_info.dart';
-import 'package:bargainbites/features/startup/screens/splash_screen.dart';
-import 'package:bargainbites/features/startup/screens/onboarding_customer.dart';
+import 'package:bargainbites/features/authentication/screens/user/order_screen.dart';
+import 'package:bargainbites/features/homepage/screens/explore.dart';
 import 'package:bargainbites/features/startup/screens/user_type.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:bargainbites/utils/theme/theme.dart';
 import 'package:provider/provider.dart';
 
-import 'features/authentication/auth_page.dart';
 import 'features/authentication/controllers/user/signup_controller.dart';
-import 'features/authentication/screens/user/signup.dart';
-import 'features/authentication/screens/user/signup_address.dart';
-import 'features/startup/screens/onboarding_merchant.dart';
+import 'features/homepage/screens/homepage.dart';// Assuming you have a Profile screen
 
-class App extends StatelessWidget {
+void main() {
+  runApp(const App());
+}
+
+class App extends StatefulWidget {
   const App({super.key});
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  int _selectedIndex = 0;
+
+  static const List<Widget> _widgetOptions = <Widget>[
+    Homepage(),
+    ExplorePage(),
+    OrderScreen(),
+    UserType()
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +46,40 @@ class App extends StatelessWidget {
         title: 'Bargain Bites',
         themeMode: ThemeMode.system,
         theme: ThemeData(
-            textTheme: const TextTheme(
-                titleMedium: TextStyle(fontFamily: 'Poppins')
-            )
+          textTheme: const TextTheme(
+            titleMedium: TextStyle(fontFamily: 'Poppins'),
+          ),
         ),
-        // darkTheme: TAppTheme.darkTheme,
-        home: const UserType(),
+        home: Scaffold(
+          body: IndexedStack(
+            index: _selectedIndex,
+            children: _widgetOptions,
+          ),
+          bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.explore),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.shopping_bag),
+                label: 'Browse',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.shopping_cart),
+                label: 'Cart',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.account_circle_sharp),
+                label: 'Profile',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: TColors.primary,
+            onTap: _onItemTapped,
+          ),
+        ),
       ),
     );
   }

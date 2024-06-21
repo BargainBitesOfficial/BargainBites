@@ -1,6 +1,4 @@
 import 'package:bargainbites/features/authentication/screens/user/login.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -28,8 +26,8 @@ screenRedirect() async {
   // This condn check if it is the first time of the user then direct to onBoarding else direct to login,
   // but in our case we dont have an onboarding screen so direct to login everytime.
   deviceStorage.read('isFirstTime') != true
-      ? Get.offAll(() => Login()) // Redirect to login screen if not first time
-      : Get.offAll(() => Login()); // Redirect to a different screen if first time
+      ? Get.offAll(() => const Login()) // Redirect to login screen if not first time
+      : Get.offAll(() => const Login()); // Redirect to a different screen if first time
 }
 
 

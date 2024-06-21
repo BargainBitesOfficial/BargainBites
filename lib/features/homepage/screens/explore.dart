@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../../utils/constants/colors.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
 
 class ExplorePage extends StatefulWidget {
+  const ExplorePage({super.key});
+
   @override
-  _ExplorePageState createState() => _ExplorePageState();
+  State<ExplorePage> createState() => _ExplorePageState();
 }
 
 class _ExplorePageState extends State<ExplorePage> {
@@ -41,113 +43,106 @@ class _ExplorePageState extends State<ExplorePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(110),
+        preferredSize: const Size.fromHeight(180),
         child: AppBar(
           flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: TColors.linerGradient,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Browse',
-                      style: TextStyle(
-                          fontSize: 18,
-                          color: TColors.bWhite,
-                          fontWeight: FontWeight.w600
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+              decoration: const BoxDecoration(
+                gradient: TColors.linerGradient,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 30),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          height: 38,
-                          width: 38,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: IconButton(
-                              icon: const Icon(Icons.shopping_cart),
-                              color: TColors.primary, // Match the background gradient
-                              onPressed: () {
-                                // Add your onPressed code here!
-                              },
-                            ),
-                          ),
+                        const Text(
+                          'Browse',
+                          style: TextStyle(
+                              fontSize: 22,
+                              color: TColors.bWhite,
+                              fontWeight: FontWeight.w600),
                         ),
-                        const SizedBox(width: 8.0), // Add some space between the icons
-                        Container(
-                          height: 38,
-                          width: 38,
-                          decoration: const BoxDecoration(
-                            color: TColors.bWhite,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: IconButton(
-                              icon: const Icon(Icons.notifications),
-                              color: TColors.primary, // Match the background gradient
-                              onPressed: () {
-                                // Add your onPressed code here!
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ]
-                ),
-                const SizedBox(height: 15,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 45,
-                        child: TextField(
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.search, color: Colors.black54),
-                            filled: true,
-                            fillColor: TColors.bWhite,
-                            hintText: 'Search with filters & browse',
-                            contentPadding: EdgeInsets.zero,
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(10.0),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                  height: 38,
+                                  width: 38,
+                                  decoration: const BoxDecoration(
+                                    color: TColors.bWhite,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Center(
+                                      child: IconButton(
+                                          icon: const Icon(Icons.notifications),
+                                          color: TColors.primary,
+                                          // Match the background gradient
+                                          onPressed: () {
+                                            // Add your onPressed code here!
+                                          })))
+                            ])
+                      ]),
+                  const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(children: [
+                          Text('University Avenue Windsor, N9B 2Y8',
+                              style: TextStyle(
+                                  fontFamily: "Poppins",
+                                  fontSize: 14,
+                                  color: Colors.white)),
+                        ]),
+                        Text('within 10 km',
+                            style: TextStyle(
+                                fontFamily: "Poppins",
+                                fontSize: 14,
+                                color: Colors.white)),
+                      ]),
+                  const SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 45,
+                          child: TextField(
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.search,
+                                  color: Colors.black54),
+                              filled: true,
+                              fillColor: TColors.bWhite,
+                              hintText: 'Search with filters & browse',
+                              contentPadding: EdgeInsets.zero,
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10.0),
-                    Container(
-                      height: 45.0,
-                      width: 45.0,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10.0),
+                      const SizedBox(width: 10.0),
+                      Container(
+                        height: 45.0,
+                        width: 45.0,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.tune, color: TColors.primary),
+                          onPressed: () {
+                            // Add your onPressed code here!
+                          },
+                        ),
                       ),
-                      child: IconButton(
-                        icon: const Icon(Icons.tune, color: TColors.primary),
-                        onPressed: () {
-                          // Add your onPressed code here!
-                        },
-                      ),
-                    ),
-
-                  ],
-                ),
-                const SizedBox(height: 10)
-              ],
-            )
-          ),
+                    ],
+                  ),
+                  const SizedBox(height: 10)
+                ],
+              )),
         ),
       ),
       body: Column(
@@ -217,37 +212,34 @@ class _ExplorePageState extends State<ExplorePage> {
                 //     ),
                 //   ),
                 // ),
-
               ],
             ),
           ),
-
           const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.0),
-                child: Text('Explore',
+                child: Text(
+                  'Explore',
                   style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    fontFamily: 'Poppins'
-                  ),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      fontFamily: 'Poppins'),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.0),
-                child: Text('see all',
+                child: Text(
+                  'see all',
                   style: TextStyle(
                       fontWeight: FontWeight.normal,
                       fontSize: 12,
-                      fontFamily: 'Poppins'
-                  ),
+                      fontFamily: 'Poppins'),
                 ),
               )
             ],
           ),
-
           Expanded(
             child: RefreshIndicator(
               onRefresh: _refreshItems,
@@ -260,7 +252,7 @@ class _ExplorePageState extends State<ExplorePage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    elevation: 5, // This gives the depth effect
+                    // elevation: 5, // This gives the depth effect
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -271,7 +263,8 @@ class _ExplorePageState extends State<ExplorePage> {
                             'assets/images/grocery.jpg',
                             width: double.infinity,
                             height: 150, // Set a height for the image
-                            fit: BoxFit.cover, // This makes the image expand to fill the width
+                            fit: BoxFit
+                                .cover, // This makes the image expand to fill the width
                           ),
                         ),
                         Padding(
@@ -286,8 +279,8 @@ class _ExplorePageState extends State<ExplorePage> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Text('${item.deliveryTime} • ${item
-                                  .deliveryFee}',
+                              Text(
+                                '${item.deliveryTime} • ${item.deliveryFee}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -295,9 +288,9 @@ class _ExplorePageState extends State<ExplorePage> {
                               Row(
                                 children: [
                                   const Icon(Icons.star,
-                                      color: TColors.starIconColor,
-                                      size: 16),
-                                  Text('${item.rating}',
+                                      color: TColors.starIconColor, size: 16),
+                                  Text(
+                                    '${item.rating}',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -305,7 +298,8 @@ class _ExplorePageState extends State<ExplorePage> {
                                   const SizedBox(width: 16),
                                   const Icon(Icons.location_on,
                                       color: TColors.greyText, size: 16),
-                                  Text('${item.distance} km',
+                                  Text(
+                                    '${item.distance} km',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -324,31 +318,9 @@ class _ExplorePageState extends State<ExplorePage> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.explore,  color: TColors.primary),
-                label: 'Explore',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.shopping_bag, color: TColors.bBlack,),
-                label: 'Browse',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.list,  color: TColors.bBlack),
-                label: 'Orders',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person,  color: TColors.bBlack),
-                label: 'Profile',
-              ),
-            ],
-            type: BottomNavigationBarType.fixed,
-          ),
     );
   }
 }
-
 
 class FoodItem {
   final String title;

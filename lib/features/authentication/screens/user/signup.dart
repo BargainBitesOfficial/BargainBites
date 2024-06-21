@@ -10,7 +10,7 @@ class UserSignupScreen extends StatefulWidget {
   const UserSignupScreen({super.key});
 
   @override
-  _UserSignupScreenState createState() => _UserSignupScreenState();
+  State<UserSignupScreen> createState() => _UserSignupScreenState();
 }
 
 class _UserSignupScreenState extends State<UserSignupScreen> {

@@ -14,7 +14,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  google_maps_flutter: ^2.2.5
 
   # Utility Packages
   provider: ^6.0.2

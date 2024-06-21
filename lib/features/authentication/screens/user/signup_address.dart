@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:bargainbites/utils/constants/sizes.dart';
-import 'package:bargainbites/utils/helpers/helper_functions.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:flutter/services.dart';
 import 'package:bargainbites/features/authentication/controllers/user/signup_controller.dart';
@@ -25,7 +24,7 @@ class SignupAddress extends StatefulWidget {
   });
 
   @override
-  _SignupAddressState createState() => _SignupAddressState();
+  State<SignupAddress> createState() => _SignupAddressState();
 }
 
 class _SignupAddressState extends State<SignupAddress> {
@@ -87,7 +86,7 @@ class _SignupAddressState extends State<SignupAddress> {
       await signupController.createUser(signupModel);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("User created successfully."),
           backgroundColor: Colors.green,
         ),
