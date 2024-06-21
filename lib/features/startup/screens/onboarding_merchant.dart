@@ -69,7 +69,7 @@ class OnboardingMerchant extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Padding(
-            padding: EdgeInsets.fromLTRB(24, 0, 24, 10),
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
             child: ElevatedButton(
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const MerchantLogin()));

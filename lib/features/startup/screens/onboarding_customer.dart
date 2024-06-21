@@ -24,7 +24,7 @@ class OnboardingCustomer extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           const Text(
             'Ready For Some Bargains?',
             style: TextStyle(fontSize: 24, color:TColors.primaryText, fontWeight: FontWeight.w700, fontFamily: 'Poppins'),
@@ -58,7 +58,7 @@ class OnboardingCustomer extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => Login()));
+                        builder: (context) => const Login()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: TColors.primaryBtn,
@@ -107,7 +107,7 @@ class OnboardingCustomer extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => UserSignupScreen()));
+                        builder: (context) => const UserSignupScreen()));
               },
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(

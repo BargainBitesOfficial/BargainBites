@@ -50,7 +50,7 @@ class UserType extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => OnboardingCustomer()));
+                        builder: (context) => const OnboardingCustomer()));
               },
               icon: const Icon(Icons.shopping_bag,color:TColors.bWhite),
               label: const Text('Customer',style: TextStyle(color:TColors.bWhite ,fontSize: 16, fontFamily: 'Poppins', fontWeight: FontWeight.w400, letterSpacing: 1)),
@@ -97,7 +97,7 @@ class UserType extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => OnboardingMerchant()));
+                        builder: (context) => const OnboardingMerchant()));
               },
               icon: const Icon(Icons.store,color:TColors.bWhite),
               label: const Text('Merchant', style: TextStyle(color:TColors.bWhite,fontSize: 16, fontFamily: 'Poppins', fontWeight: FontWeight.w400, letterSpacing: 1),),

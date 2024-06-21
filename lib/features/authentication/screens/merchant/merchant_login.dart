@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
-import '../../../../common/styles/spacing_styles.dart';
-import '../../../../utils/constants/colors.dart';
-import '../../../../utils/constants/sizes.dart';
-import '../../../../utils/constants/text_strings.dart';
+import 'package:bargainbites/common/styles/spacing_styles.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
+import 'package:bargainbites/utils/constants/sizes.dart';
+import 'package:bargainbites/utils/constants/text_strings.dart';
 
 class MerchantLogin extends StatelessWidget {
   const MerchantLogin({super.key});

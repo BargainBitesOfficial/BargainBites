@@ -5,6 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../utils/constants/colors.dart';
 
 class NewMerchantInfo extends StatelessWidget {
+  const NewMerchantInfo({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,13 +72,13 @@ class NewMerchantInfo extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: 32),
+                  const SizedBox(height: 32),
                   ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => UserType()));
+                            builder: (context) => const UserType()));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: TColors.primaryBtn,
@@ -91,7 +93,7 @@ class NewMerchantInfo extends StatelessWidget {
                     style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Poppins'),
                   ),
                 ),
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
                 ],
               ),
             ),

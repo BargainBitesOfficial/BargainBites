@@ -7,10 +7,10 @@ class VerificationScreen extends StatefulWidget {
   //const VerificationScreen({super.key});
 
   final String email; // Email address to be displayed
-  VerificationScreen({super.key, required this.email});
+  const VerificationScreen({super.key, required this.email});
 
   @override
-  _VerificationScreenState createState() => _VerificationScreenState();
+  State<VerificationScreen> createState() => _VerificationScreenState();
 }
 
 class _VerificationScreenState extends State<VerificationScreen> {
@@ -49,7 +49,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             //Navigator.of(context).pop();
           },
@@ -141,11 +141,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
             ),
             const SizedBox(height: 10),
             if (hasError)
-              Container(
-                  child: const Text(
-                    'Wrong code, please try again',
-                    style: TextStyle(color: TColors.primaryErr, fontSize: 14),
-                  )
+              const Text(
+                'Wrong code, please try again',
+                style: TextStyle(color: TColors.primaryErr, fontSize: 14),
               ),
             const SizedBox(height: 80),
             Row(
