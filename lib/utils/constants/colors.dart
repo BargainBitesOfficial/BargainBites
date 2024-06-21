@@ -31,6 +31,7 @@ class TColors {
   static const Color bDeepPurple = Colors.deepPurple;
   static const Color bBlueGrey = Colors.blueGrey;
 
+
   // Gradient Colors
   static const Gradient linerGradient = LinearGradient(
     colors: [Color(0xFF01CA7E), Color(0xFF01AB6B), Color(0xFF00643E),],
@@ -42,6 +43,7 @@ class TColors {
   // text colors
   static const Color greyText = Color(0xFF757373);// primary color
   static const Color primaryText = Color(0xFF059471);// primary color
+  static const Color starIconColor = Color(0xFFE3C745);// primary color
 
 
   // Background Colors
