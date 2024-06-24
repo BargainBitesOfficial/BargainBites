@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'features/authentication/controllers/user/signup_controller.dart';
+import 'features/authentication/controllers/merchant/merchant_signup_controller.dart';
 import 'features/homepage/screens/homepage.dart';// Assuming you have a Profile screen
 
 void main() {
@@ -40,6 +41,7 @@ class _AppState extends State<App> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SignupController()),
+        ChangeNotifierProvider(create: (_) => MerchantSignupController()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

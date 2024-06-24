@@ -1,13 +1,11 @@
 import 'package:bargainbites/features/authentication/controllers/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:bargainbites/common/styles/spacing_styles.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:bargainbites/utils/constants/sizes.dart';
 import 'package:bargainbites/utils/constants/text_strings.dart';
 import 'package:bargainbites/features/authentication/controllers/user/login_controller.dart';
-
 import 'package:bargainbites/utils/validators/validation.dart';
 import 'package:bargainbites/features/authentication/screens/forgot_password.dart';
 
@@ -182,7 +180,7 @@ class _LoginState extends State<Login> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            LoginController.signUserIn();
+                            LoginController.signIn(context);
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: TColors.primaryBtn,
