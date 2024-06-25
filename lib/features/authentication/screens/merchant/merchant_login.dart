@@ -12,7 +12,7 @@ class MerchantLogin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: const Text("Login", style: TextStyle(fontSize: 25, fontFamily: 'Poppins', fontWeight: FontWeight.w700)),
@@ -145,7 +145,7 @@ class MerchantLogin extends StatelessWidget {
                             ),
                             side: BorderSide.none,
                           ),
-                          child: const Text(TTexts.login),
+                          child: const Text(TTexts.login, style: TextStyle(color: Colors.white, fontFamily: "Poppins"),),
                         ),
                       ),
                     ],
