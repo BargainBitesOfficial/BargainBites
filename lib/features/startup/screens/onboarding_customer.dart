@@ -10,9 +10,9 @@ class OnboardingCustomer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Welcome'),
+    return Scaffold(backgroundColor: Colors.white,
+      appBar: AppBar(backgroundColor: Colors.white,
+        title: const Text('Welcome', style: TextStyle(fontFamily: "Poppins")),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -48,7 +48,7 @@ class OnboardingCustomer extends StatelessWidget {
           ),
           const Text(
             'Already registered on Bargain Bites?',
-            style: TextStyle(fontSize: 18),
+            style: TextStyle(fontSize: 18, fontFamily: "Poppins"),
           ),
           const SizedBox(height: 10),
           Padding(
@@ -119,7 +119,7 @@ class OnboardingCustomer extends StatelessWidget {
               ),
               child: const Text(
                 'Create account',
-                style: TextStyle(fontSize: 18, color: TColors.primaryText, fontWeight: FontWeight.w400),
+                style: TextStyle(fontSize: 18, color: TColors.primaryText, fontWeight: FontWeight.w400, fontFamily: "Poppins"),
               ),
             ),
           ),

@@ -1,8 +1,7 @@
-import 'package:bargainbites/features/authentication/screens/user/login.dart';
+import 'package:bargainbites/features/homepage/screens/navbar.dart';
+import 'package:bargainbites/features/startup/screens/user_type.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import 'screens/user/home_page.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
@@ -12,15 +11,15 @@ class AuthPage extends StatelessWidget {
     return Scaffold(
       body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot){
+        builder: (context, snapshot) {
           // user logged in
-          if(snapshot.hasData){
-            return HomePage();
+          if (snapshot.hasData) {
+            return const NavBar();
           }
 
           // user is not logged in
           else {
-            return const Login();
+            return const UserType();
           }
         },
       ),

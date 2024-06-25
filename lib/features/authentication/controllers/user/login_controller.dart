@@ -7,9 +7,16 @@ class LoginController extends StatelessWidget {
   static final emailController = TextEditingController();
   static final passwordController = TextEditingController();
 
-  static void signUserIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text, password: passwordController.text);
+  static Future<bool> signUserIn() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text, password: passwordController.text);
+      return true; // Login successful
+    } catch (e) {
+      // Handle error (e.g., invalid email or password)
+      print('Login failed: $e');
+      return false; // Login failed
+    }
   }
 
   @override
