@@ -1,41 +1,66 @@
+import 'package:bargainbites/features/homepage/screens/store_details_page.dart';
 import 'package:flutter/material.dart';
-
-import 'package:bargainbites/utils/constants/colors.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
+import 'dart:math';
+import '../../../utils/constants/colors.dart';
+import '../../authentication/models/merchant_model.dart';
+import '../controllers/explore_controller.dart';
 
 class ExplorePage extends StatefulWidget {
-  const ExplorePage({super.key});
-
   @override
-  State<ExplorePage> createState() => _ExplorePageState();
+  _ExplorePageState createState() => _ExplorePageState();
 }
 
 class _ExplorePageState extends State<ExplorePage> {
-  final List<FoodItem> items = [
-    FoodItem(
-      title: 'Subway',
-      //imageUrl: 'https://example.com/image.jpg',
-      deliveryTime: '32 min',
-      deliveryFee: '\$0 delivery fee',
-      rating: 4.7,
-      distance: 10,
-    ),
-    // Add more items here
-  ];
+  final ExploreController _exploreController = ExploreController();
+  List<MerchantModel> merchants = [];
+  bool isLoading = true;
+  String currDay = DateFormat('EEEE').format(DateTime.now());
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMerchants();
+  }
+
+  Future<void> _fetchMerchants() async {
+    List<MerchantModel> fetchedMerchants = await _exploreController.fetchMerchants();
+
+    // calculating the distance of merchants with current location
+    for (MerchantModel merchant in fetchedMerchants) {
+      //double distance = await _exploreController.getDistanceByRoad("N9B 2K9", merchant.postalCode, "");
+      //merchant.currDistance = (distance != -1.0) ? distance : -1;
+
+      final random = Random();
+      double temp = 2.0 + (10.0 - 2.0) * random.nextDouble();
+      merchant.currDistance = double.parse(temp.toStringAsFixed(1));
+      merchant.merchantRating = double.parse((3.0 + (5.0 - 3.0) * random.nextDouble()).toStringAsFixed(1));
+    }
+    setState(() {
+      merchants = fetchedMerchants;
+      isLoading = false;
+    });
+  }
 
   Future<void> _refreshItems() async {
     // Simulate a network call and refresh the list
-    await Future.delayed(const Duration(seconds: 2));
+    List<MerchantModel> fetchedMerchants = await _exploreController.fetchMerchants();
+
+    // calculating the distance of merchants with current location
+    for (MerchantModel merchant in fetchedMerchants) {
+      //double distance = await _exploreController.getDistanceByRoad("N9B 2K9", merchant.postalCode, "");
+      //merchant.currDistance = (distance != -1.0) ? distance : -1;
+
+      final random = Random();
+      double temp = 2.0 + (10.0 - 2.0) * random.nextDouble();
+      merchant.currDistance = double.parse(temp.toStringAsFixed(1));
+      merchant.merchantRating = double.parse((3.0 + (5.0 - 3.0) * random.nextDouble()).toStringAsFixed(1));
+    }
+
     setState(() {
-      // Update the items list
-      // This is just a simulation. You should replace it with your actual data fetch logic.
-      items.add(FoodItem(
-        title: 'New Subway',
-        //imageUrl: 'assets/images/food.jpg',
-        deliveryTime: '30 min',
-        deliveryFee: '\$0 delivery fee',
-        rating: 4.8,
-        distance: 8,
-      ));
+      merchants = fetchedMerchants;
+      isLoading = false;
     });
   }
 
@@ -43,7 +68,7 @@ class _ExplorePageState extends State<ExplorePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(180),
+        preferredSize: const Size.fromHeight(110),
         child: AppBar(
           flexibleSpace: Container(
               decoration: const BoxDecoration(
@@ -51,56 +76,77 @@ class _ExplorePageState extends State<ExplorePage> {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   const SizedBox(height: 30),
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Browse',
-                          style: TextStyle(
-                              fontSize: 22,
-                              color: TColors.bWhite,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                  height: 38,
-                                  width: 38,
-                                  decoration: const BoxDecoration(
-                                    color: TColors.bWhite,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Center(
-                                      child: IconButton(
-                                          icon: const Icon(Icons.notifications),
-                                          color: TColors.primary,
-                                          // Match the background gradient
-                                          onPressed: () {
-                                            // Add your onPressed code here!
-                                          })))
-                            ])
-                      ]),
-                  const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(children: [
-                          Text('University Avenue Windsor, N9B 2Y8',
-                              style: TextStyle(
-                                  fontFamily: "Poppins",
-                                  fontSize: 14,
-                                  color: Colors.white)),
-                        ]),
-                        Text('within 10 km',
-                            style: TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 14,
-                                color: Colors.white)),
-                      ]),
-                  const SizedBox(height: 15),
+                              Text('Browse',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: TColors.bWhite,
+                                  fontWeight: FontWeight.w600,
+
+                                ),
+                              ),
+                              Text('University Avenue, 3.2 km',
+                                  style: TextStyle(
+                                      fontFamily: "Poppins",
+                                      fontSize: 12,
+                                      color: Colors.white
+                                  )
+                              ),
+                              // Text('within 10 km',
+                              //   style: TextStyle(
+                              //     fontFamily: "Poppins",
+                              //     fontSize: 12,
+                              //     color: Colors.white
+                              //   )
+                              // ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: 38,
+                          width: 38,
+                          decoration: const BoxDecoration(
+                            color: TColors.bWhite,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: IconButton(
+                              icon: const Icon(Icons.notifications),
+                              color: TColors.primary, // Match the background gradient
+                              onPressed: () {
+                                // Add your onPressed code here!
+                              },
+                            ),
+                          ),
+                        ),
+                      ]
+                  ),
+                  // const Column(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     Row(children: [
+                  //       Text('University Avenue Windsor, N9B 2Y8',
+                  //           style: TextStyle(
+                  //               fontFamily: "Poppins",
+                  //               fontSize: 14,
+                  //               color: Colors.white)),
+                  //     ]),
+                  //     Text('within 10 km',
+                  //         style: TextStyle(
+                  //             fontFamily: "Poppins",
+                  //             fontSize: 14,
+                  //             color: Colors.white)),
+                  //   ]),
+                  const SizedBox(height: 15,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -109,8 +155,7 @@ class _ExplorePageState extends State<ExplorePage> {
                           height: 45,
                           child: TextField(
                             decoration: InputDecoration(
-                              prefixIcon: const Icon(Icons.search,
-                                  color: Colors.black54),
+                              prefixIcon: const Icon(Icons.search, color: Colors.black54),
                               filled: true,
                               fillColor: TColors.bWhite,
                               hintText: 'Search with filters & browse',
@@ -138,178 +183,147 @@ class _ExplorePageState extends State<ExplorePage> {
                           },
                         ),
                       ),
+
                     ],
                   ),
                   const SizedBox(height: 10)
                 ],
-              )),
+              )
+          ),
         ),
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                // FilterChip(
-                //   label: const Text('Distance'),
-                //   onSelected: (bool value) {},
-                // ),
-                // const SizedBox(width: 8),
-                // FilterChip(
-                //   label: const Text('Rating'),
-                //   onSelected: (bool value) {},
-                // ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12.0),
-                  child: Container(
-                    height: 28.0, // Reduced height
-                    color: TColors.primary, // Background color
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Center(
-                        child: Text(
-                          "Distance",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
 
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12.0),
-                  child: Container(
-                    height: 28.0, // Reduced height
-                    color: TColors.primary, // Background color
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12.0),
-                      child: Center(
-                        child: Text(
-                          "Rating",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+          // put padding part here..
 
-                // Positioned(
-                //   top: 4.0,
-                //   right: 4.0,
-                //   child: GestureDetector(
-                //     //onTap: onDeleted,
-                //     child: Container(
-                //       decoration: const BoxDecoration(
-                //         color: Colors.red,
-                //         shape: BoxShape.circle,
-                //       ),
-                //       child: const Icon(
-                //         Icons.close,
-                //         size: 18.0,
-                //         color: Colors.white,
-                //       ),
-                //     ),
-                //   ),
-                // ),
-              ],
-            ),
-          ),
+          // explore starts from here
           const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.0),
-                child: Text(
-                  'Explore',
+                child: Text('Explore',
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
-                      fontFamily: 'Poppins'),
+                      fontFamily: 'Poppins'
+                  ),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10.0),
-                child: Text(
-                  'see all',
+                child: Text('see all',
                   style: TextStyle(
                       fontWeight: FontWeight.normal,
                       fontSize: 12,
-                      fontFamily: 'Poppins'),
+                      fontFamily: 'Poppins'
+                  ),
                 ),
               )
             ],
           ),
+
           Expanded(
             child: RefreshIndicator(
               onRefresh: _refreshItems,
               child: ListView.builder(
-                itemCount: items.length,
+                itemCount: merchants.length,
                 itemBuilder: (context, index) {
-                  final item = items[index];
+                  final item = merchants[index];
+                  String openStatusMsg = "";
+                  bool isGreyed = false;
+                  if (item.isOpened == false || item.storeTiming?[currDay]?['openingTime'] == Null || item.storeTiming?[currDay]?['openingTime'] == "") {
+                    openStatusMsg = "Closed";
+                    isGreyed = true;
+                  }
+                  else {
+                    openStatusMsg = "Open today from ${item.storeTiming?['Monday']?['openingTime']} to ${item.storeTiming?['Monday']?['closingTime']}";
+                    isGreyed = false;
+                  }
+
+                  // calculating distance between location
+                  //String apiKey = dotenv.env['GOOGLE_API_KEY'] ?? '';
+
                   return Card(
                     margin: const EdgeInsets.all(8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    // elevation: 5, // This gives the depth effect
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(15)),
-                          child: Image.asset(
-                            'assets/images/grocery.jpg',
-                            width: double.infinity,
-                            height: 150, // Set a height for the image
-                            fit: BoxFit
-                                .cover, // This makes the image expand to fill the width
+                    elevation: 5, // This gives the depth effect
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => StoreDetailsPage()));
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ColorFiltered(colorFilter: isGreyed
+                              ? const ColorFilter.mode(Colors.grey, BlendMode.saturation)
+                              : const ColorFilter.mode(Colors.transparent, BlendMode.multiply),
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(15)),
+                              child: Image.asset(
+                                'assets/images/grocery.jpg',
+                                width: double.infinity,
+                                height: 150, // Set a height for the image
+                                fit: BoxFit.cover, // This makes the image expand to fill the width
+                              ),
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.title,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                '${item.deliveryTime} • ${item.deliveryFee}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  const Icon(Icons.star,
-                                      color: TColors.starIconColor, size: 16),
-                                  Text(
-                                    '${item.rating}',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.storeName,
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: isGreyed ? TColors.greyText : TColors.bBlack,
+                                      fontFamily: 'Poppins'
                                   ),
-                                  const SizedBox(width: 16),
-                                  const Icon(Icons.location_on,
-                                      color: TColors.greyText, size: 16),
-                                  Text(
-                                    '${item.distance} km',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                                ),
+                                Text(openStatusMsg,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize:14,
+                                    fontFamily: 'Poppins',
+                                    color: isGreyed ? TColors.greyText : TColors.greyText,
                                   ),
-                                ],
-                              ),
-                            ],
+                                ),
+                                Row(
+                                  children: [
+                                    Icon(Icons.star,
+                                        color: isGreyed ? TColors.greyText : TColors.starIconColor ,
+                                        size: 16),
+                                    Text(' ${item.merchantRating}',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: isGreyed ? TColors.greyText : TColors.bBlack,
+                                          fontFamily: 'Poppins'
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Icon(Icons.location_on,
+                                        color: isGreyed ? TColors.greyText : TColors.locationIconColor,
+                                        size: 16),
+                                    Text('${item.currDistance} km',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          color: isGreyed ? TColors.greyText : TColors.bBlack,
+                                          fontFamily: 'Poppins'
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -320,23 +334,4 @@ class _ExplorePageState extends State<ExplorePage> {
       ),
     );
   }
-}
-
-class FoodItem {
-  final String title;
-
-  //final String imageUrl;
-  final String deliveryTime;
-  final String deliveryFee;
-  final double rating;
-  final double distance;
-
-  FoodItem({
-    required this.title,
-    //required this.imageUrl,
-    required this.deliveryTime,
-    required this.deliveryFee,
-    required this.rating,
-    required this.distance,
-  });
 }

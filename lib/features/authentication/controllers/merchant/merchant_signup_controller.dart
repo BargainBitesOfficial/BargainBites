@@ -401,7 +401,7 @@ class MerchantSignupController extends ChangeNotifier {
         'streetAddress': signupModel.streetAddress,
         'postalCode': signupModel.postalCode,
         'isValidated': signupModel.isValidated,
-        'isStoreOpen': signupModel.isStoreOpen
+        'isStoreOpen': signupModel.isOpened
       });
 
       reset();

@@ -8,7 +8,7 @@ class MerchantModel {
   String password;
 
   String storeName;
-  String storeId;
+  int storeId;
   String storeContact;
 
   String country;
@@ -17,10 +17,12 @@ class MerchantModel {
   String streetAddress;
   String postalCode;
 
-  //Map<String, TimeOfDay> storeTiming = new Map<String, TimeOfDay>();
+  Map<String, Map<String, String>>? storeTiming;
 
   bool isValidated;
-  bool isStoreOpen;
+  bool isOpened;
+  double currDistance;  // stores distance of current merchant from user
+  double merchantRating;
 
   MerchantModel({
     this.merchantId = "",
@@ -39,31 +41,39 @@ class MerchantModel {
     required this.streetAddress,
     required this.postalCode,
 
-    //this.storeTiming = {},
+    this.storeTiming,
 
     this.isValidated = false,
-    this.isStoreOpen = false
+    this.isOpened = false,
+    this.currDistance = 0.0,
+    this.merchantRating = 0.0,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'merchantName': merchantName,
-      'merchantContact': merchantContact,
-      'merchantEmail': merchantEmail,
-      'password': password,
+  factory MerchantModel.fromMap(Map<String, dynamic> data) {
+    return MerchantModel(
+      merchantId: data['merchantId'] ?? '',
+      merchantName: data['merchantName'] ?? '',
+      merchantContact: data['merchantContact'] ?? '',
+      merchantEmail: data['merchantEmail'] ?? '',
 
-      'storeName': storeName,
-      'storeId': storeId,
-      'storeContact': storeContact,
+      password: data['password'] ?? '',
 
-      'country': country,
-      'province': province,
-      'city': city,
-      'streetAddress': streetAddress,
-      'postalCode': postalCode,
+      storeName: data['storeName'] ?? '',
+      storeId: data['storeId'] ?? 0,
+      storeContact: data['storeContact'] ?? '',
 
-      'isValidated': isValidated,
-      'isStoreOpen': isStoreOpen
-    };
+      country: data['country'] ?? '',
+      province: data['province'] ?? '',
+      city: data['city'] ?? '',
+      streetAddress: data['streetAddress'] ?? '',
+      postalCode: data['postalCode'] ?? '',
+
+      storeTiming: data['storeTiming'] != null
+          ? (data['storeTiming'] as Map<String, dynamic>).map((key, value) => MapEntry(key, Map<String, String>.from(value as Map)))
+          : null,
+
+      isValidated: data['isValidated'] ?? false,
+      isOpened: data['isOpened'] ?? false,
+    );
   }
 }
