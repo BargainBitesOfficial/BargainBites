@@ -48,7 +48,7 @@ class MerchantAuthController {
       final merchantData = merchantDoc.data();
       if (merchantData != null) {
         print('Merchant logged in successfully');
-        print('Merchant Name: ${merchantData['name']}');
+        print('Merchant Name: ${merchantData['merchantName']}');
         // You can access other merchant data here
       } else {
         print('Merchant data not found');

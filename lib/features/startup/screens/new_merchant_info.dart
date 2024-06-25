@@ -9,7 +9,7 @@ class NewMerchantInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(backgroundColor: Colors.white,
       body: Stack(
         children: [
           const Align(
@@ -89,7 +89,7 @@ class NewMerchantInfo extends StatelessWidget {
                     minimumSize: const Size(double.infinity, 50),
                   ),
                   child: const Text(
-                    'Go To Home',
+                    'Logout',
                     style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Poppins'),
                   ),
                 ),

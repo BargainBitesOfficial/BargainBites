@@ -10,9 +10,9 @@ class OnboardingMerchant extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Welcome'),
+    return Scaffold(backgroundColor: Colors.white,
+      appBar: AppBar(backgroundColor: Colors.white,
+        title: const Text('Welcome', style: TextStyle(fontFamily: "Poppins")),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -65,7 +65,7 @@ class OnboardingMerchant extends StatelessWidget {
           ),
           const Text(
             'Already a partner with Bargain Bites?',
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 16, fontFamily: "Poppins"),
           ),
           const SizedBox(height: 10),
           Padding(
@@ -130,7 +130,7 @@ class OnboardingMerchant extends StatelessWidget {
               ),
               child: const Text(
                 'Create a merchant account',
-                style: TextStyle(fontSize: 18, color: TColors.primaryText),
+                style: TextStyle(fontSize: 18, color: TColors.primaryText, fontFamily: "Poppins"),
               ),
             ),
           ),

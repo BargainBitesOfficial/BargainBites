@@ -3,20 +3,34 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   // Google Sign-In
-  signInWithGoogle() async {
-    // begin interactive sing in process
-    final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
+  Future<bool> signInWithGoogle() async {
+    try {
+      // Begin interactive sign-in process
+      final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
 
-    // obtain auth details from request
-    final GoogleSignInAuthentication gAuth = await gUser!.authentication;
+      if (gUser == null) {
+        // The user canceled the sign-in
+        return false;
+      }
 
-    // create a new credential for user
-    final credential = GoogleAuthProvider.credential(
-      accessToken: gAuth.accessToken,
-      idToken: gAuth.idToken,
-    );
+      // Obtain auth details from request
+      final GoogleSignInAuthentication gAuth = await gUser.authentication;
 
-    // finally, lets, sign in
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+      // Create a new credential for user
+      final credential = GoogleAuthProvider.credential(
+        accessToken: gAuth.accessToken,
+        idToken: gAuth.idToken,
+      );
+
+      // Sign in with Firebase
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      return true; // Sign-in successful
+    } catch (e) {
+      // Handle sign-in error
+      print('Google sign-in failed: $e');
+      return false; // Sign-in failed
+    }
   }
+
+
 }
