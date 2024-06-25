@@ -68,7 +68,7 @@ class _MerchantAddressPageState extends State<MerchantAddressPage> {
         merchantEmail: widget.email,
         password: widget.password,
         storeName: widget.storeName,
-        storeId: widget.storeId,
+        storeId: int.parse(widget.storeId),
         storeContact: widget.storeNumber,
         country: countryController.text,
         province: signupController.selectedProvince!,
@@ -76,7 +76,7 @@ class _MerchantAddressPageState extends State<MerchantAddressPage> {
         streetAddress: signupController.streetAddressController.text,
         postalCode: signupController.postalCodeController.text,
         isValidated: false,
-        isStoreOpen: false,
+        isOpened: false,
       );
 
       try {
