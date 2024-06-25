@@ -42,11 +42,12 @@ class MerchantAuthController {
       // Get the merchant's additional data from Firestore
       final currentUser = _auth.currentUser;
       final merchantDoc =
-      await _firestore.collection('merchants').doc(currentUser?.uid).get();
+      await _firestore.collection('Merchants').doc(currentUser?.uid).get();
 
       // Example: You can access merchant data like this
       final merchantData = merchantDoc.data();
-      if (merchantData != null) {
+      if (merchantData != null)
+      {
         print('Merchant logged in successfully');
         print('Merchant Name: ${merchantData['merchantName']}');
         // You can access other merchant data here

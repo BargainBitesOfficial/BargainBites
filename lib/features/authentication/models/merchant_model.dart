@@ -8,18 +8,19 @@ class MerchantModel {
   String password;
 
   String storeName;
-  int storeId;
+  String storeId;
   String storeContact;
 
   String country;
   String province;
+  String city;
   String streetAddress;
   String postalCode;
 
   //Map<String, TimeOfDay> storeTiming = new Map<String, TimeOfDay>();
 
   bool isValidated;
-  bool isOpened;
+  bool isStoreOpen;
 
   MerchantModel({
     this.merchantId = "",
@@ -34,13 +35,14 @@ class MerchantModel {
 
     required this.country,
     required this.province,
+    required this.city,
     required this.streetAddress,
     required this.postalCode,
 
     //this.storeTiming = {},
 
     this.isValidated = false,
-    this.isOpened = false
+    this.isStoreOpen = false
   });
 
   Map<String, dynamic> toJson() {
@@ -56,10 +58,12 @@ class MerchantModel {
 
       'country': country,
       'province': province,
+      'city': city,
       'streetAddress': streetAddress,
       'postalCode': postalCode,
 
-      'isValidated': isValidated
+      'isValidated': isValidated,
+      'isStoreOpen': isStoreOpen
     };
   }
 }

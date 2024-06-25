@@ -2,13 +2,11 @@ import 'package:bargainbites/features/authentication/controllers/auth_service.da
 import 'package:bargainbites/features/homepage/screens/navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:bargainbites/common/styles/spacing_styles.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:bargainbites/utils/constants/sizes.dart';
 import 'package:bargainbites/utils/constants/text_strings.dart';
 import 'package:bargainbites/features/authentication/controllers/user/login_controller.dart';
-
 import 'package:bargainbites/utils/validators/validation.dart';
 import 'package:bargainbites/features/authentication/screens/forgot_password.dart';
 
@@ -188,6 +186,7 @@ class _LoginState extends State<Login> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
+
                           onPressed: () async {
                             bool success = await LoginController.signUserIn();
                             if (success) {
@@ -210,6 +209,7 @@ class _LoginState extends State<Login> {
                                         'Login failed. Please try again.')),
                               );
                             }
+
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: TColors.primaryBtn,

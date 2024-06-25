@@ -1,3 +1,4 @@
+import 'package:bargainbites/features/authentication/screens/user/login.dart';
 import 'package:bargainbites/features/homepage/screens/navbar.dart';
 import 'package:bargainbites/features/startup/screens/user_type.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,7 +17,6 @@ class AuthPage extends StatelessWidget {
           if (snapshot.hasData) {
             return const NavBar();
           }
-
           // user is not logged in
           else {
             return const UserType();

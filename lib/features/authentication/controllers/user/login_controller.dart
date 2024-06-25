@@ -1,9 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:bargainbites/features/homepage/screens/homepage.dart';
 
-class LoginController extends StatelessWidget {
-  const LoginController({super.key});
-
+class LoginController {
   static final emailController = TextEditingController();
   static final passwordController = TextEditingController();
 
@@ -19,8 +20,16 @@ class LoginController extends StatelessWidget {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
+  static Future<void> signOut(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User signed out successfully'))
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error signing out User: $e'))
+      );
+    }
   }
 }
