@@ -191,11 +191,11 @@ class _LoginState extends State<Login> {
                             bool success = await LoginController.signUserIn();
                             if (success) {
                               // If login is successful, navigate to the new page
-                              Navigator.pushReplacement(
+                              Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const NavBar()), // Replace HomePage with the actual page you want to navigate to
+                                        const NavBar()), (Route<dynamic>route)=>false // Replace HomePage with the actual page you want to navigate to
                               );
                             } else {
                               // Optionally handle login failure (e.g., show an error message)
