@@ -1,15 +1,17 @@
-import 'package:bargainbites/features/startup/screens/user_type.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-import '../../../utils/constants/colors.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
+import 'package:bargainbites/features/authentication/controllers/merchant/merchant_login_controller.dart';
 
 class NewMerchantInfo extends StatelessWidget {
   const NewMerchantInfo({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: Colors.white,
+    final MerchantAuthController authController = MerchantAuthController();
+
+    return Scaffold(
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           const Align(
@@ -18,24 +20,25 @@ class NewMerchantInfo extends StatelessWidget {
               padding: EdgeInsets.only(top: 70),
               child: Text(
                 'Thank You for Signing Up!',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'Poppins'),
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins'),
                 textAlign: TextAlign.justify,
               ),
             ),
           ),
           Center(
-            child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return Center(
-                    child: SvgPicture.asset(
-                      'assets/images/new_merchant_info_img.svg',
-                      width: constraints.maxWidth * 0.7,
-                      height: constraints.maxHeight * 0.8,
-                      fit: BoxFit.cover,
-                    ),
-                  );
-                }
-            )
+            child: LayoutBuilder(builder: (context, constraints) {
+              return Center(
+                child: SvgPicture.asset(
+                  'assets/images/new_merchant_info_img.svg',
+                  width: constraints.maxWidth * 0.7,
+                  height: constraints.maxHeight * 0.8,
+                  fit: BoxFit.cover,
+                ),
+              );
+            }),
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -53,46 +56,53 @@ class NewMerchantInfo extends StatelessWidget {
                       ),
                       children: [
                         TextSpan(
-                          text: 'Your application has been successfully submitted. We appreciate your interest in partnering with.',
+                          text:
+                              'Your application has been successfully submitted. We appreciate your interest in partnering with.',
                         ),
                         TextSpan(
                           text: 'Bargain Bites ',
-                          style: TextStyle(fontWeight: FontWeight.bold, color: TColors.bBlack),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: TColors.bBlack),
                         ),
                         TextSpan(
-                          text: 'Our team will review your application, and you will receive an update via email within the next 2-3 business days.\n\nFor any urgent queries, feel free to contact our support team at '
+                          text:
+                              'Our team will review your application, and you will receive an update via email within the next 2-3 business days.\n\nFor any urgent queries, feel free to contact our support team at ',
                         ),
                         TextSpan(
                           text: 'support@bargainbites.com',
-                          style: TextStyle(fontWeight: FontWeight.bold, color: TColors.primaryBtn),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: TColors.primaryBtn),
                         ),
                         TextSpan(
-                          text: '. We look forward to working with you to reduce food waste and promote sustainability.',
+                          text:
+                              '. We look forward to working with you to reduce food waste and promote sustainability.',
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const UserType()));
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: TColors.primaryBtn,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                    onPressed: () {
+                      authController.signOut(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: TColors.primaryBtn,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 13),
+                      minimumSize: const Size(double.infinity, 50),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 13),
-                    minimumSize: const Size(double.infinity, 50),
+                    child: const Text(
+                      'Logout',
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontFamily: 'Poppins'),
+                    ),
                   ),
-                  child: const Text(
-                    'Logout',
-                    style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: 'Poppins'),
-                  ),
-                ),
                   const SizedBox(height: 25),
                 ],
               ),

@@ -7,7 +7,7 @@ class UserType extends StatelessWidget {
   const UserType({super.key});
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(backgroundColor: Colors.white,
 
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -31,7 +31,7 @@ class UserType extends StatelessWidget {
           ),
           const Text(
             'Select one to get started',
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 16, fontFamily: "Poppins"),
           ),
           const SizedBox(height: 10),
           Container(
@@ -39,7 +39,7 @@ class UserType extends StatelessWidget {
             padding: const EdgeInsets.only(left: 26),
             child: const Text(
             'I am a....',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: TColors.greyText),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: TColors.greyText, fontFamily: "Poppins"),
             ),
           ),
           const SizedBox(height: 10),
