@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:bargainbites/features/authentication/screens/user/order_screen.dart';
 import 'package:bargainbites/features/homepage/screens/profile_page.dart';
+import '../../cart/screens/cart_list_page.dart';
 import 'explore.dart';
 import 'homepage.dart';
 
@@ -16,11 +17,11 @@ class NavBar extends StatefulWidget {
 class _NavBarState extends State<NavBar> {
   int _selectedIndex = 0;
 
-  static List<Widget> _widgetOptions = <Widget>[
-    Homepage(),
+  static final List<Widget> _widgetOptions = <Widget>[
+    const Homepage(),
     ExplorePage(),
-    OrderScreen(),
-    ProfilePage()
+    CartListPage(),
+    const ProfilePage()
   ];
 
   void _onItemTapped(int index) {

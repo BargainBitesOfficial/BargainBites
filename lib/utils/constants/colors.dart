@@ -43,7 +43,6 @@ class TColors {
   // text colors
   static const Color greyText = Color(0xFF757373);// primary color
   static const Color primaryText = Color(0xFF059471);// primary color
-  static const Color starIconColor = Color(0xFFE3C745);// primary color
 
 
   // Background Colors
@@ -53,11 +52,14 @@ class TColors {
 
   // Button Colors
   static const Color primaryBtn = Color(0xFF059471);// primary color
-  //static const Color starIconColor = Color(0xFFE3C745);// primary color
 
 
   // Border Colors
-  static const Color locationIconColor = Color(0xFF7C7C7C);
+
+  // Icon Colors
+  static const Color starIconColor = Color(0xFFE3C745);// primary color
+  static const Color locationIconColor = Color(0xFF7C7C7C);// primary color
+
   // Error and Validation Colors
   static const Color primaryErr = Color(0xFFF54135);// primary color
 
