@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class MerchantModel {
   String merchantId;
   String merchantName;

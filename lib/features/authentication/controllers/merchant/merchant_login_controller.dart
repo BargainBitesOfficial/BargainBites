@@ -1,4 +1,4 @@
-import 'package:bargainbites/features/homepage/screens/profile_page.dart';
+import 'package:bargainbites/features/homepage/screens/merchant_navbar.dart';
 import 'package:bargainbites/features/startup/screens/new_merchant_info.dart';
 import 'package:bargainbites/features/startup/screens/user_type.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -44,7 +44,7 @@ class MerchantAuthController {
         // Navigate to the validated merchant screen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const ProfilePage()),
+          MaterialPageRoute(builder: (context) => const MerchantNavbar()),
         );
       } else {
         // Navigate to the new merchant info screen

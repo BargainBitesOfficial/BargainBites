@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
-import 'package:bargainbites/features/homepage/screens/homepage.dart';
 
 class LoginController {
   static final emailController = TextEditingController();
