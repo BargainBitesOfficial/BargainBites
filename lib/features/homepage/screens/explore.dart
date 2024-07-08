@@ -78,7 +78,7 @@ class _ExplorePageState extends State<ExplorePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 40),
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -112,7 +112,7 @@ class _ExplorePageState extends State<ExplorePage> {
                           ),
                         ),
                         Container(
-                          height: 38,
+                          height: 40,
                           width: 38,
                           decoration: const BoxDecoration(
                             color: TColors.bWhite,
@@ -146,7 +146,7 @@ class _ExplorePageState extends State<ExplorePage> {
                   //             fontSize: 14,
                   //             color: Colors.white)),
                   //   ]),
-                  const SizedBox(height: 15,),
+                  const SizedBox(height: 15),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -202,7 +202,7 @@ class _ExplorePageState extends State<ExplorePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                padding: EdgeInsets.symmetric(horizontal: 15.0),
                 child: Text('Explore',
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
