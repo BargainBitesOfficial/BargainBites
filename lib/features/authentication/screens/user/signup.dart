@@ -28,7 +28,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
 
     return ChangeNotifierProvider(
       create: (_) => _signupController,
-      child: Scaffold(
+      child: Scaffold(backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
           title: const Text("Create Your Account",

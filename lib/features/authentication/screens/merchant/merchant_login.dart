@@ -1,21 +1,34 @@
 import 'package:flutter/material.dart';
-
 import 'package:bargainbites/common/styles/spacing_styles.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:bargainbites/utils/constants/sizes.dart';
 import 'package:bargainbites/utils/constants/text_strings.dart';
+import 'package:bargainbites/features/authentication/controllers/merchant/merchant_login_controller.dart';
 
-class MerchantLogin extends StatelessWidget {
+class MerchantLogin extends StatefulWidget {
   const MerchantLogin({super.key});
 
-  final bool _obscureText = true;
+  @override
+  State<MerchantLogin> createState() => _MerchantLoginState();
+}
+
+class _MerchantLoginState extends State<MerchantLogin> {
+  final MerchantAuthController _authController = MerchantAuthController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: Colors.white,
+    return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Text("Login", style: TextStyle(fontSize: 25, fontFamily: 'Poppins', fontWeight: FontWeight.w700)),
+        title: const Text(
+          "Login",
+          style: TextStyle(
+              fontSize: 25, fontFamily: 'Poppins', fontWeight: FontWeight.w700),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -25,8 +38,6 @@ class MerchantLogin extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-
-      /// Body
       body: Padding(
         padding: TSpacingStyle.paddingWithAppBarHeight,
         child: SingleChildScrollView(
@@ -34,10 +45,12 @@ class MerchantLogin extends StatelessWidget {
             children: [
               const Text(
                 TTexts.merchantAccess,
-                style: TextStyle(fontSize: 24, fontFamily: "Poppins", fontWeight: FontWeight.w400, color: TColors.primaryBtn),
+                style: TextStyle(
+                    fontSize: 24,
+                    fontFamily: "Poppins",
+                    fontWeight: FontWeight.w400,
+                    color: TColors.primaryBtn),
               ),
-
-              /// Form
               Form(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -45,10 +58,14 @@ class MerchantLogin extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
-                      /// Email
-                      const Text('Email',
-                          style: TextStyle(fontSize: 16, color: Colors.grey, fontFamily: "Poppins", fontWeight: FontWeight.w400)),
+                      const Text(
+                        'Email',
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                            fontFamily: "Poppins",
+                            fontWeight: FontWeight.w400),
+                      ),
                       const SizedBox(height: 8),
                       Container(
                         width: double.infinity,
@@ -58,6 +75,7 @@ class MerchantLogin extends StatelessWidget {
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: TextField(
+                          controller: _emailController,
                           decoration: InputDecoration(
                             hintText: "Required",
                             hintStyle: const TextStyle(color: Colors.grey),
@@ -68,10 +86,10 @@ class MerchantLogin extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-
-                      /// Password
-                      const Text('Password',
-                          style: TextStyle(fontSize: 16, color: Colors.grey)),
+                      const Text(
+                        'Password',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
                       const SizedBox(height: 8),
                       Container(
                         width: double.infinity,
@@ -81,6 +99,7 @@ class MerchantLogin extends StatelessWidget {
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: TextFormField(
+                          controller: _passwordController,
                           obscureText: _obscureText,
                           decoration: InputDecoration(
                             hintText: "●●●●●●●●●●",
@@ -95,22 +114,21 @@ class MerchantLogin extends StatelessWidget {
                                     : Icons.visibility,
                               ),
                               onPressed: () {
-                                // setState(() {
-                                //   _obscureText = !_obscureText;
-                                // });
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
                               },
                             ),
                           ),
                         ),
                       ),
-
-                      /// Forgot Password
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           TextButton(
                             style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
                             ),
                             onPressed: () {
                               // Implement forgot password functionality
@@ -127,17 +145,15 @@ class MerchantLogin extends StatelessWidget {
                           ),
                         ],
                       ),
-
-
-
-
                       const SizedBox(height: 16),
-
-                      /// Sign In Button
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            final email = _emailController.text;
+                            final password = _passwordController.text;
+                            _authController.signIn(email, password, context);
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: TColors.primaryBtn,
                             shape: RoundedRectangleBorder(
@@ -145,7 +161,11 @@ class MerchantLogin extends StatelessWidget {
                             ),
                             side: BorderSide.none,
                           ),
-                          child: const Text(TTexts.login, style: TextStyle(color: Colors.white, fontFamily: "Poppins"),),
+                          child: const Text(
+                            TTexts.login,
+                            style: TextStyle(
+                                color: Colors.white, fontFamily: "Poppins"),
+                          ),
                         ),
                       ),
                     ],

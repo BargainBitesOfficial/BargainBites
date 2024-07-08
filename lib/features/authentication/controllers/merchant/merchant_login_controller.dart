@@ -1,79 +1,81 @@
+import 'package:bargainbites/features/homepage/screens/profile_page.dart';
+import 'package:bargainbites/features/startup/screens/new_merchant_info.dart';
+import 'package:bargainbites/features/startup/screens/user_type.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-// class MerchantLoginController extends StatelessWidget {
-//   const MerchantLoginController({super.key});
-//
-//   static final emailController = TextEditingController();
-//   static final passwordController = TextEditingController();
-//
-//   static void signMerchantIn() async {
-//     await FirebaseAuth.instance.signInWithEmailAndPassword(
-//         email: emailController.text, password: passwordController.text);
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Placeholder();
-//   }
-// }
-
-
-
-
-
-//------------------------------------------------------------------------------
-
+import 'package:flutter/material.dart';
 
 class MerchantAuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<void> signIn(String email, String password) async {
+  Future<void> signIn(
+      String email, String password, BuildContext context) async {
     try {
-      // Sign in the merchant with email and password using Firebase Authentication
+      // Check if the email exists in the Firestore collection
+      final querySnapshot = await _firestore
+          .collection('Merchants')
+          .where('merchantEmail', isEqualTo: email)
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        // Email does not exist in the database
+        print('Email does not exist in the database');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Email does not exist in the database')),
+        );
+        return;
+      }
+
+      // Email exists, proceed with sign in
       await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // Get the merchant's additional data from Firestore
-      final currentUser = _auth.currentUser;
-      final merchantDoc =
-      await _firestore.collection('Merchants').doc(currentUser?.uid).get();
-
-      // Example: You can access merchant data like this
+      // Get the merchant's data by email
+      final merchantDoc = querySnapshot.docs.first;
       final merchantData = merchantDoc.data();
-      if (merchantData != null)
-      {
-        print('Merchant logged in successfully');
-        print('Merchant Name: ${merchantData['merchantName']}');
-        // You can access other merchant data here
+
+      print('Merchant logged in successfully');
+      print('Merchant Name: ${merchantData['merchantName']}');
+
+      if (merchantData['isValidated'] == true) {
+        // Navigate to the validated merchant screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const ProfilePage()),
+        );
       } else {
-        print('Merchant data not found');
-        // Handle the case when merchant data is not found in Firestore
+        // Navigate to the new merchant info screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const NewMerchantInfo()),
+        );
       }
     } catch (e) {
       // Error handling
       print('Error logging in merchant: $e');
-      // You can also throw an exception here or handle the error UI accordingly
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error logging in merchant: $e')),
+      );
     }
   }
 
-  Future<void> signOut() async {
+  Future<void> signOut(BuildContext context) async {
     try {
-      // Sign out the current merchant
       await _auth.signOut();
-
-      // Merchant signed out successfully
       print('Merchant signed out successfully');
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const UserType()),
+      );
     } catch (e) {
-      // Error handling
       print('Error signing out merchant: $e');
-      // You can also throw an exception here or handle the error UI accordingly
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error signing out merchant: $e')),
+      );
     }
   }
 }
-

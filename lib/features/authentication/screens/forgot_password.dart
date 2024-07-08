@@ -2,17 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../common/styles/spacing_styles.dart';
-import '../../../utils/constants/colors.dart';
-import '../../../utils/constants/sizes.dart';
-import '../../../utils/constants/text_strings.dart';
+import 'package:bargainbites/common/styles/spacing_styles.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
+import 'package:bargainbites/utils/constants/sizes.dart';
 import 'package:bargainbites/features/authentication/controllers/user/signup_controller.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
 
   @override
-  _ForgotPasswordState createState() => _ForgotPasswordState();
+  State<ForgotPassword> createState() => _ForgotPasswordState();
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
@@ -28,13 +27,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => _signupController,
-      child: Scaffold(
+      child: Scaffold(backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              // Implement back functionality
+              Navigator.pop(context);
             },
           ),
           centerTitle: true,
