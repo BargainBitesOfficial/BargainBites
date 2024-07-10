@@ -1,11 +1,27 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../startup/screens/user_type.dart';
 
 
-class ProfilePage extends StatelessWidget {
+
+class ProfilePage extends StatefulWidget {
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   final String userName = 'Vinay Kumar';
+
   final String userEmail = 'vinaykumar@gmail.com';
 
+  final user = FirebaseAuth.instance.currentUser!;
+
+  void signUserOut() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const UserType()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +101,8 @@ class ProfilePage extends StatelessWidget {
                   icon: Icons.logout,
                   title: 'Sign Out',
                   onTap: () {
-                    // Handle Sign Out tap
+                    signUserOut();
+                    // Handle SsignUserOutign Out tap
                     print('Sign Out tapped');
                   },
                 ),

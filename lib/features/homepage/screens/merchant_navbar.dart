@@ -1,4 +1,6 @@
+import 'package:bargainbites/features/homepage/screens/merchant_active_product_screen.dart';
 import 'package:bargainbites/features/homepage/screens/merchant_catalogue.dart';
+import 'package:bargainbites/features/homepage/screens/userdevelopmentscreen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bargainbites/utils/constants/colors.dart';
@@ -15,11 +17,11 @@ class MerchantNavbar extends StatefulWidget {
 class _MerchantNavbarState extends State<MerchantNavbar> {
   int _selectedIndex = 0;
 
-  static List<Widget> _widgetOptions = <Widget>[
-    // MerchantHomepage(),
-    // SalesScreen(),
-    MerchantCatalogue(),
-    MerchantProfilePage()
+  static final List<Widget> _widgetOptions = <Widget>[
+    ActiveProductsPage(),
+    UnderDevelopmentScreen(),
+    const MerchantCatalogue(),
+    const MerchantProfilePage()
   ];
 
   void _onItemTapped(int index) {

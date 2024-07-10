@@ -2,14 +2,18 @@ import 'dart:math';
 
 import 'package:bargainbites/features/homepage/controllers/product_controller.dart';
 import 'package:bargainbites/features/homepage/models/listing_item_model.dart';
+import 'package:bargainbites/features/homepage/screens/view_merchant_page.dart';
 import 'package:bargainbites/features/order/screens/product_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bargainbites/utils/constants/colors.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:bargainbites/features/authentication/models/merchant_model.dart';
 import 'package:bargainbites/features/homepage/controllers/explore_controller.dart';
+
+import '../models/merchant/catalog_item_model.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -21,8 +25,10 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   final ExploreController _exploreController = ExploreController();
   final ProductController _productController = ProductController();
+  // final ProductController _catalogController = ProductController();
   List<MerchantModel> merchants = [];
   List<ListingItemModel> products = [];
+  List<CatalogItemModel> catalogItems = [];
   bool isLoading = true;
 
   @override
@@ -64,18 +70,22 @@ class _HomepageState extends State<Homepage> {
   Future<void> _fetchProducts() async {
     List<ListingItemModel> fetchedProducts =
         await _productController.fetchProducts();
+    // List<CatalogItemModel> fetchedCatalogItems =
+    // await _catalogController.fetchCatalogItems();
 
     setState(() {
       products = fetchedProducts;
+      // catalogItems = fetchedCatalogItems;
       isLoading = false;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(170),
+          preferredSize: const Size.fromHeight(160),
           child: AppBar(
             flexibleSpace: Container(
                 decoration: const BoxDecoration(
@@ -85,7 +95,7 @@ class _HomepageState extends State<Homepage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 50),
+                    const SizedBox(height: 40),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -94,7 +104,7 @@ class _HomepageState extends State<Homepage> {
                               'Discover Savings',
                               style: TextStyle(
                                   fontFamily: "Poppins",
-                                  fontSize: 22,
+                                  fontSize: 20,
                                   color: TColors.bWhite,
                                   fontWeight: FontWeight.w600),
                             ),
@@ -225,7 +235,7 @@ class SectionTitle extends StatelessWidget {
 class HorizontalItemList extends StatelessWidget {
   final List<ListingItemModel> items;
 
-  const HorizontalItemList({Key? key, required this.items}) : super(key: key);
+  HorizontalItemList({Key? key, required this.items}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -288,6 +298,8 @@ class HorizontalItemList extends StatelessWidget {
       return {};
     }
   }
+
+
 }
 
 class HorizontalItemListForStores extends StatelessWidget {
@@ -325,8 +337,39 @@ class DiscountCard extends StatelessWidget {
   final ListingItemModel product;
   final String merchantName;
 
-  const DiscountCard(
-      {super.key, required this.product, required this.merchantName});
+  DiscountCard({
+    Key? key,
+    required this.product,
+    required this.merchantName,
+  }) : super(key: key);
+
+  Future<String> fetchImageUrl(String productId) async {
+    var product = (await FirebaseFirestore.instance
+        .collection('CatalogItems')
+        .where('productId', isEqualTo: productId)
+        .get())
+        .docs
+        .first;
+
+    String productImage = product['itemImage'];
+    // print("Fetched productImage: $productImage");
+    return productImage;
+  }
+
+  Future<String> getDownloadURL(String gsUrl) async {
+    final ref = FirebaseStorage.instance.refFromURL(gsUrl);
+    return await ref.getDownloadURL();
+
+    // try {
+    //   final ref = FirebaseStorage.instance.refFromURL(gsUrl);
+    //   String downloadUrl = await ref.getDownloadURL();
+    //   print("Fetched downloadUrl: $downloadUrl"); // Log the fetched downloadUrl
+    //   return downloadUrl;
+    // } catch (e) {
+    //   print("Error fetching download URL: $e");
+    //   throw e;
+    // }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -350,11 +393,39 @@ class DiscountCard extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10.0),
-                    child: Image.asset(
-                      'assets/images/grocery.jpg',
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: 110.0,
+                    child: FutureBuilder<String>(
+                      future: fetchImageUrl(product.productId).then((productImage) => getDownloadURL(productImage)),
+                      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Container(
+                            width: double.infinity,
+                            height: 110.0,
+                            color: Colors.grey[200],
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Container(
+                            width: double.infinity,
+                            height: 110.0,
+                            color: Colors.grey[200],
+                            child: Center(child: Icon(Icons.error)),
+                          );
+                        } else if (!snapshot.hasData) {
+                          return Container(
+                            width: double.infinity,
+                            height: 110.0,
+                            color: Colors.grey[200],
+                            child: Center(child: Icon(Icons.image)),
+                          );
+                        } else {
+                          return Image.network(
+                            snapshot.data!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: 110.0,
+                          );
+                        }
+                      },
                     ),
                   ),
                 ],
@@ -379,7 +450,6 @@ class DiscountCard extends StatelessWidget {
                     '${product.price}',
                     style: const TextStyle(
                       fontFamily: "Poppins",
-                      fontWeight: FontWeight.w800,
                     ),
                   ),
                   const SizedBox(width: 10.0),
@@ -403,65 +473,106 @@ class DiscountCardForStores extends StatelessWidget {
 
   const DiscountCardForStores({super.key, required this.merchant});
 
+  Future<String> fetchImageUrl(String merchantId) async {
+    var merchant = (await FirebaseFirestore.instance
+        .collection('Merchants')
+        .doc(merchantId)
+        .get());
+
+    String merchantImage = merchant['imageUrl'];
+    return merchantImage;
+  }
+
+  Future<String> getDownloadURL(String gsUrl) async {
+    final ref = FirebaseStorage.instance.refFromURL(gsUrl);
+    return await ref.getDownloadURL();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Container(
-        width: 200.0,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10.0),
-                  child: Image.asset(
-                    'assets/images/grocery.jpg',
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: 110.0,
-                  ),
-                ),
-                // Positioned(
-                //   top: 8.0,
-                //   right: 8.0,
-                //   child: Container(
-                //     decoration: BoxDecoration(
-                //         color: Colors.white,
-                //         borderRadius: BorderRadius.circular(8.0)),
-                //     padding: const EdgeInsets.symmetric(
-                //         horizontal: 4.0, vertical: 2.0),
-                //     // child: const Text(
-                //     //   'new',
-                //     //   style: TextStyle(
-                //     //       color: TColors.primary,
-                //     //       fontSize: 12.0,
-                //     //       fontFamily: "Poppins"),
-                //     // ),
-                //   ),
-                // ),
-              ],
+      child: GestureDetector(
+        onTap: () {
+          // Navigate to merchant details page (create this page)
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ViewMerchantPage(merchantData: merchant),
             ),
-            const SizedBox(height: 8.0),
-            Text(
-              merchant.merchantName,
-              style: const TextStyle(
+          );
+        },
+        child: Container(
+          width: 200.0,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: FutureBuilder<String>(
+                      future: fetchImageUrl(merchant.merchantId).then((merchantImage) => getDownloadURL(merchantImage)),
+                      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Container(
+                            width: double.infinity,
+                            height: 110.0,
+                            color: Colors.grey[200],
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Container(
+                            width: double.infinity,
+                            height: 110.0,
+                            color: Colors.grey[200],
+                            child: Center(child: Icon(Icons.error)),
+                          );
+                        } else if (!snapshot.hasData) {
+                          return Container(
+                            width: double.infinity,
+                            height: 110.0,
+                            color: Colors.grey[200],
+                            child: Center(child: Icon(Icons.image)),
+                          );
+                        } else {
+                          return Image.network(
+                            snapshot.data!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: 110.0,
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8.0),
+              Text(
+                merchant.merchantName,
+                style: const TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.w600,
-                  fontFamily: "Poppins"),
-            ),
-            Text(merchant.streetAddress,
-                style: const TextStyle(fontFamily: "Poppins")),
-            Row(
-              children: [
-                const Icon(Icons.location_on, color: Colors.grey, size: 16.0),
-                Text('${merchant.currDistance} km',
-                    style: const TextStyle(fontFamily: "Poppins")),
-              ],
-            ),
-            const SizedBox(height: 8.0),
-          ],
+                  fontFamily: "Poppins",
+                ),
+              ),
+              Text(
+                merchant.streetAddress,
+                style: const TextStyle(fontFamily: "Poppins"),
+              ),
+              Row(
+                children: [
+                  const Icon(Icons.location_on, color: Colors.grey, size: 16.0),
+                  Text(
+                    '${merchant.currDistance} km',
+                    style: const TextStyle(fontFamily: "Poppins"),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8.0),
+            ],
+          ),
         ),
       ),
     );
@@ -491,24 +602,24 @@ class DiscountCardVertical extends StatelessWidget {
                     height: 110.0,
                   ),
                 ),
-                Positioned(
-                  top: 8.0,
-                  right: 8.0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8.0)),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 4.0, vertical: 2.0),
-                    child: const Text(
-                      'new',
-                      style: TextStyle(
-                          color: TColors.primary,
-                          fontSize: 12.0,
-                          fontFamily: "Poppins"),
-                    ),
-                  ),
-                ),
+                // Positioned(
+                //   top: 8.0,
+                //   right: 8.0,
+                //   child: Container(
+                //     decoration: BoxDecoration(
+                //         color: Colors.white,
+                //         borderRadius: BorderRadius.circular(8.0)),
+                //     padding: const EdgeInsets.symmetric(
+                //         horizontal: 4.0, vertical: 2.0),
+                //     child: const Text(
+                //       'new',
+                //       style: TextStyle(
+                //           color: TColors.primary,
+                //           fontSize: 12.0,
+                //           fontFamily: "Poppins"),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
             const SizedBox(height: 8.0),
