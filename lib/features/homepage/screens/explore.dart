@@ -1,4 +1,6 @@
-import 'package:bargainbites/features/homepage/screens/store_details_page.dart';
+import 'package:bargainbites/features/homepage/screens/view_merchant_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
@@ -64,11 +66,26 @@ class _ExplorePageState extends State<ExplorePage> {
     });
   }
 
+  Future<String> fetchImageUrl(String merchantId) async {
+    var merchant = (await FirebaseFirestore.instance
+        .collection('Merchants')
+        .doc(merchantId)
+        .get());
+
+    String merchantImage = merchant['imageUrl'];
+    return merchantImage;
+  }
+
+  Future<String> getDownloadURL(String gsUrl) async {
+    final ref = FirebaseStorage.instance.refFromURL(gsUrl);
+    return await ref.getDownloadURL();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(110),
+        preferredSize: const Size.fromHeight(140),
         child: AppBar(
           flexibleSpace: Container(
               decoration: const BoxDecoration(
@@ -202,17 +219,17 @@ class _ExplorePageState extends State<ExplorePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15.0),
+                padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
                 child: Text('Explore',
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                      fontSize: 18,
                       fontFamily: 'Poppins'
                   ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                padding: EdgeInsets.symmetric(horizontal: 15.0),
                 child: Text('see all',
                   style: TextStyle(
                       fontWeight: FontWeight.normal,
@@ -233,17 +250,13 @@ class _ExplorePageState extends State<ExplorePage> {
                   final item = merchants[index];
                   String openStatusMsg = "";
                   bool isGreyed = false;
-                  if (item.isOpened == false || item.storeTiming?[currDay]?['openingTime'] == Null || item.storeTiming?[currDay]?['openingTime'] == "") {
+                  if (item.isOpened == false || item.storeTiming?[currDay]?['openingTime'] == null || item.storeTiming?[currDay]?['openingTime'] == "") {
                     openStatusMsg = "Closed";
                     isGreyed = true;
-                  }
-                  else {
+                  } else {
                     openStatusMsg = "Open today from ${item.storeTiming?['Monday']?['openingTime']} to ${item.storeTiming?['Monday']?['closingTime']}";
                     isGreyed = false;
                   }
-
-                  // calculating distance between location
-                  //String apiKey = dotenv.env['GOOGLE_API_KEY'] ?? '';
 
                   return Card(
                     margin: const EdgeInsets.all(8),
@@ -253,24 +266,53 @@ class _ExplorePageState extends State<ExplorePage> {
                     elevation: 5, // This gives the depth effect
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => StoreDetailsPage()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ViewMerchantPage(merchantData: item)));
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ColorFiltered(colorFilter: isGreyed
-                              ? const ColorFilter.mode(Colors.grey, BlendMode.saturation)
-                              : const ColorFilter.mode(Colors.transparent, BlendMode.multiply),
-                            child: ClipRRect(
-                              borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(15)),
-                              child: Image.asset(
-                                'assets/images/grocery.jpg',
-                                width: double.infinity,
-                                height: 150, // Set a height for the image
-                                fit: BoxFit.cover, // This makes the image expand to fill the width
-                              ),
-                            ),
+                          FutureBuilder<String>(
+                            future: fetchImageUrl(item.merchantId).then((merchantImage) => getDownloadURL(merchantImage)),
+                            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Container(
+                                  width: double.infinity,
+                                  height: 150, // Set a height for the image
+                                  color: Colors.grey[200],
+                                  child: Center(child: CircularProgressIndicator()),
+                                );
+                              } else if (snapshot.hasError) {
+                                return Container(
+                                  width: double.infinity,
+                                  height: 150, // Set a height for the image
+                                  color: Colors.grey[200],
+                                  child: Center(child: Icon(Icons.error)),
+                                );
+                              } else if (!snapshot.hasData) {
+                                return Container(
+                                  width: double.infinity,
+                                  height: 150, // Set a height for the image
+                                  color: Colors.grey[200],
+                                  child: Center(child: Icon(Icons.image)),
+                                );
+                              } else {
+                                return ColorFiltered(
+                                  colorFilter: isGreyed
+                                      ? const ColorFilter.mode(Colors.grey, BlendMode.saturation)
+                                      : const ColorFilter.mode(Colors.transparent, BlendMode.multiply),
+                                  child: ClipRRect(
+                                    borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(15)),
+                                    child: Image.network(
+                                      snapshot.data!,
+                                      width: double.infinity,
+                                      height: 150, // Set a height for the image
+                                      fit: BoxFit.cover, // This makes the image expand to fill the width
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),

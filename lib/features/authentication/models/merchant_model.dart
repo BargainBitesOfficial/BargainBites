@@ -1,4 +1,5 @@
 class MerchantModel {
+  String imageUrl;
   String merchantId;
   String merchantName;
   String merchantContact;
@@ -19,7 +20,7 @@ class MerchantModel {
 
   bool isValidated;
   bool isOpened;
-  double currDistance;  // stores distance of current merchant from user
+  double currDistance; // stores distance of current merchant from user
   double merchantRating;
 
   MerchantModel({
@@ -28,19 +29,16 @@ class MerchantModel {
     required this.merchantContact,
     required this.merchantEmail,
     required this.password,
-
     required this.storeName,
     required this.storeId,
     required this.storeContact,
-
     required this.country,
     required this.province,
     required this.city,
     required this.streetAddress,
     required this.postalCode,
-
     this.storeTiming,
-
+    this.imageUrl = "",
     this.isValidated = false,
     this.isOpened = false,
     this.currDistance = 0.0,
@@ -48,30 +46,33 @@ class MerchantModel {
   });
 
   factory MerchantModel.fromMap(Map<String, dynamic> data) {
-    return MerchantModel(
-      merchantId: data['merchantId'] ?? '',
-      merchantName: data['merchantName'] ?? '',
-      merchantContact: data['merchantContact'] ?? '',
-      merchantEmail: data['merchantEmail'] ?? '',
-
-      password: data['password'] ?? '',
-
-      storeName: data['storeName'] ?? '',
-      storeId: data['storeId'] ?? 0,
-      storeContact: data['storeContact'] ?? '',
-
-      country: data['country'] ?? '',
-      province: data['province'] ?? '',
-      city: data['city'] ?? '',
-      streetAddress: data['streetAddress'] ?? '',
-      postalCode: data['postalCode'] ?? '',
-
-      storeTiming: data['storeTiming'] != null
-          ? (data['storeTiming'] as Map<String, dynamic>).map((key, value) => MapEntry(key, Map<String, String>.from(value as Map)))
-          : null,
-
-      isValidated: data['isValidated'] ?? false,
-      isOpened: data['isOpened'] ?? false,
-    );
+    try {
+      print('Processing merchant data: $data');
+      return MerchantModel(
+        imageUrl: data['imgUrl'] ?? '',
+        merchantId: data['merchantId'] ?? '',
+        merchantName: data['merchantName'] ?? '',
+        merchantContact: data['merchantContact'] ?? '',
+        merchantEmail: data['merchantEmail'] ?? '',
+        password: data['password'] ?? '',
+        storeName: data['storeName'] ?? '',
+        storeId: data['storeId'] ?? 0,
+        storeContact: data['storeContact'] ?? '',
+        country: data['country'] ?? '',
+        province: data['province'] ?? '',
+        city: data['city'] ?? '',
+        streetAddress: data['streetAddress'] ?? '',
+        postalCode: data['postalCode'] ?? '',
+        storeTiming: data['storeTiming'] != null
+            ? (data['storeTiming'] as Map<String, dynamic>).map((key, value) =>
+                MapEntry(key, Map<String, String>.from(value as Map)))
+            : null,
+        isValidated: data['isValidated'] ?? false,
+        isOpened: data['isOpened'] ?? false,
+      );
+    } catch (e) {
+      print('Error processing merchant data: $e');
+      throw e;
+    }
   }
 }

@@ -2,6 +2,7 @@ class ListingItemModel {
   String listingId;
   String merchantId;
   String catalogId;
+  String productId;
 
   String productName;
   String brandName;
@@ -17,6 +18,7 @@ class ListingItemModel {
     this.listingId = "",
     this.merchantId = "",
     this.catalogId = "",
+    this.productId = "",
     required this.productName,
     required this.brandName,
     required this.basePrice,
@@ -30,8 +32,9 @@ class ListingItemModel {
   factory ListingItemModel.fromMap(Map<String, dynamic> data) {
     return ListingItemModel(
       listingId: data['listingId'] ?? '',
-      merchantId: data['merchantId'] ?? '',
+      merchantId: data['merchantID'] ?? '',
       catalogId: data['catalogId'] ?? '',
+      productId: data['productId'] ?? '',
       productName: data['productName'] ?? '',
       brandName: data['brandName'] ?? '',
       basePrice: (data['basePrice'] ?? 0.0).toDouble(),
@@ -49,8 +52,9 @@ class ListingItemModel {
   factory ListingItemModel.fromJson(Map<String, dynamic> json) {
     return ListingItemModel(
       listingId: json['listingId'] ?? '',
-      merchantId: json['merchantId'] ?? '',
+      merchantId: json['merchantID'] ?? '',
       catalogId: json['catalogId'] ?? '',
+      productId: json['productId'] ?? '',
       productName: json['productName'] ?? '',
       brandName: json['brandName'] ?? '',
       basePrice: (json['basePrice'] ?? 0.0).toDouble(),
@@ -68,8 +72,9 @@ class ListingItemModel {
   Map<String, dynamic> toJson() {
     return {
       'listingId': listingId,
-      'merchantId': merchantId,
+      'merchantID': merchantId,
       'catalogId': catalogId,
+      'productId': productId,
       'productName': productName,
       'brandName': brandName,
       'basePrice': basePrice,
@@ -79,5 +84,20 @@ class ListingItemModel {
       'createdOn': createdOn?.toIso8601String(),
       'lastModified': lastModified?.toIso8601String(),
     };
+  }
+
+  List<String> validate() {
+    List<String> errors = [];
+    if (productName.isEmpty) errors.add('Product name is empty');
+    if (brandName.isEmpty) errors.add('Brand name is empty');
+    if (basePrice <= 0) errors.add('Base price must be greater than 0');
+    if (price <= 0) errors.add('Price must be greater than 0');
+    if (quantity <= 0) errors.add('Quantity must be greater than 0');
+    if (daysUntilExpiry <= 0) errors.add('Days until expiry must be greater than 0');
+    return errors;
+  }
+
+  bool isBlank() {
+    return validate().isNotEmpty;
   }
 }

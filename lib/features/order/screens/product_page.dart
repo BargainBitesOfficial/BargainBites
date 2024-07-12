@@ -1,4 +1,6 @@
 import 'package:bargainbites/features/homepage/models/listing_item_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/constants/colors.dart';
@@ -14,6 +16,38 @@ class ProductDetailsPage extends StatefulWidget {
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   int quantity = 1;
+  String des="";
+
+  Future<String> fetchImageUrl(String productId) async {
+    var product = (await FirebaseFirestore.instance
+            .collection('CatalogItems')
+            .where('productId', isEqualTo: productId)
+            .get())
+        .docs
+        .first;
+
+    String productImage = product['itemImage'];
+    return productImage;
+  }
+
+  Future<String> getDownloadURL(String gsUrl) async {
+    final ref = FirebaseStorage.instance.refFromURL(gsUrl);
+    return await ref.getDownloadURL();
+  }
+
+  Future<void> fetchProductDetail(String productId) async {
+    var detail = (await FirebaseFirestore.instance
+        .collection('CatalogItems')
+        .where('productId', isEqualTo: productId)
+        .get())
+    .docs
+    .first;
+
+    setState(() {
+      des = detail['itemDescription'];
+      print("descri: " + des);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +66,37 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
-            child: Image.asset(
-              'assets/images/tomato.png', // Replace with your image asset path
-              height: 300,
+            child: FutureBuilder<String>(
+              future: fetchImageUrl(widget.product.productId)
+                  .then((productImage) => getDownloadURL(productImage)),
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Container(
+                    height: 300,
+                    color: Colors.grey[200],
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                } else if (snapshot.hasError) {
+                  return Container(
+                    height: 300,
+                    color: Colors.grey[200],
+                    child: Center(child: Icon(Icons.error, color: Colors.red)),
+                  );
+                } else if (!snapshot.hasData) {
+                  return Container(
+                    height: 300,
+                    color: Colors.grey[200],
+                    child: Center(
+                        child: Icon(Icons.image, color: Colors.grey[700])),
+                  );
+                } else {
+                  return Image.network(
+                    snapshot.data!,
+                    height: 300,
+                    fit: BoxFit.cover,
+                  );
+                }
+              },
             ),
           ),
           const SizedBox(height: 20),
@@ -57,7 +119,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   ),
                   Text(
                     '$quantity',
-                    style: const TextStyle(color: Colors.white, fontSize: 18, fontFamily: "Poppins"),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontFamily: "Poppins"),
                   ),
                   IconButton(
                     icon: const Icon(Icons.add, color: Colors.white),
@@ -72,7 +137,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -81,12 +147,18 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   children: [
                     Text(
                       widget.product.productName,
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: "Poppins"),
+                      style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Poppins"),
                     ),
                     SizedBox(height: 4),
                     Text(
                       'Quantity ${widget.product.quantity} Kg',
-                      style: TextStyle(fontSize: 16, color: Colors.grey, fontFamily: "Poppins"),
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                          fontFamily: "Poppins"),
                     ),
                   ],
                 ),
@@ -94,7 +166,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   children: [
                     Text(
                       '\$${widget.product.price}',
-                      style: TextStyle(fontSize: 24, color: Colors.green, fontFamily: "Poppins"),
+                      style: TextStyle(
+                          fontSize: 24,
+                          color: Colors.green,
+                          fontFamily: "Poppins"),
                     ),
                     // Container(
                     //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -112,31 +187,37 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               ],
             ),
           ),
-
-
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 16.0),
             child: Text(
               'Details',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: "Poppins"),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Poppins"),
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: Text(
-              'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia Amet minim mollit non deserunt ullamco',
-              style: TextStyle(fontSize: 14, color: Colors.grey, fontFamily: "Poppins"),
+            child: Text(des,
+              // 'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia Amet minim mollit non deserunt ullamco',
+              style: TextStyle(
+                  fontSize: 14, color: Colors.grey, fontFamily: "Poppins"),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 8.0),
             child: InkWell(
               onTap: () {
                 // Handle "See More Detail" tap
               },
               child: const Text(
                 'See More Detail',
-                style: TextStyle(fontSize: 14, color: TColors.primary, fontFamily: "Poppins"),
+                style: TextStyle(
+                    fontSize: 14,
+                    color: TColors.primary,
+                    fontFamily: "Poppins"),
               ),
             ),
           ),
@@ -158,7 +239,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 },
                 child: const Text(
                   'Add To Cart',
-                  style: TextStyle(fontSize: 18, color: Colors.white, fontFamily: "Poppins"),
+                  style: TextStyle(
+                      fontSize: 18, color: Colors.white, fontFamily: "Poppins"),
                 ),
               ),
             ),

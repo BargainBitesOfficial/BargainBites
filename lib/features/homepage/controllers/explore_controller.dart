@@ -9,8 +9,24 @@ class ExploreController {
   Future<List<MerchantModel>> fetchMerchants() async {
     try {
       //only fetching validated stores.
-      QuerySnapshot snapshot = await _firestore.collection('Merchants').where('isValidated', isEqualTo: true).get();
-      List<MerchantModel> merchantList = snapshot.docs.map((doc) => MerchantModel.fromMap(doc.data() as Map<String, dynamic>)).toList();
+      QuerySnapshot snapshot = await _firestore
+          .collection('Merchants')
+          .where('isValidated', isEqualTo: true)
+          .get();
+      print('Fetched merchants count: ${snapshot.docs.length}');
+      // List<MerchantModel> merchantList = snapshot.docs
+      //     .map((doc) =>
+      //         MerchantModel.fromMap(doc.data() as Map<String, dynamic>))
+      //     .toList();
+
+      List<MerchantModel> merchantList = snapshot.docs.map((doc) {
+        try {
+          return MerchantModel.fromMap(doc.data() as Map<String, dynamic>);
+        } catch (e) {
+          print('Error converting document to MerchantModel: $e');
+          return null;
+        }
+      }).where((merchant) => merchant != null).cast<MerchantModel>().toList();
       return merchantList;
     } catch (e) {
       print('Error fetching merchants: $e');
@@ -18,13 +34,13 @@ class ExploreController {
     }
   }
 
-  Future<double> getDistanceByRoad(String sourcePostalCode, String destinationPostalCode, String apiKey) async {
-    final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/distancematrix/json'
+  Future<double> getDistanceByRoad(String sourcePostalCode,
+      String destinationPostalCode, String apiKey) async {
+    final url =
+        Uri.parse('https://maps.googleapis.com/maps/api/distancematrix/json'
             '?origins=$sourcePostalCode'
             '&destinations=$destinationPostalCode'
-            '&key=$apiKey'
-    );
+            '&key=$apiKey');
 
     final response = await http.get(url);
     if (response.statusCode == 200) {
@@ -33,18 +49,16 @@ class ExploreController {
       if (data['rows'].isNotEmpty) {
         final elements = data['rows'][0]['elements'];
         if (elements.isNotEmpty && elements[0]['status'] == 'OK') {
-          final distance = elements[0]['distance']['value']; // distance in meters
+          final distance =
+              elements[0]['distance']['value']; // distance in meters
           return distance / 1000; // convert to kilometers
-        }
-        else {
+        } else {
           print("distance not okay");
         }
-      }
-      else {
+      } else {
         print("no rows");
       }
-    }
-    else {
+    } else {
       print('Error fetching distance: ${response.statusCode}');
     }
     return -1.0; // Return null if no valid distance found
