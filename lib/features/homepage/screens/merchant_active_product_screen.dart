@@ -90,6 +90,7 @@ class _ActiveProductsPageState extends State<ActiveProductsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("Hi, $merchantName",
             style: const TextStyle(fontFamily: "Poppins", color: Colors.white)),
@@ -104,26 +105,32 @@ class _ActiveProductsPageState extends State<ActiveProductsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Text(
-              //   "Listings expiring soon",
+              // const Text(
+              //   "Listings expired",
               //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               // ),
-              const SizedBox(height: 10),
+              // const SizedBox(height: 10),
               // FutureBuilder<List<ListingItemModel>>(
-              //   future: _productController.fetchSpecificProducts(merchantId),
+              //   future: _productController.fetchExpiredProducts(merchantId),
               //   builder: (context, snapshot) {
               //     if (snapshot.connectionState == ConnectionState.waiting) {
-              //       return Center(child: CircularProgressIndicator());
+              //       return const Center(child: CircularProgressIndicator());
               //     } else if (snapshot.hasError) {
               //       return Center(child: Text('Error: ${snapshot.error}'));
               //     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              //       return Center(child: Text('No expiring products found'));
+              //       return const Center(child: Text('There are no expired products'));
               //     } else {
-              //       return _buildExpiringListings(snapshot.data!);
+              //       return ListView.builder(
+              //         itemCount: snapshot.data!.length,
+              //         itemBuilder: (context, index) {
+              //           final product = snapshot.data![index];
+              //           return _buildProductCard(product);
+              //         },
+              //       );
               //     }
               //   },
               // ),
-              // SizedBox(height: 20),
+              // const SizedBox(height: 20),
               const Text(
                 "All Active Products",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -157,40 +164,6 @@ class _ActiveProductsPageState extends State<ActiveProductsPage> {
       ),
     );
   }
-
-  // Widget _buildExpiringListings(List<ListingItemModel> products) {
-  //   List<ListingItemModel> expiringSoon;
-  //   products.where((product) => product.daysUntilExpiry <= 3).toList();
-  //   return Row(
-  //     children: expiringSoon.map((product) {
-  //       return Expanded(
-  //         child: Card(
-  //           color: Colors.green,
-  //           child: Padding(
-  //             padding: const EdgeInsets.all(16.0),
-  //             child: Column(
-  //               children: [
-  //                 Text(
-  //                   product.productName,
-  //                   style: const TextStyle(color: Colors.white),
-  //                 ),
-  //                 Text(
-  //                   // "Expiring in ${product.daysUntilExpiry} days",
-  //                   "",
-  //                   style: const TextStyle(color: Colors.white),
-  //                 ),
-  //                 Text(
-  //                   "${product.quantity} qty remaining",
-  //                   style: const TextStyle(color: Colors.white),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ),
-  //       );
-  //     }).toList(),
-  //   );
-  // }
 
   Future<String> fetchImageUrl(String productId) async {
     var product = (await FirebaseFirestore.instance

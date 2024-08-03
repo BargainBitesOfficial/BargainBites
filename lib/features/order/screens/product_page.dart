@@ -58,6 +58,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
@@ -69,6 +70,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         elevation: 0,
       ),
       body: Column(
+
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(

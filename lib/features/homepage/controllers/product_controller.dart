@@ -8,13 +8,20 @@ class ProductController {
 
   Future<List<ListingItemModel>> fetchProducts() async {
     try {
+      final now = DateTime.now();
       //only fetching validated stores.
       QuerySnapshot snapshot =
           await _firestore.collection('ActiveProductList').get();
+      // List<ListingItemModel> productList = snapshot.docs
+      //     .map((doc) =>
+      //         ListingItemModel.fromMap(doc.data() as Map<String, dynamic>))
+      //     .toList();
+
       List<ListingItemModel> productList = snapshot.docs
-          .map((doc) =>
-              ListingItemModel.fromMap(doc.data() as Map<String, dynamic>))
+          .map((doc) => ListingItemModel.fromMap(doc.data() as Map<String, dynamic>))
+          .where((product) => product.expiringOn!.isAfter(now)) // Filter out expired products
           .toList();
+
       return productList;
     } catch (e) {
       print('Error fetching products: $e');
@@ -38,6 +45,64 @@ class ProductController {
     } catch (e) {
       print('Error fetching products: $e');
       return [];
+    }
+  }
+
+  Future<List<ListingItemModel>> fetchExpiredProducts(
+      String merchantId) async {
+    try {
+      final now = DateTime.now();
+      QuerySnapshot snapshot = await _firestore
+          .collection('ActiveProductList')
+          .where('merchantID', isEqualTo: merchantId)
+          .get();
+      List<ListingItemModel> productList = snapshot.docs
+          .map((doc) => ListingItemModel.fromMap(doc.data() as Map<String, dynamic>))
+          .where((product) => product.expiringOn!.isBefore(now)) // Filter out expired products
+          .toList();
+      return productList;
+    } catch (e) {
+      print('Error fetching products: $e');
+      return [];
+    }
+  }
+
+  Future<void> updateProduct(CatalogItemModel updatedProduct) async {
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('CatalogItems')
+          .where('productID', isEqualTo: updatedProduct.productId)
+          .get();
+
+      QuerySnapshot querySnapshot2 = await FirebaseFirestore.instance.collection('ActiveProductList')
+          .where('productId', isEqualTo: updatedProduct.productId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        DocumentSnapshot doc = querySnapshot.docs.first;
+        await FirebaseFirestore.instance.collection('CatalogItems').doc(doc.id).update({
+          'productName': updatedProduct.productName,
+          'brand': updatedProduct.brandName,
+          'basePrice': updatedProduct.basePrice,
+          'itemDescription': updatedProduct.itemDescription,
+          'itemImage': updatedProduct.itemImage,
+        });
+      } else {
+        throw Exception('Product not found');
+      }
+
+      if (querySnapshot2.docs.isNotEmpty) {
+        DocumentSnapshot doc = querySnapshot2.docs.first;
+        await FirebaseFirestore.instance.collection('ActiveProductList').doc(doc.id).update({
+          'productName': updatedProduct.productName,
+          'brand': updatedProduct.brandName,
+          'basePrice': updatedProduct.basePrice,
+        });
+      } else {
+        throw Exception('Product not found');
+      }
+
+    } catch (e) {
+      throw Exception('Error updating product: $e');
     }
   }
 
@@ -96,12 +161,18 @@ class ProductController {
 
   Future<List<ListingItemModel>> fetchProductsByMerchant(String id) async {
     try {
+      final now = DateTime.now();
       //only fetching validated stores.
       QuerySnapshot snapshot =
       await _firestore.collection('ActiveProductList').where('merchantID', isEqualTo: id).get();
+      // List<ListingItemModel> productList = snapshot.docs
+      //     .map((doc) =>
+      //     ListingItemModel.fromMap(doc.data() as Map<String, dynamic>))
+      //     .toList();
+
       List<ListingItemModel> productList = snapshot.docs
-          .map((doc) =>
-          ListingItemModel.fromMap(doc.data() as Map<String, dynamic>))
+          .map((doc) => ListingItemModel.fromMap(doc.data() as Map<String, dynamic>))
+          .where((product) => product.expiringOn!.isAfter(now)) // Filter out expired products
           .toList();
 
       return productList;

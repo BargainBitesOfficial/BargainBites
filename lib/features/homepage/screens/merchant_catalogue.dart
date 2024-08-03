@@ -3,11 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
-import '../../../utils/constants/colors.dart';
-import '../controllers/product_controller.dart';
-import '../models/listing_item_model.dart';
-import '../models/merchant/catalog_item_model.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
+import 'package:bargainbites/features/homepage/controllers/product_controller.dart';
+import 'package:bargainbites/features/homepage/models/listing_item_model.dart';
+import 'package:bargainbites/features/homepage/models/merchant/catalog_item_model.dart';
 import 'add_product_merchant.dart';
+import 'edit_product.dart';
 
 class MerchantCatalogue extends StatefulWidget {
   const MerchantCatalogue({super.key});
@@ -139,6 +140,7 @@ class _MerchantCatalogueState extends State<MerchantCatalogue> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: TColors.primaryBtn,
         title: const Text("Catalogue",
@@ -250,11 +252,13 @@ class _MerchantCatalogueState extends State<MerchantCatalogue> {
                                           hintText: item.expiringOn != null
                                               ? 'Expiring On: ${DateFormat('yyyy-MM-dd').format(item.expiringOn!)}'
                                               : 'Expiring On',
-                                          suffixIcon: const Icon(Icons.calendar_today),
+                                          suffixIcon:
+                                              const Icon(Icons.calendar_today),
                                         ),
                                         readOnly: true,
                                         onTap: () async {
-                                          final DateTime? picked = await showDatePicker(
+                                          final DateTime? picked =
+                                              await showDatePicker(
                                             context: context,
                                             initialDate: DateTime.now(),
                                             firstDate: DateTime(2000),
@@ -344,7 +348,16 @@ class _MerchantCatalogueState extends State<MerchantCatalogue> {
                                                     color: Colors.white)),
                                           ),
                                           TextButton(
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EditProductPage(
+                                                          item: item),
+                                                ),
+                                              );
+                                            },
                                             child: const Text('Edit Product',
                                                 style: TextStyle(
                                                     fontFamily: "Poppins",

@@ -31,6 +31,7 @@ class _MerchantNavbarState extends State<MerchantNavbar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: IndexedStack(
         index: _selectedIndex,
         children: _widgetOptions,

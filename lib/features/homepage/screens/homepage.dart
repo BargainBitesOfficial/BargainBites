@@ -84,6 +84,7 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(160),
           child: AppBar(
@@ -179,6 +180,7 @@ class _HomepageState extends State<Homepage> {
             child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 10),
             const SectionTitle(title: "What’s in the neighborhood"),
             HorizontalItemList(items: products),
             const SectionTitle(title: "Stores"),
@@ -209,23 +211,23 @@ class SectionTitle extends StatelessWidget {
                 fontWeight: FontWeight.w600,
                 fontFamily: "Poppins"),
           ),
-          TextButton(
-            onPressed: () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) =>
-              //         const ForgotPassword()));
-            },
-            child: const Text(
-              "see all",
-              style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: "Poppins",
-                  fontWeight: FontWeight.w400,
-                  fontSize: 12),
-            ),
-          ),
+          // TextButton(
+          //   onPressed: () {
+          //     // Navigator.push(
+          //     //     context,
+          //     //     MaterialPageRoute(
+          //     //         builder: (context) =>
+          //     //         const ForgotPassword()));
+          //   },
+          //   // child: const Text(
+          //   //   "see all",
+          //   //   style: TextStyle(
+          //   //       color: Colors.black,
+          //   //       fontFamily: "Poppins",
+          //   //       fontWeight: FontWeight.w400,
+          //   //       fontSize: 12),
+          //   // ),
+          // ),
         ],
       ),
     );
