@@ -3,9 +3,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 
-import '../../../utils/constants/colors.dart';
-import '../controllers/product_controller.dart';
-import '../models/merchant/catalog_item_model.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
+import 'package:bargainbites/features/homepage/controllers/product_controller.dart';
+import 'package:bargainbites/features/homepage/models/merchant/catalog_item_model.dart';
 
 class EditProductPage extends StatefulWidget {
   final CatalogItemModel item;

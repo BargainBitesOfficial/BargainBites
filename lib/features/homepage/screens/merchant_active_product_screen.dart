@@ -32,9 +32,10 @@ class _ActiveProductsPageState extends State<ActiveProductsPage> {
     });
 
     merchant = (await FirebaseFirestore.instance
-        .collection('Merchants')
-        .where('merchantEmail', isEqualTo: FirebaseAuth.instance.currentUser!.email!)
-        .get())
+            .collection('Merchants')
+            .where('merchantEmail',
+                isEqualTo: FirebaseAuth.instance.currentUser!.email!)
+            .get())
         .docs
         .first;
     setState(() {
@@ -99,77 +100,93 @@ class _ActiveProductsPageState extends State<ActiveProductsPage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
-        onRefresh: _refreshData,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // const Text(
-              //   "Listings expired",
-              //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              // ),
-              // const SizedBox(height: 10),
-              // FutureBuilder<List<ListingItemModel>>(
-              //   future: _productController.fetchExpiredProducts(merchantId),
-              //   builder: (context, snapshot) {
-              //     if (snapshot.connectionState == ConnectionState.waiting) {
-              //       return const Center(child: CircularProgressIndicator());
-              //     } else if (snapshot.hasError) {
-              //       return Center(child: Text('Error: ${snapshot.error}'));
-              //     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              //       return const Center(child: Text('There are no expired products'));
-              //     } else {
-              //       return ListView.builder(
-              //         itemCount: snapshot.data!.length,
-              //         itemBuilder: (context, index) {
-              //           final product = snapshot.data![index];
-              //           return _buildProductCard(product);
-              //         },
-              //       );
-              //     }
-              //   },
-              // ),
-              // const SizedBox(height: 20),
-              const Text(
-                "All Active Products",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: FutureBuilder<List<ListingItemModel>>(
-                  future: _productController.fetchSpecificProducts(merchantId),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(child: Text('No active products found'));
-                    } else {
-                      return ListView.builder(
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) {
-                          final product = snapshot.data![index];
-                          return _buildProductCard(product);
+              onRefresh: _refreshData,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Expired Listings",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: FutureBuilder<List<ListingItemModel>>(
+                        future:
+                            _productController.fetchExpiredProducts(merchantId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Error: ${snapshot.error}'));
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return const Center(
+                                child: Text('There are no expired products'));
+                          } else {
+                            return ListView.builder(
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                final product = snapshot.data![index];
+                                return _buildProductCard(product);
+                              },
+                            );
+                          }
                         },
-                      );
-                    }
-                  },
+                      ),
+                    ),
+                    // const SizedBox(height: 20),
+                    const Text(
+                      "All Active Products",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    Expanded(
+                      child: FutureBuilder<List<ListingItemModel>>(
+                        future: _productController
+                            .fetchSpecificProducts(merchantId),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Error: ${snapshot.error}'));
+                          } else if (!snapshot.hasData ||
+                              snapshot.data!.isEmpty) {
+                            return const Center(
+                                child: Text('No active products found'));
+                          } else {
+                            return ListView.builder(
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                final product = snapshot.data![index];
+                                return _buildProductCard(product);
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 
   Future<String> fetchImageUrl(String productId) async {
     var product = (await FirebaseFirestore.instance
-        .collection('CatalogItems')
-        .where('productID', isEqualTo: productId)
-        .get())
+            .collection('CatalogItems')
+            .where('productID', isEqualTo: productId)
+            .get())
         .docs
         .first;
 
@@ -199,7 +216,8 @@ class _ActiveProductsPageState extends State<ActiveProductsPage> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
-                return const Center(child: Icon(Icons.error, color: Colors.red));
+                return const Center(
+                    child: Icon(Icons.error, color: Colors.red));
               } else if (!snapshot.hasData) {
                 return Icon(Icons.image, size: 30, color: Colors.grey[700]);
               } else {
