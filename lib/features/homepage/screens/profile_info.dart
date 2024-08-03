@@ -1,9 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../startup/screens/user_type.dart';
-
-
+import 'package:bargainbites/features/startup/screens/user_type.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -11,11 +10,36 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final String userName = 'Vinay Kumar';
+  String userName = "";
 
-  final String userEmail = 'vinaykumar@gmail.com';
+  String userEmail = "";
 
-  final user = FirebaseAuth.instance.currentUser!;
+  final String? email = FirebaseAuth.instance.currentUser!.email;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserDetailsByEmail();
+  }
+
+  void fetchUserDetailsByEmail() async {
+    if (email != null) {
+      var userSnapshot = (await FirebaseFirestore.instance
+          .collection('Users')
+          .where('email', isEqualTo: email)
+          .get()).docs.first;
+
+      // if (userSnapshot.docs.isNotEmpty) {
+        setState(() {
+          userName = userSnapshot['userName'];
+          userEmail = userSnapshot['email'];
+          // userDetails = userSnapshot.docs.first.data();
+        });
+      // }
+    }
+  }
+
+  // final String? email = user.email;
 
   void signUserOut() async {
     await FirebaseAuth.instance.signOut();
@@ -31,9 +55,9 @@ class _ProfilePageState extends State<ProfilePage> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.green,
-              borderRadius: const BorderRadius.only(
+              borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(30.0),
                 bottomRight: Radius.circular(30.0),
               ),
@@ -41,10 +65,11 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 48), // to compensate for the status bar height
+                const SizedBox(height: 48),
+                // to compensate for the status bar height
                 Text(
                   'Hello, $userName',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -53,7 +78,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 4),
                 Text(
                   userEmail,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                   ),
@@ -73,37 +98,36 @@ class _ProfilePageState extends State<ProfilePage> {
                   subtitle: 'Change personal information',
                   onTap: () {
                     // Handle Account settings tap
-                    print('Account settings tapped');
+                    // print('Account settings tapped');
                   },
                 ),
-                _buildListItem(
-                  context,
-                  icon: Icons.notifications,
-                  title: 'Notifications',
-                  subtitle: 'Get all your updates here',
-                  onTap: () {
-                    // Handle Notifications tap
-                    print('Notifications tapped');
-                  },
-                ),
-                _buildListItem(
-                  context,
-                  icon: Icons.star,
-                  title: 'Rate our App',
-                  subtitle: 'Help us get 5 stars',
-                  onTap: () {
-                    // Handle Rate our App tap
-                    print('Rate our App tapped');
-                  },
-                ),
+                // _buildListItem(
+                //   context,
+                //   icon: Icons.notifications,
+                //   title: 'Notifications',
+                //   subtitle: 'Get all your updates here',
+                //   onTap: () {
+                //     // Handle Notifications tap
+                //     print('Notifications tapped');
+                //   },
+                // ),
+                // _buildListItem(
+                //   context,
+                //   icon: Icons.star,
+                //   title: 'Rate our App',
+                //   subtitle: 'Help us get 5 stars',
+                //   onTap: () {
+                //     // Handle Rate our App tap
+                //     print('Rate our App tapped');
+                //   },
+                // ),
                 _buildListItem(
                   context,
                   icon: Icons.logout,
                   title: 'Sign Out',
                   onTap: () {
                     signUserOut();
-                    // Handle SsignUserOutign Out tap
-                    print('Sign Out tapped');
+                    // print('Sign Out tapped');
                   },
                 ),
               ],
@@ -115,17 +139,20 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildListItem(BuildContext context,
-      {required IconData icon, required String title, String? subtitle, required VoidCallback onTap}) {
+      {required IconData icon,
+      required String title,
+      String? subtitle,
+      required VoidCallback onTap}) {
     return Column(
       children: [
         ListTile(
           leading: Icon(icon, color: Colors.black),
           title: Text(
             title,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           subtitle: subtitle != null ? Text(subtitle) : null,
-          trailing: Icon(Icons.chevron_right, color: Colors.black),
+          trailing: const Icon(Icons.chevron_right, color: Colors.black),
           onTap: onTap,
         ),
         Divider(),

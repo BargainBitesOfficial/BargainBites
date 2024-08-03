@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:bargainbites/features/cart/models/cart_model.dart';
 
 class CartController {

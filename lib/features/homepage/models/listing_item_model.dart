@@ -9,7 +9,10 @@ class ListingItemModel {
   double basePrice;
   double price;
   int quantity;
-  int daysUntilExpiry;
+
+  // int daysUntilExpiry;
+
+  DateTime? expiringOn;
 
   DateTime? createdOn;
   DateTime? lastModified;
@@ -24,7 +27,8 @@ class ListingItemModel {
     required this.basePrice,
     required this.price,
     required this.quantity,
-    required this.daysUntilExpiry,
+    required this.expiringOn,
+    // required this.daysUntilExpiry,
     this.createdOn,
     this.lastModified,
   });
@@ -36,11 +40,14 @@ class ListingItemModel {
       catalogId: data['catalogId'] ?? '',
       productId: data['productId'] ?? '',
       productName: data['productName'] ?? '',
-      brandName: data['brandName'] ?? '',
+      brandName: data['brand'] ?? '',
       basePrice: (data['basePrice'] ?? 0.0).toDouble(),
       price: (data['price'] ?? 0.0).toDouble(),
       quantity: data['quantity'] ?? 0,
-      daysUntilExpiry: data['daysUntilExpiry'] ?? '',
+      expiringOn:
+          data['expiringOn'] != null ? DateTime.parse(data['expiringOn']) : DateTime.now(),
+      //daysUntilExpiry: data['daysUntilExpiry'] ?? '',
+      // daysUntilExpiry: int.tryParse(data['daysUntilExpiry']?.toString() ?? '0') ?? 0,
       createdOn:
           data['createdOn'] != null ? DateTime.parse(data['createdOn']) : null,
       lastModified: data['lastModified'] != null
@@ -56,11 +63,13 @@ class ListingItemModel {
       catalogId: json['catalogId'] ?? '',
       productId: json['productId'] ?? '',
       productName: json['productName'] ?? '',
-      brandName: json['brandName'] ?? '',
+      brandName: json['brand'] ?? '',
       basePrice: (json['basePrice'] ?? 0.0).toDouble(),
       price: (json['price'] ?? 0.0).toDouble(),
       quantity: json['quantity'] ?? 0,
-      daysUntilExpiry: json['daysUntilExpiry'] ?? 0,
+      expiringOn:
+          json['expiringOn'] != null ? DateTime.parse(json['expiringOn']) : null,
+      // daysUntilExpiry: json['daysUntilExpiry'] ?? 0,
       createdOn:
           json['createdOn'] != null ? DateTime.parse(json['createdOn']) : null,
       lastModified: json['lastModified'] != null
@@ -76,11 +85,12 @@ class ListingItemModel {
       'catalogId': catalogId,
       'productId': productId,
       'productName': productName,
-      'brandName': brandName,
+      'brand': brandName,
       'basePrice': basePrice,
       'price': price,
       'quantity': quantity,
-      'daysUntilExpiry': daysUntilExpiry,
+      'expiringOn': expiringOn?.toIso8601String(),
+      // 'daysUntilExpiry': daysUntilExpiry,
       'createdOn': createdOn?.toIso8601String(),
       'lastModified': lastModified?.toIso8601String(),
     };
@@ -93,7 +103,7 @@ class ListingItemModel {
     if (basePrice <= 0) errors.add('Base price must be greater than 0');
     if (price <= 0) errors.add('Price must be greater than 0');
     if (quantity <= 0) errors.add('Quantity must be greater than 0');
-    if (daysUntilExpiry <= 0) errors.add('Days until expiry must be greater than 0');
+    if (expiringOn == null) errors.add('Expiry date is not set');
     return errors;
   }
 

@@ -11,7 +11,7 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
-  GoogleMapController? _mapController;
+  // GoogleMapController? _mapController;
 
   final CameraPosition _initialPosition = const CameraPosition(
     target: LatLng(37.7749, -122.4194), // Replace with your desired coordinates
@@ -67,7 +67,7 @@ class _OrderScreenState extends State<OrderScreen> {
                 child: GoogleMap(
                   initialCameraPosition: _initialPosition,
                   onMapCreated: (GoogleMapController controller) {
-                    _mapController = controller;
+                    // _mapController = controller;
                   },
                   markers: {
                     const Marker(

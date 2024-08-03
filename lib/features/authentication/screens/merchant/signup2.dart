@@ -4,10 +4,9 @@ import 'package:provider/provider.dart';
 
 import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:bargainbites/utils/constants/sizes.dart';
-import 'package:bargainbites/utils/validators/validation.dart';
 
 import 'package:bargainbites/features/authentication/screens/merchant/signup3.dart';
-import '../../controllers/merchant/merchant_signup_controller.dart';
+import 'package:bargainbites/features/authentication/controllers/merchant/merchant_signup_controller.dart';
 
 class MerchantSignupPageTwo extends StatefulWidget {
   final String name;

@@ -1,28 +1,23 @@
 import 'package:bargainbites/features/authentication/models/merchant_model.dart';
 import 'package:bargainbites/features/homepage/controllers/product_controller.dart';
-import 'package:bargainbites/features/homepage/models/merchant/catalog_item_model.dart';
 import 'package:bargainbites/features/homepage/models/listing_item_model.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-
-import '../../../utils/constants/colors.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
 
 class ViewMerchantPage extends StatefulWidget {
   final MerchantModel merchantData;
 
-  ViewMerchantPage({super.key, required this.merchantData});
+  const ViewMerchantPage({super.key, required this.merchantData});
 
   @override
-  _ViewMerchantPageState createState() => _ViewMerchantPageState();
+  State<ViewMerchantPage> createState() => _ViewMerchantPageState();
 }
 
 class _ViewMerchantPageState extends State<ViewMerchantPage> {
-  ProductController _productController = ProductController();
+  final ProductController _productController = ProductController();
   List<ListingItemModel> listedProducts = [];
-  // List<CatalogItemModel> catalogItems = [];
-
   bool isLoading = true;
 
   @override
@@ -32,18 +27,41 @@ class _ViewMerchantPageState extends State<ViewMerchantPage> {
   }
 
   Future<void> _fetchProductsByMerchant() async {
-    List<ListingItemModel> fetchedProducts = await _productController.fetchProductsByMerchant(widget.merchantData.merchantId);
-
-    // for (ListingItemModel item in fetchedProducts) {
-    //   print("productId: " + item.productId);
-    //   CatalogItemModel? product = await _productController.fetchItemById("6lAzd42FQ2LbZtYJIFcI");
-    //   print("productName: " + product!.productName);
-    // }
+    List<ListingItemModel> fetchedProducts = await _productController.fetchProductsByMerchant(widget.merchantData.merchantID);
 
     setState(() {
       listedProducts = fetchedProducts;
       isLoading = false;
     });
+  }
+
+  Future<String> fetchImageUrlPrdt(String productId) async {
+    var product = (await FirebaseFirestore.instance
+        .collection('CatalogItems')
+        .where('productID', isEqualTo: productId)
+        .get())
+        .docs
+        .first;
+
+    String productImage = product['itemImage'];
+    return productImage;
+  }
+
+  Future<String> fetchImageUrl(String merchantId) async {
+    var merchant = (await FirebaseFirestore.instance
+        .collection('Merchants')
+        .where('merchantID', isEqualTo: merchantId)
+        .get())
+        .docs
+        .first;
+
+    String merchantImage = merchant['imageUrl'];
+    return merchantImage;
+  }
+
+  Future<String> getDownloadURL(String gsUrl) async {
+    final ref = FirebaseStorage.instance.refFromURL(gsUrl);
+    return await ref.getDownloadURL();
   }
 
   @override
@@ -53,31 +71,59 @@ class _ViewMerchantPageState extends State<ViewMerchantPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // AppBar with image and back button
-          Stack(
-            children: [
-              Container(
-                height: 180,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/grocery.jpg'), // replace with your image
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 40, // Adjust according to your needs
-                left: 10, // Adjust according to your needs
-                child: CircleAvatar(
-                  backgroundColor: Colors.black54, // Background color for the button
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: TColors.bWhite),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-              ),
-            ],
+          FutureBuilder<String>(
+            future: fetchImageUrl(widget.merchantData.merchantID)
+                .then((merchantImage) => getDownloadURL(merchantImage)),
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Container(
+                  height: 180,
+                  color: Colors.grey[200],
+                  child: const Center(child: CircularProgressIndicator()),
+                );
+              } else if (snapshot.hasError) {
+                return Container(
+                  height: 180,
+                  color: Colors.grey[200],
+                  child: const Center(
+                      child: Icon(Icons.error, color: Colors.red)),
+                );
+              } else if (!snapshot.hasData) {
+                return Container(
+                  height: 180,
+                  color: Colors.grey[200],
+                  child: Center(
+                      child: Icon(Icons.image, color: Colors.grey[700])),
+                );
+              } else {
+                return Stack(
+                  children: [
+                    Container(
+                      height: 180,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: NetworkImage(snapshot.data!),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 40, // Adjust according to your needs
+                      left: 10, // Adjust according to your needs
+                      child: CircleAvatar(
+                        backgroundColor: Colors.black54, // Background color for the button
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back, color: TColors.bWhite),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
           ),
           // Merchant info card
           Padding(
@@ -93,7 +139,7 @@ class _ViewMerchantPageState extends State<ViewMerchantPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.merchantData.merchantName,
+                      widget.merchantData.storeName,
                       style: const TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 20,
@@ -195,12 +241,42 @@ class _ViewMerchantPageState extends State<ViewMerchantPage> {
                       child: Row(
                         children: [
                           // Product image
-                          Image.network(
-                            'gs://bargainbites-f6682.appspot.com/ProductImages/dr_pepper.jpg',
-                            // catalogItems[index].itemImage,
-                            width: 50, // Set the desired width
-                            height: 50, // Set the desired height
-                            fit: BoxFit.cover, // Set the fit property to cover
+                          FutureBuilder<String>(
+                            future: fetchImageUrlPrdt(item.productId)
+                                .then((productImage) => getDownloadURL(productImage)),
+                            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Container(
+                                  width: 50,
+                                  height: 50,
+                                  color: Colors.grey[200],
+                                  child: const Center(child: CircularProgressIndicator()),
+                                );
+                              } else if (snapshot.hasError) {
+                                return Container(
+                                  width: 50,
+                                  height: 50,
+                                  color: Colors.grey[200],
+                                  child: const Center(
+                                      child: Icon(Icons.error, color: Colors.red)),
+                                );
+                              } else if (!snapshot.hasData) {
+                                return Container(
+                                  width: 50,
+                                  height: 50,
+                                  color: Colors.grey[200],
+                                  child: Center(
+                                      child: Icon(Icons.image, color: Colors.grey[700])),
+                                );
+                              } else {
+                                return Image.network(
+                                  snapshot.data!,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                );
+                              }
+                            },
                           ),
                           const SizedBox(width: 10),
                           // Product details
@@ -253,19 +329,10 @@ class _ViewMerchantPageState extends State<ViewMerchantPage> {
   }
 
   String openStatusMsg(MerchantModel item) {
-    String openStatusMsg = "";
-    String currDay = DateFormat('EEEE').format(DateTime.now());
-    bool isGreyed = false;
-    if (item.isOpened == false ||
-        item.storeTiming?[currDay]?['openingTime'] == null ||
-        item.storeTiming?[currDay]?['openingTime'] == "") {
-      openStatusMsg = "Closed";
-      isGreyed = true;
+    if (item.isOpened) {
+      return "Open";
     } else {
-      openStatusMsg =
-      "Open today from ${item.storeTiming?['Monday']?['openingTime']} to ${item.storeTiming?['Monday']?['closingTime']}";
-      isGreyed = false;
+      return "Closed";
     }
-    return openStatusMsg;
   }
 }

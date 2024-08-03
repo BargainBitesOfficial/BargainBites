@@ -20,7 +20,8 @@ class MerchantAuthController {
 
       if (querySnapshot.docs.isEmpty) {
         // Email does not exist in the database
-        print('Email does not exist in the database');
+        // print('Email does not exist in the database');
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Email does not exist in the database')),
         );
@@ -37,25 +38,32 @@ class MerchantAuthController {
       final merchantDoc = querySnapshot.docs.first;
       final merchantData = merchantDoc.data();
 
-      print('Merchant logged in successfully');
-      print('Merchant Name: ${merchantData['merchantName']}');
-
       if (merchantData['isValidated'] == true) {
         // Navigate to the validated merchant screen
-        Navigator.pushReplacement(
+
+        // Navigator.pushAndRemoveUntil(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => MerchantCatalogue()),
+        //       (Route<dynamic> route) => false,
+        // );
+
+
+        Navigator.pushAndRemoveUntil(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(builder: (context) => const MerchantNavbar()),
+              (Route<dynamic> route) => false,
         );
       } else {
         // Navigate to the new merchant info screen
         Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(builder: (context) => const NewMerchantInfo()),
         );
       }
     } catch (e) {
-      // Error handling
-      print('Error logging in merchant: $e');
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error logging in merchant: $e')),
       );
@@ -65,14 +73,14 @@ class MerchantAuthController {
   Future<void> signOut(BuildContext context) async {
     try {
       await _auth.signOut();
-      print('Merchant signed out successfully');
 
       Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(builder: (context) => const UserType()),
       );
     } catch (e) {
-      print('Error signing out merchant: $e');
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error signing out merchant: $e')),
       );

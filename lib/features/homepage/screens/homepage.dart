@@ -55,7 +55,7 @@ class _HomepageState extends State<Homepage> {
       // merchant.merchantRating = double.parse((3.0 + (5.0 - 3.0) * random.nextDouble()).toStringAsFixed(1));
 
       // Store the distance in the map
-      merchantDistances[merchant.merchantId] = merchant.currDistance;
+      merchantDistances[merchant.merchantID] = merchant.currDistance;
     }
 
     // Sort merchants by distance
@@ -286,7 +286,7 @@ class HorizontalItemList extends StatelessWidget {
             await firestore.collection('Merchants').doc(merchantId).get();
 
         if (doc.exists) {
-          merchantNames[merchantId] = doc['merchantName'] ?? 'Unknown Merchant';
+          merchantNames[merchantId] = doc['storeName'] ?? 'Unknown Merchant';
         } else {
           merchantNames[merchantId] = 'Unknown Merchant';
         }
@@ -310,7 +310,7 @@ class HorizontalItemListForStores extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 205.0,
+      height: 230.0,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: items.length,
@@ -346,7 +346,7 @@ class DiscountCard extends StatelessWidget {
   Future<String> fetchImageUrl(String productId) async {
     var product = (await FirebaseFirestore.instance
         .collection('CatalogItems')
-        .where('productId', isEqualTo: productId)
+        .where('productID', isEqualTo: productId)
         .get())
         .docs
         .first;
@@ -401,21 +401,21 @@ class DiscountCard extends StatelessWidget {
                             width: double.infinity,
                             height: 110.0,
                             color: Colors.grey[200],
-                            child: Center(child: CircularProgressIndicator()),
+                            child: const Center(child: CircularProgressIndicator()),
                           );
                         } else if (snapshot.hasError) {
                           return Container(
                             width: double.infinity,
                             height: 110.0,
                             color: Colors.grey[200],
-                            child: Center(child: Icon(Icons.error)),
+                            child: const Center(child: Icon(Icons.error)),
                           );
                         } else if (!snapshot.hasData) {
                           return Container(
                             width: double.infinity,
                             height: 110.0,
                             color: Colors.grey[200],
-                            child: Center(child: Icon(Icons.image)),
+                            child: const Center(child: Icon(Icons.image)),
                           );
                         } else {
                           return Image.network(
@@ -512,28 +512,28 @@ class DiscountCardForStores extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10.0),
                     child: FutureBuilder<String>(
-                      future: fetchImageUrl(merchant.merchantId).then((merchantImage) => getDownloadURL(merchantImage)),
+                      future: fetchImageUrl(merchant.merchantID).then((merchantImage) => getDownloadURL(merchantImage)),
                       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return Container(
                             width: double.infinity,
                             height: 110.0,
                             color: Colors.grey[200],
-                            child: Center(child: CircularProgressIndicator()),
+                            child: const Center(child: CircularProgressIndicator()),
                           );
                         } else if (snapshot.hasError) {
                           return Container(
                             width: double.infinity,
                             height: 110.0,
                             color: Colors.grey[200],
-                            child: Center(child: Icon(Icons.error)),
+                            child: const Center(child: Icon(Icons.error)),
                           );
                         } else if (!snapshot.hasData) {
                           return Container(
                             width: double.infinity,
                             height: 110.0,
                             color: Colors.grey[200],
-                            child: Center(child: Icon(Icons.image)),
+                            child: const Center(child: Icon(Icons.image)),
                           );
                         } else {
                           return Image.network(
@@ -550,7 +550,7 @@ class DiscountCardForStores extends StatelessWidget {
               ),
               const SizedBox(height: 8.0),
               Text(
-                merchant.merchantName,
+                merchant.storeName,
                 style: const TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.w600,

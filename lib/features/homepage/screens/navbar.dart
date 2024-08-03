@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:bargainbites/utils/constants/colors.dart';
-import 'package:bargainbites/features/authentication/screens/user/order_screen.dart';
 import 'package:bargainbites/features/homepage/screens/profile_info.dart';
 import '../../cart/screens/cart_list_page.dart';
 import 'explore.dart';

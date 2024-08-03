@@ -75,10 +75,10 @@ class AuthPage extends StatelessWidget {
 
 void main() {
   runApp(MaterialApp(
-    home: AuthPage(),
+    home: const AuthPage(),
     routes: {
-      '/userHome': (context) => NavBar(),
-      '/merchantHome': (context) => MerchantNavbar(),
+      '/userHome': (context) => const NavBar(),
+      '/merchantHome': (context) => const MerchantNavbar(),
     },
   ));
 }

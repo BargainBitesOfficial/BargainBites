@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
-import '../../../utils/constants/colors.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final ListingItemModel product;
@@ -16,12 +16,18 @@ class ProductDetailsPage extends StatefulWidget {
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   int quantity = 1;
-  String des="";
+  String des = "";
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProductDetail();
+  }
 
   Future<String> fetchImageUrl(String productId) async {
     var product = (await FirebaseFirestore.instance
             .collection('CatalogItems')
-            .where('productId', isEqualTo: productId)
+            .where('productID', isEqualTo: productId)
             .get())
         .docs
         .first;
@@ -35,17 +41,17 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     return await ref.getDownloadURL();
   }
 
-  Future<void> fetchProductDetail(String productId) async {
+  Future<void> fetchProductDetail() async {
+    // print("product ID: " + productId);
     var detail = (await FirebaseFirestore.instance
-        .collection('CatalogItems')
-        .where('productId', isEqualTo: productId)
-        .get())
-    .docs
-    .first;
+            .collection('CatalogItems')
+            .where('productID', isEqualTo: widget.product.productId)
+            .get())
+        .docs
+        .first;
 
     setState(() {
       des = detail['itemDescription'];
-      print("descri: " + des);
     });
   }
 
@@ -74,13 +80,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   return Container(
                     height: 300,
                     color: Colors.grey[200],
-                    child: Center(child: CircularProgressIndicator()),
+                    child: const Center(child: CircularProgressIndicator()),
                   );
                 } else if (snapshot.hasError) {
                   return Container(
                     height: 300,
                     color: Colors.grey[200],
-                    child: Center(child: Icon(Icons.error, color: Colors.red)),
+                    child: const Center(
+                        child: Icon(Icons.error, color: Colors.red)),
                   );
                 } else if (!snapshot.hasData) {
                   return Container(
@@ -128,7 +135,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     icon: const Icon(Icons.add, color: Colors.white),
                     onPressed: () {
                       setState(() {
-                        quantity++;
+                        if (quantity < widget.product.quantity) quantity++;
                       });
                     },
                   ),
@@ -152,10 +159,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           fontWeight: FontWeight.bold,
                           fontFamily: "Poppins"),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
-                      'Quantity ${widget.product.quantity} Kg',
-                      style: TextStyle(
+                      'Quantity ${widget.product.quantity}',
+                      style: const TextStyle(
                           fontSize: 16,
                           color: Colors.grey,
                           fontFamily: "Poppins"),
@@ -166,7 +173,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   children: [
                     Text(
                       '\$${widget.product.price}',
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 24,
                           color: Colors.green,
                           fontFamily: "Poppins"),
@@ -199,28 +206,28 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: Text(des,
-              // 'Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia Amet minim mollit non deserunt ullamco',
-              style: TextStyle(
+            child: Text(
+              des,
+              style: const TextStyle(
                   fontSize: 14, color: Colors.grey, fontFamily: "Poppins"),
             ),
           ),
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 8.0),
-            child: InkWell(
-              onTap: () {
-                // Handle "See More Detail" tap
-              },
-              child: const Text(
-                'See More Detail',
-                style: TextStyle(
-                    fontSize: 14,
-                    color: TColors.primary,
-                    fontFamily: "Poppins"),
-              ),
-            ),
-          ),
+          // Padding(
+          //   padding:
+          //       const EdgeInsets.symmetric(horizontal: 25.0, vertical: 8.0),
+          //   child: InkWell(
+          //     onTap: () {
+          //       // Handle "See More Detail" tap
+          //     },
+          //     child: const Text(
+          //       'See More Detail',
+          //       style: TextStyle(
+          //           fontSize: 14,
+          //           color: TColors.primary,
+          //           fontFamily: "Poppins"),
+          //     ),
+          //   ),
+          // ),
           const Spacer(),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -232,7 +239,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 onPressed: () {
                   // Handle "Add to Cart" button press

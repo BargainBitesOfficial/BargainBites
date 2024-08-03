@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../../utils/constants/colors.dart';
 import '../controllers/product_controller.dart';
@@ -22,14 +22,11 @@ class _MerchantCatalogueState extends State<MerchantCatalogue> {
   List<CatalogItemModel> catalogItems = [];
   List<ListingItemModel> products = [];
   var merchant;
-  String merchantName = "", merchantId = "";
+  String merchantName = "", merchantId = "", storeName = "";
   bool isLoading = true;
-
-  // int quantity = 0;
-  double productPrice = 0;
   bool autoPriceReduction = false;
 
-  final _formKey = GlobalKey<FormState>();
+  // final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -38,7 +35,10 @@ class _MerchantCatalogueState extends State<MerchantCatalogue> {
   }
 
   Future<void> _fetchProducts() async {
-    // Just fetching Merchant Name here :)
+    setState(() {
+      isLoading = true;
+    });
+
     merchant = (await FirebaseFirestore.instance
             .collection('Merchants')
             .where('merchantEmail',
@@ -47,12 +47,13 @@ class _MerchantCatalogueState extends State<MerchantCatalogue> {
         .docs
         .first;
     merchantName = merchant['merchantName'];
-    merchantId = merchant['merchantId'];
+    merchantId = merchant['merchantID'];
+    storeName = merchant['storeName'];
 
     List<CatalogItemModel> fetchedCatalogItems =
-    await _catalogController.fetchCatalogItems(merchantId);
+        await _catalogController.fetchCatalogItems(merchantId);
     List<ListingItemModel> fetchedProducts =
-    await _productController.fetchProducts();
+        await _productController.fetchProducts();
 
     setState(() {
       catalogItems = fetchedCatalogItems;
@@ -62,26 +63,16 @@ class _MerchantCatalogueState extends State<MerchantCatalogue> {
   }
 
   Future<void> _addListing(CatalogItemModel item) async {
-    // if (_formKey.currentState!.validate()) {
-    print("Item name: " + item.productName);
-    print("compa: " + item.brandName);
+    final price = double.tryParse(item.price.toString()) ?? 0.0;
     ListingItemModel newListing = ListingItemModel(
         productId: item.productId,
         merchantId: item.merchantId,
         productName: item.productName,
         brandName: item.brandName,
         basePrice: item.basePrice,
-        price: item.price,
+        price: price,
         quantity: item.quantity,
-        daysUntilExpiry: 1);
-
-    // if (newListing.isBlank != true) {
-    //   print("blank");
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text('ListingItemModel contains invalid data')),
-    //   );
-    //   return;
-    // }
+        expiringOn: item.expiringOn);
 
     List<String> errors = newListing.validate();
 
@@ -100,10 +91,12 @@ class _MerchantCatalogueState extends State<MerchantCatalogue> {
                     Text(error, style: const TextStyle(fontFamily: "Poppins")),
                 backgroundColor: TColors.primary),
           );
-          print('Validation Error: $error');
         }
       } else {
         await _productController.addListing(newListing);
+        setState(() {
+          item.price = 0; // Reset the price to 0 after adding the listing
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text('Listing added successfully',
@@ -119,21 +112,27 @@ class _MerchantCatalogueState extends State<MerchantCatalogue> {
             backgroundColor: TColors.primary),
       );
     }
-    // }
+  }
+
+  Future<void> _deleteProduct(String productId) async {
+    try {
+      await _productController.deleteCatalogProduct(productId);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Product deleted successfully')),
+      );
+      _fetchProducts(); // Refresh the data after deletion
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting product: $e')),
+      );
+    }
   }
 
   void findingProductInfo(String productIdx) {
     for (ListingItemModel product in products) {
-      // print("argument: " + productIdx);
-      // print("loop ID: " + product.productId);
       if ((product.productId).compareTo(productIdx) == 0) {
-        // print("correct");
-        // quantity = product.quantity;
-        // print("QUANTITY------------------------------------------------ " + product.quantity.toString());
-        productPrice = product.price;
-        // print("PRICE------------------------------------------------ " + product.price.toString());
+        break;
       }
-      break;
     }
   }
 
@@ -142,203 +141,229 @@ class _MerchantCatalogueState extends State<MerchantCatalogue> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: TColors.primaryBtn,
-        title: Text("Hi, $merchantName",
+        title: const Text("Catalogue",
             style: TextStyle(fontFamily: "Poppins", color: Colors.white)),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Catalogue',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: "Poppins",
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      TextField(
-                        decoration: InputDecoration(
-                          hintText: 'Search',
-                          prefixIcon: const Icon(Icons.search),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey[200],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: _fetchProducts,
+              child: Column(
+                children: [
+                  Padding(
                     padding: const EdgeInsets.all(16.0),
-                    itemCount: catalogItems.length,
-                    itemBuilder: (context, index) {
-                      final item = catalogItems[index];
-                      // print("printing from listview, sending this to function: " + item.productId);
-                      findingProductInfo(item.productId);
-                      print("product Price : " + productPrice.toString());
-                      item.price = productPrice;
-
-                      return Container(
-                        margin: const EdgeInsets.symmetric(vertical: 8.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12.0),
-                          border: Border.all(color: Colors.grey),
-                        ),
-                        child: CustomExpansionTile(
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                item.productName,
-                                style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: "Poppins"),
-                              ),
-                              Text(
-                                '\$${item.price}',
-                                style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey,
-                                    fontFamily: "Poppins"),
-                              ),
-                            ],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        TextField(
+                          decoration: InputDecoration(
+                            hintText: 'Search',
+                            prefixIcon: const Icon(Icons.search),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey[200],
                           ),
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16.0),
+                      itemCount: catalogItems.length,
+                      itemBuilder: (context, index) {
+                        final item = catalogItems[index];
+                        findingProductInfo(item.productId);
+                        return Dismissible(
+                          key: Key(item.productId),
+                          direction: DismissDirection.endToStart,
+                          onDismissed: (direction) {
+                            _deleteProduct(item.productId);
+                          },
+                          background: ClipRRect(
+                            borderRadius: BorderRadius.circular(12.0),
+                            child: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: const Icon(Icons.delete_outline_sharp,
+                                  color: Colors.white),
+                            ),
+                          ),
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 8.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12.0),
+                              border: Border.all(color: Colors.grey),
+                            ),
+                            child: CustomExpansionTile(
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('Days Until Expiry: 0 Days',
-                                      style: const TextStyle(
-                                          fontFamily: "Poppins")),
-                                  Text('Base Price: \$${item.basePrice}',
-                                      style: const TextStyle(
-                                          fontFamily: "Poppins")),
-                                  const SizedBox(height: 10),
-                                  // Row(
-                                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  //   children: [
-                                  //     const Text('Automatic Price Reduction:',
-                                  //         style: TextStyle(fontFamily: "Poppins")),
-                                  //     Align(
-                                  //       alignment: Alignment.centerRight,
-                                  //       child: Switch(
-                                  //         value: autoPriceReduction,
-                                  //         activeColor: TColors.primaryBtn,
-                                  //         onChanged: (bool value) {
-                                  //           setState(() {
-                                  //             autoPriceReduction = value;
-                                  //           });
-                                  //         },
-                                  //       ),
-                                  //     ),
-                                  //   ],
-                                  // ),
-                                  // if (autoPriceReduction) ...[
-                                  //   Text(
-                                  //       '30% Reduction: 0 Days',
-                                  //       style:
-                                  //       const TextStyle(fontFamily: "Poppins")),
-                                  //   Text(
-                                  //       '50% Reduction: 0 Days',
-                                  //       style:
-                                  //       const TextStyle(fontFamily: "Poppins")),
-                                  // ],
-                                  const SizedBox(height: 10),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text('Quantity: ',
-                                          style:
-                                              TextStyle(fontFamily: "Poppins")),
-                                      Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade300,
-                                            borderRadius:
-                                                BorderRadius.circular(25.0),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10.0),
-                                          child: Row(
-                                            children: [
-                                              IconButton(
-                                                icon: const Icon(Icons.remove),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    if (item.quantity > 0)
-                                                      item.quantity--;
-                                                  });
-                                                },
-                                              ),
-                                              Text('${item.quantity}',
-                                                  style: const TextStyle(
-                                                      fontFamily: "Poppins")),
-                                              IconButton(
-                                                icon: const Icon(Icons.add),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    item.quantity++;
-                                                  });
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                  Text(
+                                    item.productName,
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: "Poppins"),
                                   ),
-                                  const SizedBox(height: 10),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          _addListing(item);
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: TColors.primaryBtn,
-                                        ),
-                                        child: const Text('Add To Listing',
-                                            style: TextStyle(
-                                                fontFamily: "Poppins",
-                                                color: Colors.white)),
+                                  SizedBox(
+                                    width: 50,
+                                    child: TextFormField(
+                                      initialValue: item.price.toString(),
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: 'Price',
                                       ),
-                                      TextButton(
-                                        onPressed: () {},
-                                        child: const Text('Edit Product',
-                                            style: TextStyle(
-                                                fontFamily: "Poppins",
-                                                color: Colors.grey)),
-                                      ),
-                                    ],
-                                  )
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          item.price =
+                                              double.tryParse(value) ?? 0;
+                                        });
+                                      },
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey,
+                                          fontFamily: "Poppins"),
+                                    ),
+                                  ),
                                 ],
                               ),
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      TextFormField(
+                                        initialValue: '',
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: item.expiringOn != null
+                                              ? 'Expiring On: ${DateFormat('yyyy-MM-dd').format(item.expiringOn!)}'
+                                              : 'Expiring On',
+                                          suffixIcon: const Icon(Icons.calendar_today),
+                                        ),
+                                        readOnly: true,
+                                        onTap: () async {
+                                          final DateTime? picked = await showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime(2000),
+                                            lastDate: DateTime(2101),
+                                          );
+                                          if (picked != null) {
+                                            setState(() {
+                                              item.expiringOn = picked;
+                                            });
+                                          }
+                                        },
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey,
+                                          fontFamily: "Poppins",
+                                        ),
+                                      ),
+                                      Text('Base Price: \$${item.basePrice}',
+                                          style: const TextStyle(
+                                              fontFamily: "Poppins")),
+                                      const SizedBox(height: 10),
+                                      const SizedBox(height: 10),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text('Quantity: ',
+                                              style: TextStyle(
+                                                  fontFamily: "Poppins")),
+                                          Align(
+                                            alignment: Alignment.centerRight,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey.shade300,
+                                                borderRadius:
+                                                    BorderRadius.circular(25.0),
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10.0),
+                                              child: Row(
+                                                children: [
+                                                  IconButton(
+                                                    icon: const Icon(
+                                                        Icons.remove),
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        if (item.quantity > 0)
+                                                          item.quantity--;
+                                                      });
+                                                    },
+                                                  ),
+                                                  Text('${item.quantity}',
+                                                      style: const TextStyle(
+                                                          fontFamily:
+                                                              "Poppins")),
+                                                  IconButton(
+                                                    icon: const Icon(Icons.add),
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        item.quantity++;
+                                                      });
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              _addListing(item);
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  TColors.primaryBtn,
+                                            ),
+                                            child: const Text('Add To Listing',
+                                                style: TextStyle(
+                                                    fontFamily: "Poppins",
+                                                    color: Colors.white)),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {},
+                                            child: const Text('Edit Product',
+                                                style: TextStyle(
+                                                    fontFamily: "Poppins",
+                                                    color: Colors.grey)),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
-                    },
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
@@ -346,7 +371,8 @@ class _MerchantCatalogueState extends State<MerchantCatalogue> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => AddProductPage()));
+                  builder: (context) => AddProductPage(
+                      storeName: storeName, merchantID: merchantId)));
         },
         backgroundColor: TColors.primaryBtn,
         shape:

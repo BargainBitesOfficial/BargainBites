@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:bargainbites/features/authentication/controllers/auth_service.dart';
 import 'package:bargainbites/features/homepage/screens/navbar.dart';
 import 'package:flutter/material.dart';
