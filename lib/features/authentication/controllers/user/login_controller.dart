@@ -12,7 +12,7 @@ class LoginController {
       return true; // Login successful
     } catch (e) {
       // Handle error (e.g., invalid email or password)
-      print('Login failed: $e');
+      // print('Login failed: $e');
       return false; // Login failed
     }
   }
@@ -20,10 +20,12 @@ class LoginController {
   static Future<void> signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('User signed out successfully'))
+          const SnackBar(content: Text('User signed out successfully'))
       );
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error signing out User: $e'))
       );

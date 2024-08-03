@@ -272,7 +272,7 @@ class _ExplorePageState extends State<ExplorePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           FutureBuilder<String>(
-                            future: fetchImageUrl(item.merchantId).then((merchantImage) => getDownloadURL(merchantImage)),
+                            future: fetchImageUrl(item.merchantID).then((merchantImage) => getDownloadURL(merchantImage)),
                             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
                               if (snapshot.connectionState == ConnectionState.waiting) {
                                 return Container(

@@ -27,7 +27,7 @@ class AuthService {
       return true; // Sign-in successful
     } catch (e) {
       // Handle sign-in error
-      print('Google sign-in failed: $e');
+      // print('Google sign-in failed: $e');
       return false; // Sign-in failed
     }
   }

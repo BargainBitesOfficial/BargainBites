@@ -1,11 +1,6 @@
 import 'package:bargainbites/features/authentication/auth_page.dart';
-import 'package:bargainbites/features/authentication/screens/user/login.dart';
-import 'package:bargainbites/features/authentication/screens/user/order_screen.dart';
-import 'package:bargainbites/features/startup/screens/new_merchant_info.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import 'features/authentication/controllers/user/signup_controller.dart';
 
 void main() {
   runApp(const App());

@@ -1,5 +1,4 @@
 import 'package:bargainbites/common/styles/spacing_styles.dart';
-//import 'package:bargainbites/features/authentication/screens/user/login.dart'
 import 'package:bargainbites/features/authentication/controllers/user/login_controller.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:bargainbites/utils/constants/text_strings.dart';
@@ -7,10 +6,9 @@ import 'package:bargainbites/utils/constants/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get/get.dart';
 
 class ResetPasswordSuccess extends StatelessWidget {
-  const ResetPasswordSuccess({Key? key}) : super(key: key);
+  const ResetPasswordSuccess({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +68,7 @@ class ResetPasswordSuccess extends StatelessWidget {
                     ),
                     side: BorderSide.none,
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
@@ -80,7 +78,7 @@ class ResetPasswordSuccess extends StatelessWidget {
                           fontSize: 16,
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10),
                       FaIcon(
                         FontAwesomeIcons.chevronRight,
                         color: Colors.white,

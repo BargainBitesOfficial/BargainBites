@@ -1,6 +1,5 @@
 import 'package:bargainbites/features/homepage/screens/merchant_active_product_screen.dart';
 import 'package:bargainbites/features/homepage/screens/merchant_catalogue.dart';
-import 'package:bargainbites/features/homepage/screens/userdevelopmentscreen.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bargainbites/utils/constants/colors.dart';
@@ -18,8 +17,7 @@ class _MerchantNavbarState extends State<MerchantNavbar> {
   int _selectedIndex = 0;
 
   static final List<Widget> _widgetOptions = <Widget>[
-    ActiveProductsPage(),
-    UnderDevelopmentScreen(),
+    const ActiveProductsPage(),
     const MerchantCatalogue(),
     const MerchantProfilePage()
   ];
@@ -33,6 +31,7 @@ class _MerchantNavbarState extends State<MerchantNavbar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: IndexedStack(
         index: _selectedIndex,
         children: _widgetOptions,
@@ -43,10 +42,6 @@ class _MerchantNavbarState extends State<MerchantNavbar> {
           BottomNavigationBarItem(
             icon: Icon(Icons.bolt_sharp),
             label: 'Active',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag),
-            label: 'Sales',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.summarize_sharp),

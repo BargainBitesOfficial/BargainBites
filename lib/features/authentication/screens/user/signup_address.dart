@@ -9,8 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'login.dart';
 
-
-
 class SignupAddress extends StatefulWidget {
   final String name;
   final String email;

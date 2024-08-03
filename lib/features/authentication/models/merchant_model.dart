@@ -1,6 +1,6 @@
 class MerchantModel {
   String imageUrl;
-  String merchantId;
+  String merchantID;
   String merchantName;
   String merchantContact;
   String merchantEmail;
@@ -24,7 +24,7 @@ class MerchantModel {
   double merchantRating;
 
   MerchantModel({
-    this.merchantId = "",
+    this.merchantID = "",
     required this.merchantName,
     required this.merchantContact,
     required this.merchantEmail,
@@ -47,10 +47,9 @@ class MerchantModel {
 
   factory MerchantModel.fromMap(Map<String, dynamic> data) {
     try {
-      print('Processing merchant data: $data');
       return MerchantModel(
-        imageUrl: data['imgUrl'] ?? '',
-        merchantId: data['merchantId'] ?? '',
+        imageUrl: data['imageUrl'] ?? '',
+        merchantID: data['merchantID'] ?? '',
         merchantName: data['merchantName'] ?? '',
         merchantContact: data['merchantContact'] ?? '',
         merchantEmail: data['merchantEmail'] ?? '',
@@ -65,14 +64,39 @@ class MerchantModel {
         postalCode: data['postalCode'] ?? '',
         storeTiming: data['storeTiming'] != null
             ? (data['storeTiming'] as Map<String, dynamic>).map((key, value) =>
-                MapEntry(key, Map<String, String>.from(value as Map)))
+            MapEntry(key, Map<String, String>.from(value as Map)))
             : null,
         isValidated: data['isValidated'] ?? false,
         isOpened: data['isOpened'] ?? false,
+        currDistance: data['currDistance'] ?? 0.0,
+        merchantRating: data['merchantRating'] ?? 0.0,
       );
     } catch (e) {
-      print('Error processing merchant data: $e');
-      throw e;
+      rethrow;
     }
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'imageUrl': imageUrl,
+      'merchantID': merchantID,
+      'merchantName': merchantName,
+      'merchantContact': merchantContact,
+      'merchantEmail': merchantEmail,
+      'password': password,
+      'storeName': storeName,
+      'storeId': storeId,
+      'storeContact': storeContact,
+      'country': country,
+      'province': province,
+      'city': city,
+      'streetAddress': streetAddress,
+      'postalCode': postalCode,
+      'storeTiming': storeTiming,
+      'isValidated': isValidated,
+      'isOpened': isOpened,
+      'currDistance': currDistance,
+      'merchantRating': merchantRating,
+    };
   }
 }

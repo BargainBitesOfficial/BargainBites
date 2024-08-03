@@ -29,7 +29,7 @@ class MerchantAddressPage extends StatefulWidget {
   });
 
   @override
-  _MerchantAddressPageState createState() => _MerchantAddressPageState();
+  State<MerchantAddressPage> createState() => _MerchantAddressPageState();
 }
 
 class _MerchantAddressPageState extends State<MerchantAddressPage> {
@@ -82,6 +82,7 @@ class _MerchantAddressPageState extends State<MerchantAddressPage> {
       try {
         await signupController.createUser(merchantModel);
 
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Merchant created successfully."),
@@ -91,11 +92,13 @@ class _MerchantAddressPageState extends State<MerchantAddressPage> {
 
         signupController.reset();
         Navigator.pushAndRemoveUntil(
+          // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(builder: (context) => const NewMerchantInfo()), // Change to the appropriate login screen if needed
               (Route<dynamic> route) => false,
         );
       } on FirebaseAuthException catch (e) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Failed to create merchant: ${e.message}"),
@@ -211,7 +214,7 @@ class _MerchantAddressPageState extends State<MerchantAddressPage> {
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: const Color.fromRGBO(236, 236, 236, 1),
+                        fillColor: Color.fromRGBO(236, 236, 236, 1),
                       ),
                       items: _provinces.map((province) => DropdownMenuItem(
                         value: province,

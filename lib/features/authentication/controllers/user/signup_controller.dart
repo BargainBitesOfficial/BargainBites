@@ -87,8 +87,8 @@ class SignupController extends ChangeNotifier {
       });
 
       reset();
-    } on FirebaseAuthException catch (e) {
-      print('Error: $e'); // Dont invoke print in production code
+    } on FirebaseAuthException {
+      // print('Error: $e'); // Don't invoke print in production code
     }
   }
 

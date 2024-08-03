@@ -6,10 +6,9 @@ class CatalogItemModel {
   double basePrice;
   String itemDescription;
   String itemImage;
-  bool isCountable;
   int quantity;
   double price;
-
+  DateTime? expiringOn;
   DateTime? itemCreatedOn;
   DateTime? itemLastModified;
 
@@ -21,38 +20,44 @@ class CatalogItemModel {
     required this.basePrice,
     required this.itemDescription,
     required this.itemImage,
-    required this.isCountable,
+    this.expiringOn,
     this.itemCreatedOn,
     this.itemLastModified,
     this.quantity = 0,
-    this.price = 0
+    this.price = 0,
   });
 
   factory CatalogItemModel.fromJson(Map<String, dynamic> json) {
     return CatalogItemModel(
-      merchantId: json['merchantId'],
-      productId: json['productId'],
+      merchantId: json['merchantID'],
+      productId: json['productID'],
       productName: json['productName'],
-      brandName: json['brandName'],
+      brandName: json['brand'],
       basePrice: json['basePrice'],
       itemDescription: json['itemDescription'],
       itemImage: json['itemImage'],
-      isCountable: json['isCountable'],
-      itemCreatedOn: json['itemCreatedOn'] != null ? DateTime.parse(json['itemCreatedOn']) : null,
-      itemLastModified: json['itemLastModified'] != null ? DateTime.parse(json['itemLastModified']) : null,
+      expiringOn: json['expiringOn'] != null
+          ? DateTime.parse(json['expiringOn'])
+          : null,
+      itemCreatedOn: json['itemCreatedOn'] != null
+          ? DateTime.parse(json['itemCreatedOn'])
+          : null,
+      itemLastModified: json['itemLastModified'] != null
+          ? DateTime.parse(json['itemLastModified'])
+          : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'merchantId': merchantId,
-      'productId': productId,
+      'merchantID': merchantId,
+      'productID': productId,
       'productName': productName,
-      'brandName': brandName,
+      'brand': brandName,
       'basePrice': basePrice,
       'itemDescription': itemDescription,
       'itemImage': itemImage,
-      'isCountable': isCountable,
+      'expiringOn': expiringOn?.toIso8601String(),
       'itemCreatedOn': itemCreatedOn?.toIso8601String(),
       'itemLastModified': itemLastModified?.toIso8601String(),
     };
@@ -60,18 +65,41 @@ class CatalogItemModel {
 
   factory CatalogItemModel.fromMap(Map<String, dynamic> data) {
     return CatalogItemModel(
-      productId: data['productId'] ?? '',
-      merchantId: data['merchantId'] ?? '',
+      productId: data['productID'] ?? '',
+      merchantId: data['merchantID'] ?? '',
       productName: data['productName'] ?? '',
-      brandName: data['brandName'] ?? '',
+      brandName: data['brand'] ?? '',
       basePrice: (data['basePrice'] ?? 0.0).toDouble(),
       itemDescription: data['itemDescription'] ?? '',
       itemImage: data['itemImage'] ?? '',
-      isCountable: data['isCountable'] ?? false,
-      itemCreatedOn: data['itemCreatedOn'] != null ? DateTime.parse(data['itemCreatedOn']) : null,
+      expiringOn: data['expiringOn'] != null
+          ? DateTime.parse(data['expiringOn'])
+          : null,
+      itemCreatedOn: data['itemCreatedOn'] != null
+          ? DateTime.parse(data['itemCreatedOn'])
+          : null,
       itemLastModified: data['itemLastModified'] != null
           ? DateTime.parse(data['itemLastModified'])
           : null,
     );
+  }
+
+  List<String> validate() {
+    List<String> errors = [];
+    if (merchantId.isEmpty) errors.add('Merchant ID is empty');
+    if (productId.isEmpty) errors.add('Product ID is empty');
+    if (productName.isEmpty) errors.add('Product name is empty');
+    if (brandName.isEmpty) errors.add('Brand name is empty');
+    if (basePrice <= 0) errors.add('Base price must be greater than 0');
+    if (itemDescription.isEmpty) errors.add('Item description is empty');
+    // if (expiringOn == null) errors.add('Expiry date is not set');
+    // if (itemImage.isEmpty) errors.add('Item image is empty');
+    // if (quantity < 0) errors.add('Quantity cannot be negative');
+    // if (price < 0) errors.add('Price cannot be negative');
+    return errors;
+  }
+
+  bool isBlank() {
+    return validate().isNotEmpty;
   }
 }

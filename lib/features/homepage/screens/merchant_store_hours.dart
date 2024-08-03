@@ -1,13 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../../utils/constants/colors.dart';
 import '../../../utils/constants/text_styles.dart';
 
-
-
-
-
-
 class StoreHoursPage extends StatefulWidget {
+  final String merchantId;
+  final String merchantName;// Pass the merchant ID to this page
+
+  StoreHoursPage({required this.merchantId, required this.merchantName});
+
   @override
   _StoreHoursPageState createState() => _StoreHoursPageState();
 }
@@ -26,11 +27,48 @@ class _StoreHoursPageState extends State<StoreHoursPage> {
   };
 
   @override
+  void initState() {
+    super.initState();
+    _loadStoreHours();
+  }
+
+  Future<void> _loadStoreHours() async {
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+        .collection('Merchants')
+        .doc(widget.merchantId)
+        .get();
+
+    if (snapshot.exists && snapshot.data()!.containsKey('storeTiming')) {
+      setState(() {
+        storeHours = (snapshot.data()!['storeTiming'] as Map<String, dynamic>).map((key, value) {
+          var v = Map<String, String>.from(value);
+          return MapEntry(key, StoreHour.fromMap(v));
+        });
+      });
+    }
+  }
+
+  void _saveStoreHours() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      // Convert storeHours map to a format suitable for Firestore
+      Map<String, Map<String, String>> storeHoursData = storeHours.map((key, value) => MapEntry(key, value.toMap()));
+
+      // Save to Firestore
+      await FirebaseFirestore.instance.collection('Merchants').doc(widget.merchantId).update({
+        'storeTiming': storeHoursData,
+      });
+
+      print("Store hours updated successfully!");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: TColors.primary,
-        title: Text("Hi, Circle K", style: TextStyles.regulartext(color: TColors.bWhite)),
+        title: Text(widget.merchantName, style: TextStyles.regulartext(color: TColors.bWhite)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -61,13 +99,7 @@ class _StoreHoursPageState extends State<StoreHoursPage> {
               ),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      // Handle the form submission, e.g., save to the database
-                      print(storeHours);
-                    }
-                  },
+                  onPressed: _saveStoreHours,
                   child: Text('Update Store Hours', style: TextStyles.button()),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
@@ -204,6 +236,24 @@ class StoreHour {
       isOpen: isOpen ?? this.isOpen,
       openTime: openTime ?? this.openTime,
       closeTime: closeTime ?? this.closeTime,
+    );
+  }
+
+  Map<String, String> toMap() {
+    return {
+      'day': day,
+      'isOpen': isOpen.toString(),
+      'openTime': openTime ?? '',
+      'closeTime': closeTime ?? '',
+    };
+  }
+
+  factory StoreHour.fromMap(Map<String, String> map) {
+    return StoreHour(
+      day: map['day']!,
+      isOpen: map['isOpen'] == 'true',
+      openTime: map['openTime'],
+      closeTime: map['closeTime'],
     );
   }
 
