@@ -6,8 +6,9 @@ class CartModel {
   final String merchantName;
   final String merchantAddress;
   final String userId;
-  final List<ListingItemModel> items;
+  List<ListingItemModel> items;
   double total;
+  Map<String, int> itemQuantity;
 
   CartModel({
     required this.cartId,
@@ -15,9 +16,10 @@ class CartModel {
     required this.merchantName,
     required this.merchantAddress,
     required this.userId,
-    required this.items,
-    required this.total,
-  });
+    this.items = const [],
+    this.total = 0.0,
+    Map<String, int>? itemQuantity,
+  }): itemQuantity = itemQuantity ?? {};
 
   factory CartModel.fromJson(Map<String, dynamic> json) {
 
@@ -37,6 +39,7 @@ class CartModel {
       userId: json['userId'],
       items: items_list,
       total: total,
+      itemQuantity: Map<String, int>.from(json['itemQuantity']),
     );
   }
 
@@ -44,13 +47,19 @@ class CartModel {
     return {
       'cartId': cartId,
       'merchantId': merchantId,
+      'merchantName': merchantName,
+      'merchantAddress': merchantAddress,
       'userId': userId,
       'items': items.map((item) => item.toJson()).toList(),
       'total': total,
+      'itemQuantity': itemQuantity,
     };
   }
 
   void updateTotal() {
-    total = items.fold(0.0, (sum, item) => sum + item.price);
+    total = items.fold(0.0, (sum, item) {
+      int quantity = itemQuantity[item.productId] ?? 0;
+      return sum + (item.price * quantity);
+    });
   }
 }

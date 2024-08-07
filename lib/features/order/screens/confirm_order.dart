@@ -1,66 +1,58 @@
+import 'package:bargainbites/features/homepage/models/listing_item_model.dart';
+import 'package:bargainbites/features/order/controllers/order_controller.dart';
 import 'package:flutter/material.dart';
 
-class Store {
-  static const String name = 'Circle K';
-  static const String address = '1201 Wyandotte Street';
-}
+import '../../cart/models/cart_model.dart';
 
 class ConfirmOrderPage extends StatefulWidget {
+  final CartModel cartModel;
+
+  ConfirmOrderPage({required this.cartModel});
+
   @override
   _ConfirmOrderPageState createState() => _ConfirmOrderPageState();
 }
 
 class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
-  final List<OrderItem> items = [
-    OrderItem(
-      title: 'Item Name 1',
-      discount: '50% OFF',
-      price: 28.8,
-      quantity: 3,
-    ),
-    OrderItem(
-      title: 'Item Name 2',
-      discount: '30% OFF',
-      price: 28.8,
-      quantity: 3,
-    ),
-    OrderItem(
-      title: 'Item Name 3',
-      discount: '10% OFF',
-      price: 28.8,
-      quantity: 3,
-    ),
-  ];
+
+  late List<ListingItemModel> carts;
+  OrderController orderController = OrderController();
+  Map<String, String> imageUrls = {};
+
+
+  @override
+  void initState() {
+    super.initState();
+    carts = widget.cartModel.items;
+    _fetchImageUrls();
+  }
+
+  void _fetchImageUrls() async {
+    for (var item in carts) {
+      String imageUrl = await orderController.fetchProductImageUrl(item.productId);
+      print("url in screen: " + imageUrl);
+      setState(() {
+        imageUrls[item.productId] = imageUrl;
+      });
+    }
+  }
 
   double _calculateSubtotal() {
     double subtotal = 0;
-    for (var item in items) {
-      subtotal += item.price * item.quantity;
-    }
+    subtotal = widget.cartModel.items.fold(0.0, (sum, item) {
+      int quantity = widget.cartModel.itemQuantity[item.productId] ?? 0;
+      return sum + (item.price * quantity);
+    });
     return subtotal;
-  }
-
-  void _increaseQuantity(int index) {
-    setState(() {
-      items[index].quantity++;
-    });
-  }
-
-  void _decreaseQuantity(int index) {
-    setState(() {
-      if (items[index].quantity > 1) {
-        items[index].quantity--;
-      } else {
-        items.removeAt(index);
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     double subtotal = _calculateSubtotal();
-    double taxAndFees = subtotal * 0.13; // 13% tax and fees
+    double taxAndFees = subtotal*.13; // 13% tax and fees
     double total = subtotal + taxAndFees;
+
+    print("SUBTOTAL" + subtotal.toString());
 
     return Scaffold(
       appBar: AppBar(
@@ -86,11 +78,11 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
                 borderRadius: BorderRadius.circular(30.0),
               ),
               padding: EdgeInsets.all(16.0),
-              child: Row(
+              child:  Row(
                 children: [
                   Expanded(
                     child: Text(
-                      '${Store.name} - ${Store.address}',
+                      '${widget.cartModel.merchantName} - ${widget.cartModel.merchantAddress}',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -105,11 +97,12 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
-              itemCount: items.length,
+              itemCount: carts.length,
               itemBuilder: (context, index) {
-                final item = items[index];
+                final item = carts[index];
+
                 return Card(
-                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -118,50 +111,69 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
                       children: [
-                        Image.network(
-                          'https://via.placeholder.com/100',
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(15.0),
+                          child: Image.network(
+                            "https://firebasestorage.googleapis.com/v0/b/bargainbites-f6682.appspot.com/o/ProductImages%2F1722701610692.png?alt=media&token=d3f15556-d273-4bd7-bed1-ff8f0be273de",
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                        SizedBox(width: 15),
+                        SizedBox(width: 16.0),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                item.title,
-                                style: TextStyle(
+                                item.productName,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Text(item.discount),
+                              Text(
+                                item.brandName,
+                                style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
                             ],
                           ),
                         ),
                         Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
-                              '\$${(item.price).toStringAsFixed(2)}',
-                              style: TextStyle(
+                              '\$${item.basePrice.toStringAsFixed(1)}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                            Text(
+                              '\$${item.price.toStringAsFixed(1)}',
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             SizedBox(height: 10),
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: Icon(Icons.remove),
-                                  onPressed: () => _decreaseQuantity(index),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              child: Text(
+                                'Quantity: ${widget.cartModel.itemQuantity[item.productId]}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
                                 ),
-                                Text('${item.quantity}'),
-                                IconButton(
-                                  icon: Icon(Icons.add),
-                                  onPressed: () => _increaseQuantity(index),
-                                ),
-                              ],
+                              ),
                             ),
                           ],
                         ),
@@ -192,17 +204,12 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
                     ),
                     padding: EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         'Proceed To Checkout',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        '\$${total.toStringAsFixed(2)}',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     ],
                   ),
@@ -242,18 +249,4 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
       ),
     );
   }
-}
-
-class OrderItem {
-  final String title;
-  final String discount;
-  final double price;
-  int quantity;
-
-  OrderItem({
-    required this.title,
-    required this.discount,
-    required this.price,
-    required this.quantity,
-  });
 }
