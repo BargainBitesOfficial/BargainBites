@@ -37,38 +37,6 @@ class _SignupAddressState extends State<SignupAddress> {
     super.dispose();
   }
 
-  // Future<void> submit() async {
-  //   final signupModel = SignupModel(
-  //     name: widget.name,
-  //     email: widget.email,
-  //     password: widget.password,
-  //     country: countryController.text,
-  //     postalCode: postalCodeController.text,
-  //   );
-  //
-  //   final signupController = Provider.of<SignupController>(context, listen: false);
-  //   try {
-  //     await signupController.createUser(signupModel);
-  //
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text("User created successfully."),
-  //         backgroundColor: Colors.green,
-  //       ),
-  //     );
-  //
-  //     signupController.reset();
-  //     Navigator.popUntil(context, (route) => route.isFirst);
-  //   } on FirebaseAuthException catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text("Failed to create user: ${e.message}"),
-  //         backgroundColor: Colors.red,
-  //       ),
-  //     );
-  //   }
-  // }
-
   void submit() async {
     final signupModel = SignupModel(
       name: widget.name,
@@ -78,7 +46,8 @@ class _SignupAddressState extends State<SignupAddress> {
       postalCode: postalCodeController.text,
     );
 
-    final signupController = Provider.of<SignupController>(context, listen: false);
+    final signupController =
+        Provider.of<SignupController>(context, listen: false);
 
     try {
       await signupController.createUser(signupModel);
@@ -106,13 +75,13 @@ class _SignupAddressState extends State<SignupAddress> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Create Account",
-            style: TextStyle(fontFamily: "Poppins", fontWeight: FontWeight.w700)),
+            style:
+                TextStyle(fontFamily: "Poppins", fontWeight: FontWeight.w700)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -129,12 +98,13 @@ class _SignupAddressState extends State<SignupAddress> {
               Center(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    double size = constraints.maxWidth * 0.7; // Scale to 50% of the parent's width
+                    double size = constraints.maxWidth *
+                        0.7; // Scale to 50% of the parent's width
                     return Container(
                       width: size,
                       height: size,
                       child: SvgPicture.asset(
-                        'assets/images/signup_address.svg', // Ensure this path matches your SVG asset
+                        'assets/images/signup_address.svg',
                         fit: BoxFit.contain,
                       ),
                     );
@@ -173,7 +143,6 @@ class _SignupAddressState extends State<SignupAddress> {
                               fillColor: TColors.backgroundContainerColor,
                               contentPadding: const EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 12.0),
-                              //prefixIcon: const Icon(Icons.location_city),
                             ),
                             style: const TextStyle(
                               color: Colors.black,
@@ -246,7 +215,8 @@ class _SignupAddressState extends State<SignupAddress> {
                               ),
                             ),
                             SizedBox(width: 8),
-                            Icon(Icons.arrow_forward, color: Colors.white),
+                            Icon(Icons.arrow_forward_ios,
+                                color: Colors.white, size: 18),
                           ],
                         ),
                       ),

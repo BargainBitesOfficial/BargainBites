@@ -1,11 +1,12 @@
-import 'package:bargainbites/features/homepage/screens/merchant_store_hours.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-
-import 'package:bargainbites/utils/constants/colors.dart';
-import 'package:bargainbites/utils/constants/text_styles.dart';
 import 'package:bargainbites/features/startup/screens/user_type.dart';
+
+import 'package:bargainbites/utils/constants/text_styles.dart';
+import 'merchant_store_hours.dart';
 
 class MerchantProfilePage extends StatefulWidget {
   const MerchantProfilePage({super.key});
@@ -28,25 +29,29 @@ class _MerchantProfilePageState extends State<MerchantProfilePage> {
   @override
   void initState() {
     super.initState();
-    fetchMerchantNameByEmail(user.email!);
+    fetchMerchantDetailsByEmail(user.email!);
   }
 
-  // var merchant;
-  String merchantName = "", merchantId = "";
+  String merchantName = "", merchantId = "", merchantImageUrl = "";
 
-  Future<void> fetchMerchantNameByEmail(String email) async {
+  Future<void> fetchMerchantDetailsByEmail(String email) async {
     try {
       QuerySnapshot snapshot = await _firestore
           .collection('Merchants')
           .where('merchantEmail', isEqualTo: email)
-          .limit(1) // Limit to one document
+          .limit(1)
           .get();
 
       if (snapshot.docs.isNotEmpty) {
         var merchantDoc = snapshot.docs.first;
+        String gsImageUrl =
+            merchantDoc['imageUrl']; // Assuming this is the gs:// URL
+        String httpImageUrl = await getDownloadURL(gsImageUrl);
+
         setState(() {
           merchantName = merchantDoc['storeName'];
           merchantId = merchantDoc['merchantID'];
+          merchantImageUrl = httpImageUrl;
           isLoading = false;
         });
       } else {
@@ -64,46 +69,69 @@ class _MerchantProfilePageState extends State<MerchantProfilePage> {
     }
   }
 
+  Future<String> getDownloadURL(String gsUrl) async {
+    final ref = FirebaseStorage.instance.refFromURL(gsUrl);
+    return await ref.getDownloadURL();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // fetchMerchantName();
     return Scaffold(
-      backgroundColor: TColors.bWhite,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: TColors.primaryBtn,
-        toolbarHeight: 150, // Set a more reasonable height for the app bar
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [TColors.primaryBtn, TColors.primaryBtn],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 30.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 10),
-              Text(
-                merchantName,
-                style: const TextStyle(
-                  fontSize: 25,
-                  fontFamily: "Poppins",
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+        toolbarHeight: 150,
+        flexibleSpace: merchantImageUrl.isNotEmpty
+            ? Container(
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                image: NetworkImage(merchantImageUrl),
+                fit: BoxFit.cover,
+              )))
+            : Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [TColors.primaryBtn, TColors.primaryBtn],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 30.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 10),
+                    Text(
+                      merchantName,
+                      style: const TextStyle(
+                        fontSize: 25,
+                        fontFamily: "Poppins",
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
       ),
+
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
+            const SizedBox(height: 10),
+            Text(
+              merchantName,
+              style: const TextStyle(
+                fontSize: 25,
+                fontFamily: "Poppins",
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 10),
             ListTile(
               leading: const Icon(Icons.person, color: Colors.black),
               title: Text(
@@ -131,55 +159,17 @@ class _MerchantProfilePageState extends State<MerchantProfilePage> {
               ),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => StoreHoursPage(merchantId: merchantId, merchantName: merchantName)));
-                // Implement navigation to edit store info
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => StoreHoursPage(
+                      merchantId: merchantId,
+                      merchantName: merchantName,
+                    ),
+                  ),
+                );
               },
             ),
-            // ListTile(
-            //   leading: const Icon(Icons.notifications, color: Colors.black),
-            //   title: Text(
-            //     'Notifications',
-            //     style: TextStyles.regulartext(),
-            //   ),
-            //   subtitle: Text(
-            //     'Get all your updates here',
-            //     style: TextStyles.regulartext(color: Colors.grey),
-            //   ),
-            //   trailing: const Icon(Icons.chevron_right),
-            //   onTap: () {
-            //     // Implement navigation to notifications
-            //   },
-            // ),
-            // ListTile(
-            //   leading: const Icon(Icons.credit_card, color: Colors.black),
-            //   title: Text(
-            //     'Payment Methods',
-            //     style: TextStyles.regulartext(),
-            //   ),
-            //   subtitle: Text(
-            //     'Cards',
-            //     style: TextStyles.regulartext(color: Colors.grey),
-            //   ),
-            //   trailing: const Icon(Icons.chevron_right),
-            //   onTap: () {
-            //     // Implement navigation to payment methods
-            //   },
-            // ),
-            // ListTile(
-            //   leading: const Icon(Icons.star, color: Colors.black),
-            //   title: Text(
-            //     'Rate our App',
-            //     style: TextStyles.regulartext(),
-            //   ),
-            //   subtitle: Text(
-            //     'Help us get 5 stars',
-            //     style: TextStyles.regulartext(color: Colors.grey),
-            //   ),
-            //   trailing: const Icon(Icons.chevron_right),
-            //   onTap: () {
-            //     // Implement navigation to rate app
-            //   },
-            // ),
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.black),
               title: Text(

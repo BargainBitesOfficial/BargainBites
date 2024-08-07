@@ -186,7 +186,7 @@ class _HomepageState extends State<Homepage> {
             const SectionTitle(title: "Stores"),
             HorizontalItemListForStores(items: merchants),
             const SectionTitle(title: "Explore"),
-            const VerticalItemList(),
+            VerticalItemList(items: merchants),
           ],
         )));
   }
@@ -211,23 +211,6 @@ class SectionTitle extends StatelessWidget {
                 fontWeight: FontWeight.w600,
                 fontFamily: "Poppins"),
           ),
-          // TextButton(
-          //   onPressed: () {
-          //     // Navigator.push(
-          //     //     context,
-          //     //     MaterialPageRoute(
-          //     //         builder: (context) =>
-          //     //         const ForgotPassword()));
-          //   },
-          //   // child: const Text(
-          //   //   "see all",
-          //   //   style: TextStyle(
-          //   //       color: Colors.black,
-          //   //       fontFamily: "Poppins",
-          //   //       fontWeight: FontWeight.w400,
-          //   //       fontSize: 12),
-          //   // ),
-          // ),
         ],
       ),
     );
@@ -325,12 +308,20 @@ class HorizontalItemListForStores extends StatelessWidget {
 }
 
 class VerticalItemList extends StatelessWidget {
-  const VerticalItemList({super.key});
+  final List<MerchantModel> items;
+  VerticalItemList({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: List.generate(5, (index) => const DiscountCardVertical()),
+    return SizedBox(
+      height: 500.0,  // Adjust the height as needed
+      child: ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: (items.length < 5)? items.length : 5,
+        itemBuilder: (context, index) {
+          return DiscountCardVertical(merchant: items[index]);
+        },
+      ),
     );
   }
 }
@@ -361,16 +352,6 @@ class DiscountCard extends StatelessWidget {
   Future<String> getDownloadURL(String gsUrl) async {
     final ref = FirebaseStorage.instance.refFromURL(gsUrl);
     return await ref.getDownloadURL();
-
-    // try {
-    //   final ref = FirebaseStorage.instance.refFromURL(gsUrl);
-    //   String downloadUrl = await ref.getDownloadURL();
-    //   print("Fetched downloadUrl: $downloadUrl"); // Log the fetched downloadUrl
-    //   return downloadUrl;
-    // } catch (e) {
-    //   print("Error fetching download URL: $e");
-    //   throw e;
-    // }
   }
 
   @override
@@ -582,7 +563,24 @@ class DiscountCardForStores extends StatelessWidget {
 }
 
 class DiscountCardVertical extends StatelessWidget {
-  const DiscountCardVertical({super.key});
+  final MerchantModel merchant;
+
+  const DiscountCardVertical({super.key, required this.merchant});
+
+  Future<String> fetchImageUrl(String merchantId) async {
+    var merchant = (await FirebaseFirestore.instance
+        .collection('Merchants')
+        .doc(merchantId)
+        .get());
+
+    String merchantImage = merchant['imageUrl'];
+    return merchantImage;
+  }
+
+  Future<String> getDownloadURL(String gsUrl) async {
+    final ref = FirebaseStorage.instance.refFromURL(gsUrl);
+    return await ref.getDownloadURL();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -597,37 +595,47 @@ class DiscountCardVertical extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10.0),
-                  child: Image.asset(
-                    'assets/images/grocery.jpg',
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: 110.0,
+                  child: FutureBuilder<String>(
+                    future: fetchImageUrl(merchant.merchantID).then((merchantImage) => getDownloadURL(merchantImage)),
+                    builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          width: double.infinity,
+                          height: 110.0,
+                          color: Colors.grey[200],
+                          child: const Center(child: CircularProgressIndicator()),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Container(
+                          width: double.infinity,
+                          height: 110.0,
+                          color: Colors.grey[200],
+                          child: const Center(child: Icon(Icons.error)),
+                        );
+                      } else if (!snapshot.hasData) {
+                        return Container(
+                          width: double.infinity,
+                          height: 110.0,
+                          color: Colors.grey[200],
+                          child: const Center(child: Icon(Icons.image)),
+                        );
+                      } else {
+                        return Image.network(
+                          snapshot.data!,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: 110.0,
+                        );
+                      }
+                    },
                   ),
                 ),
-                // Positioned(
-                //   top: 8.0,
-                //   right: 8.0,
-                //   child: Container(
-                //     decoration: BoxDecoration(
-                //         color: Colors.white,
-                //         borderRadius: BorderRadius.circular(8.0)),
-                //     padding: const EdgeInsets.symmetric(
-                //         horizontal: 4.0, vertical: 2.0),
-                //     child: const Text(
-                //       'new',
-                //       style: TextStyle(
-                //           color: TColors.primary,
-                //           fontSize: 12.0,
-                //           fontFamily: "Poppins"),
-                //     ),
-                //   ),
-                // ),
               ],
             ),
             const SizedBox(height: 8.0),
-            const Text(
-              'Subway',
-              style: TextStyle(
+            Text(
+              merchant.storeName,
+              style: const TextStyle(
                   fontSize: 16.0,
                   fontWeight: FontWeight.w600,
                   fontFamily: "Poppins"),
@@ -643,17 +651,6 @@ class DiscountCardVertical extends StatelessWidget {
                 Text('10 km', style: TextStyle(fontFamily: "Poppins")),
               ],
             ),
-            const SizedBox(height: 8.0),
-            // Container(
-            //   padding: const EdgeInsets.all(4.0),
-            //   color: Colors.green[100],
-            //   child: const Text(
-            //     '50% OFF',
-            //     style: TextStyle(
-            //       color: Colors.red,
-            //     ),
-            //   ),
-            // ),
           ],
         ),
       ),

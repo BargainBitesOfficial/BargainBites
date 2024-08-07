@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:bargainbites/features/authentication/controllers/auth_service.dart';
 import 'package:bargainbites/features/homepage/screens/navbar.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +18,29 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final _formKey = GlobalKey<FormState>();
   bool _obscureText = true;
+
+  String? _emailError;
+  String? _passwordError;
+  bool _emailValidated = false;
+  bool _passwordValidated = false;
+
+  void _validateEmail() {
+    setState(() {
+      _emailError = TValidator.validateEmail(LoginController.emailController.text);
+      _emailValidated = _emailError == null;
+    });
+  }
+
+  void _validatePassword() {
+    setState(() {
+      _passwordError = TValidator.validatePassword(LoginController.passwordController.text);
+      _passwordValidated = _passwordError == null;
+    });
+  }
+
+  bool get _isFormValid => _emailValidated && _passwordValidated;
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +56,11 @@ class _LoginState extends State<Login> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            // Implement back functionality
             Navigator.pop(context);
           },
         ),
         centerTitle: true,
       ),
-
-      /// Body
       body: Padding(
         padding: TSpacingStyle.paddingWithAppBarHeight,
         child: SingleChildScrollView(
@@ -57,16 +74,14 @@ class _LoginState extends State<Login> {
                     fontWeight: FontWeight.w400,
                     color: TColors.primaryBtn),
               ),
-
-              /// Form
               Form(
+                key: _formKey,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical: TSizes.spaceBtwSections),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      /// Email
                       const Text('Email',
                           style: TextStyle(
                               fontSize: 16,
@@ -74,50 +89,35 @@ class _LoginState extends State<Login> {
                               fontFamily: "Poppins",
                               fontWeight: FontWeight.w400)),
                       const SizedBox(height: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: TextFormField(
-                              controller: LoginController.emailController,
-                              decoration: InputDecoration(
-                                hintText: "Required",
-                                hintStyle: const TextStyle(color: Colors.grey),
-                                border: InputBorder.none,
-                                filled: true,
-                                fillColor: Colors.grey[200],
-                              ),
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: TValidator.validateEmail,
-                            ),
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: TextFormField(
+                          controller: LoginController.emailController,
+                          decoration: InputDecoration(
+                            hintText: "Required",
+                            hintStyle: const TextStyle(color: Colors.grey),
+                            border: InputBorder.none,
+                            filled: true,
+                            fillColor: Colors.grey[200],
                           ),
-                          const SizedBox(height: 5.0),
-                          // Add space between text field and error message
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10.0),
-                            // Adjust left padding as needed
-                            child: Text(
-                              LoginController.emailController.text.isNotEmpty
-                                  ? TValidator.validateEmail(LoginController
-                                          .emailController.text) ??
-                                      ''
-                                  : '',
-                              style: const TextStyle(color: Colors.red),
-                            ),
-                          ),
-                        ],
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          onChanged: (_) => _validateEmail(),
+                        ),
                       ),
+                      if (_emailError != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            _emailError!,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ),
                       const SizedBox(height: 16),
-
-                      /// Password
                       const Text('Password',
                           style: TextStyle(
                               fontSize: 16,
@@ -154,12 +154,18 @@ class _LoginState extends State<Login> {
                               },
                             ),
                           ),
-                          // autovalidateMode: AutovalidateMode.onUserInteraction,
-                          // validator: TValidator.validatePassword,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          onChanged: (_) => _validatePassword(),
                         ),
                       ),
-
-                      /// Forgot Password
+                      if (_passwordError != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            _passwordError!,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -169,7 +175,7 @@ class _LoginState extends State<Login> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const ForgotPassword()));
+                                      const ForgotPassword()));
                             },
                             child: const Text(
                               TTexts.forgetPassword,
@@ -183,38 +189,39 @@ class _LoginState extends State<Login> {
                         ],
                       ),
                       const SizedBox(height: TSizes.spaceBtwSections),
-
-                      /// Login Button
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-
-                          onPressed: () async {
-                            bool success = await LoginController.signUserIn();
-                            if (success) {
-                              // If login is successful, navigate to the new page
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const NavBar()), (Route<dynamic>route)=>false // Replace HomePage with the actual page you want to navigate to
-                              );
-                            } else {
-                              // Optionally handle login failure (e.g., show an error message)
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    backgroundColor: TColors.primary,
-                                    content: Text(
-                                        style: TextStyle(
-                                            fontFamily: "Poppins",
-                                            color: Colors.white),
-                                        'Login failed. Please try again.')),
-                              );
+                          onPressed: _isFormValid
+                              ? () async {
+                            if (_formKey.currentState!.validate()) {
+                              bool success =
+                              await LoginController.signUserIn();
+                              if (success) {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const NavBar()),
+                                      (Route<dynamic> route) => false,
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      backgroundColor: TColors.primary,
+                                      content: Text(
+                                          style: TextStyle(
+                                              fontFamily: "Poppins",
+                                              color: Colors.white),
+                                          'Login failed. Please try again.')),
+                                );
+                              }
                             }
-
-                          },
+                          }
+                              : null,
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: TColors.primaryBtn,
+                              backgroundColor: _isFormValid
+                                  ? TColors.primaryBtn
+                                  : Colors.grey,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30.0),
                               ),
@@ -230,8 +237,6 @@ class _LoginState extends State<Login> {
                   ),
                 ),
               ),
-
-              // Divider
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -262,8 +267,6 @@ class _LoginState extends State<Login> {
                 ],
               ),
               const SizedBox(height: TSizes.spaceBtwSections),
-
-              /// Footer
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -277,15 +280,12 @@ class _LoginState extends State<Login> {
                       onPressed: () async {
                         bool success = await AuthService().signInWithGoogle();
                         if (success) {
-                          // If sign-in is successful, navigate to the new page
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    const NavBar()), // Replace HomePage with the actual page you want to navigate to
+                                builder: (context) => const NavBar()),
                           );
                         } else {
-                          // Optionally handle sign-in failure (e.g., show an error message)
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                                 backgroundColor: TColors.primary,
