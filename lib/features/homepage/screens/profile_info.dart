@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'package:bargainbites/features/startup/screens/user_type.dart';
 
+import 'package:bargainbites/utils/constants/colors.dart';
+
 class ProfilePage extends StatefulWidget {
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -56,7 +58,7 @@ class _ProfilePageState extends State<ProfilePage> {
             width: double.infinity,
             padding: const EdgeInsets.all(16.0),
             decoration: const BoxDecoration(
-              color: Colors.green,
+              gradient: TColors.linerGradient,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(30.0),
                 bottomRight: Radius.circular(30.0),

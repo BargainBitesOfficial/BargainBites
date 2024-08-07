@@ -26,24 +26,26 @@ class OrderController {
   }
 
   Future<String> fetchProductImageUrl(String productId) async {
-    print("product ID; " + productId);
-    DocumentSnapshot snapshot = await _firestore.collection('CatalogItems').doc(productId).get();
-    print(snapshot.exists);
-    print(snapshot.data());
+    print("Product ID: " + productId);
     try {
-      if (snapshot.exists && snapshot.data() != null) {
-        print("IMage url: " + snapshot['itemImage']);
-        return snapshot['itemImage'];
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('CatalogItems')
+          .where('productID', isEqualTo: productId)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        var product = snapshot.docs.first;
+        print("Image URL: " + product['itemImage']);
+        return product['itemImage'];
+      } else {
+        print("Product image URL not found");
+        return "";
       }
-      // else {
-      //   throw Exception('Product image URL not found');
-      // }
-    }
-    catch (e) {
+    } catch (e) {
       print(e.toString());
       return "";
     }
-    return "";
   }
+
 
 }

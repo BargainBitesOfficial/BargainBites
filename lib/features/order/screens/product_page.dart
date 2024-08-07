@@ -3,10 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
-import '../../../utils/constants/colors.dart';
-import '../../cart/models/cart_model.dart';
-import '../../homepage/controllers/product_controller.dart';
-import '../controllers/order_controller.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
+import 'package:bargainbites/features/cart/models/cart_model.dart';
+import 'package:bargainbites/features/order/controllers/order_controller.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final ListingItemModel product;
@@ -34,7 +33,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   Future<String> fetchImageUrl(String productId) async {
     var product = (await FirebaseFirestore.instance
             .collection('CatalogItems')
-            .where('productId', isEqualTo: productId)
+            .where('productID', isEqualTo: productId)
             .get())
         .docs
         .first;
@@ -51,7 +50,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   Future<void> fetchProductDetail(String productId) async {
     var detail = (await FirebaseFirestore.instance
         .collection('CatalogItems')
-        .where('productId', isEqualTo: productId)
+        .where('productID', isEqualTo: productId)
         .get())
     .docs
     .first;
@@ -64,6 +63,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
@@ -140,6 +140,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     icon: const Icon(Icons.add, color: Colors.white),
                     onPressed: () {
                       setState(() {
+                        if(quantity < widget.product.quantity)
                         quantity++;
                       });
                     },
@@ -166,7 +167,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Quantity ${widget.product.quantity} Kg',
+                      'Quantity ${widget.product.quantity}',
                       style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey,
@@ -216,22 +217,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   fontSize: 14, color: Colors.grey, fontFamily: "Poppins"),
             ),
           ),
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 8.0),
-            child: InkWell(
-              onTap: () {
-                // Handle "See More Detail" tap
-              },
-              child: const Text(
-                'See More Detail',
-                style: TextStyle(
-                    fontSize: 14,
-                    color: TColors.primary,
-                    fontFamily: "Poppins"),
-              ),
-            ),
-          ),
+          // Padding(
+          //   padding:
+          //       const EdgeInsets.symmetric(horizontal: 25.0, vertical: 8.0),
+          //   child: InkWell(
+          //     onTap: () {
+          //       // Handle "See More Detail" tap
+          //     },
+          //     child: const Text(
+          //       'See More Detail',
+          //       style: TextStyle(
+          //           fontSize: 14,
+          //           color: TColors.primary,
+          //           fontFamily: "Poppins"),
+          //     ),
+          //   ),
+          // ),
           const Spacer(),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -246,7 +247,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 onPressed: () async{
-                  print("ONPRESSED_clicked");
+                  // print("ONPRESSED_clicked");
                   if (quantity > 0) {
                     // updating the quantity of selected product
                     try {
@@ -270,7 +271,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     }
 
                     if (await _orderController.updateCart(widget.cartModel)) {
-                      print("cart updated successfully!");
+                      // print("cart updated successfully!");
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Added to cart'),

@@ -1,10 +1,14 @@
 import 'package:bargainbites/features/authentication/models/merchant_model.dart';
+import 'package:bargainbites/features/cart/controllers/cart_controller.dart';
+import 'package:bargainbites/features/cart/models/cart_model.dart';
 import 'package:bargainbites/features/homepage/controllers/product_controller.dart';
 import 'package:bargainbites/features/homepage/models/listing_item_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:bargainbites/utils/constants/colors.dart';
+
+import '../../order/screens/product_page.dart';
 
 class ViewMerchantPage extends StatefulWidget {
   final MerchantModel merchantData;
@@ -17,13 +21,16 @@ class ViewMerchantPage extends StatefulWidget {
 
 class _ViewMerchantPageState extends State<ViewMerchantPage> {
   final ProductController _productController = ProductController();
+  CartController _cartController = CartController();
   List<ListingItemModel> listedProducts = [];
+  CartModel? _cartModel;
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _fetchProductsByMerchant();
+    _fetchCartByMerchant();
   }
 
   Future<void> _fetchProductsByMerchant() async {
@@ -31,6 +38,18 @@ class _ViewMerchantPageState extends State<ViewMerchantPage> {
 
     setState(() {
       listedProducts = fetchedProducts;
+      isLoading = false;
+    });
+  }
+
+  Future<void> _fetchCartByMerchant() async {
+    // initializing cart model for particular merchant.
+    CartModel? cartModel = await _cartController.getCartIfExists(widget.merchantData.merchantID);
+
+    cartModel ??= await _cartController.getCartInstance(widget.merchantData);
+
+    setState(() {
+      _cartModel = cartModel;
       isLoading = false;
     });
   }
@@ -232,98 +251,104 @@ class _ViewMerchantPageState extends State<ViewMerchantPage> {
                 final item = listedProducts[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 2.0),
-                  child: Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        children: [
-                          // Product image
-                          FutureBuilder<String>(
-                            future: fetchImageUrlPrdt(item.productId)
-                                .then((productImage) => getDownloadURL(productImage)),
-                            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return Container(
-                                  width: 50,
-                                  height: 50,
-                                  color: Colors.grey[200],
-                                  child: const Center(child: CircularProgressIndicator()),
-                                );
-                              } else if (snapshot.hasError) {
-                                return Container(
-                                  width: 50,
-                                  height: 50,
-                                  color: Colors.grey[200],
-                                  child: const Center(
-                                      child: Icon(Icons.error, color: Colors.red)),
-                                );
-                              } else if (!snapshot.hasData) {
-                                return Container(
-                                  width: 50,
-                                  height: 50,
-                                  color: Colors.grey[200],
-                                  child: Center(
-                                      child: Icon(Icons.image, color: Colors.grey[700])),
-                                );
-                              } else {
-                                return Image.network(
-                                  snapshot.data!,
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                );
-                              }
-                            },
-                          ),
-                          const SizedBox(width: 10),
-                          // Product details
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item.productName,
-                                  style: const TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  'Quantity: ${item.quantity}',
-                                  style: const TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      '\$${item.price}', // Replace with your dynamic product price
-                                      style: const TextStyle(
-                                        fontFamily: 'Poppins',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailsPage(product: item, cartModel: _cartModel)));
+                    },
+                    child: Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Row(
+                          children: [
+                            // Product image
+                            FutureBuilder<String>(
+                              future: fetchImageUrlPrdt(item.productId)
+                                  .then((productImage) => getDownloadURL(productImage)),
+                              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return Container(
+                                    width: 50,
+                                    height: 50,
+                                    color: Colors.grey[200],
+                                    child: const Center(child: CircularProgressIndicator()),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Container(
+                                    width: 50,
+                                    height: 50,
+                                    color: Colors.grey[200],
+                                    child: const Center(
+                                        child: Icon(Icons.error, color: Colors.red)),
+                                  );
+                                } else if (!snapshot.hasData) {
+                                  return Container(
+                                    width: 50,
+                                    height: 50,
+                                    color: Colors.grey[200],
+                                    child: Center(
+                                        child: Icon(Icons.image, color: Colors.grey[700])),
+                                  );
+                                } else {
+                                  return Image.network(
+                                    snapshot.data!,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                  );
+                                }
+                              },
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 10),
+                            // Product details
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.productName,
+                                    style: const TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Quantity: ${item.quantity}',
+                                    style: const TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '\$${item.price}', // Replace with your dynamic product price
+                                        style: const TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 );
               },
             ),
-          ),
+          )
+          ,
         ],
       ),
     );

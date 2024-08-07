@@ -245,7 +245,7 @@ class _MerchantSignupStatePageTwo extends State<MerchantSignupPageTwo> {
                             MaterialPageRoute(
                                 builder: (context) => MerchantAddressPage(
                                   name: widget.name,
-                                  personalNumber: widget.personalNumber,
+                                  personalNumber: '12312312',
                                   email: widget.email,
                                   password: widget.password,
                                   storeId: controller.storeIdController.text,

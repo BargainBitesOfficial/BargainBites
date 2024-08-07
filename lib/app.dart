@@ -1,5 +1,9 @@
 import 'package:bargainbites/features/authentication/auth_page.dart';
+import 'package:bargainbites/features/authentication/controllers/merchant/merchant_signup_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'features/authentication/controllers/user/signup_controller.dart';
 
 
 void main() {
@@ -17,11 +21,12 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return
-        // return MultiProvider(
-        //   providers: [
-        //     ChangeNotifierProvider(create: (_) => SignupController()),
-        //   ],
-        //   child:
+         MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_)=> SignupController()),
+            ChangeNotifierProvider(create: (_) => MerchantSignupController()
+    )],
+           child:
         MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Bargain Bites',
@@ -32,7 +37,7 @@ class _AppState extends State<App> {
         ),
       ),
       home: const AuthPage(),
-    );
+    ));
     // );
   }
 }
