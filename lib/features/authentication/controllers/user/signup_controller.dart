@@ -63,10 +63,31 @@ class SignupController extends ChangeNotifier {
   bool validatePasswords() {
     String password = passwordController.text;
     String confirmPassword = confirmPasswordController.text;
-    return password.isNotEmpty &&
-        confirmPassword.isNotEmpty &&
-        password == confirmPassword;
+
+    // Check if passwords are non-empty
+    if (password.isEmpty || confirmPassword.isEmpty) {
+      return false;
+    }
+
+    // Check if password length is at least 8 characters
+    if (password.length < 8) {
+      return false;
+    }
+
+    // Check if password contains at least one uppercase letter
+    if (!password.contains(RegExp(r'[A-Z]'))) {
+      return false;
+    }
+
+    // Check if password contains at least one special character
+    if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+      return false;
+    }
+
+    // Check if password matches confirm password
+    return password == confirmPassword;
   }
+
 
   Future<void> createUser(SignupModel signupModel) async {
     try {

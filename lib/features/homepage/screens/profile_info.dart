@@ -31,7 +31,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
       // if (userSnapshot.docs.isNotEmpty) {
         setState(() {
-          userName = userSnapshot['userName'];
+          userName = userSnapshot['name'];
           userEmail = userSnapshot['email'];
           // userDetails = userSnapshot.docs.first.data();
         });

@@ -24,16 +24,19 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final dark = THelperFunctions.isDarkMode(context);
-
     return ChangeNotifierProvider(
       create: (_) => _signupController,
-      child: Scaffold(backgroundColor: Colors.white,
+      child: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: const Text("Create Your Account",
-              style: TextStyle(
-                  fontFamily: "Poppins", fontWeight: FontWeight.w700)),
+          title: const Text(
+            "Create Your Account",
+            style: TextStyle(
+              fontFamily: "Poppins",
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
@@ -60,7 +63,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                             fontSize: 16,
                             color: Colors.grey,
                             fontFamily: "Poppins",
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ),
@@ -85,7 +88,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                                     color: Colors.black,
                                   ),
                                   autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
+                                  AutovalidateMode.onUserInteraction,
                                   validator: (value) {
                                     return controller.validateName()
                                         ? null
@@ -135,7 +138,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                               color: Colors.black,
                             ),
                             autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
+                            AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               return controller.validateEmail()
                                   ? null
@@ -177,13 +180,18 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                               color: Colors.black,
                             ),
                             autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
+                            AutovalidateMode.onUserInteraction,
                             validator: (value) {
-                              return value != null && value.isNotEmpty
-                                  ? value.length < 8
-                                      ? "Password Cannot be Less than 8"
-                                      : null
-                                  : "Password cannot be empty";
+                              if (value == null || value.isEmpty) {
+                                return 'Password cannot be empty';
+                              } else if (value.length < 8) {
+                                return 'Password cannot be less than 8 characters';
+                              } else if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                                return 'Password must contain at least one uppercase letter';
+                              } else if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
+                                return 'Password must contain at least one special character';
+                              }
+                              return null;
                             },
                           );
                         },
@@ -221,7 +229,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                               color: Colors.black,
                             ),
                             autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
+                            AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               return controller.validatePasswords()
                                   ? null
@@ -241,7 +249,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                                   TextSpan(
                                     text: 'By continuing you agree to our ',
                                     style:
-                                        Theme.of(context).textTheme.bodySmall,
+                                    Theme.of(context).textTheme.bodySmall,
                                   ),
                                   TextSpan(
                                     text: 'Terms of Use ',
@@ -249,14 +257,14 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                                         .textTheme
                                         .bodyMedium!
                                         .apply(
-                                          color: Colors.green,
-                                          decoration: TextDecoration.underline,
-                                        ),
+                                      color: Colors.green,
+                                      decoration: TextDecoration.underline,
+                                    ),
                                   ),
                                   TextSpan(
                                     text: 'and ',
                                     style:
-                                        Theme.of(context).textTheme.bodySmall,
+                                    Theme.of(context).textTheme.bodySmall,
                                   ),
                                   TextSpan(
                                     text: 'Privacy Policy.',
@@ -264,9 +272,9 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                                         .textTheme
                                         .bodyMedium!
                                         .apply(
-                                          color: Colors.green,
-                                          decoration: TextDecoration.underline,
-                                        ),
+                                      color: Colors.green,
+                                      decoration: TextDecoration.underline,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -283,19 +291,20 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                             child: ElevatedButton(
                               onPressed: controller.isFormValid
                                   ? () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => SignupAddress(
-                                                  name: controller
-                                                      .nameController.text,
-                                                  email: controller
-                                                      .emailController.text,
-                                                  password: controller
-                                                      .passwordController.text,
-                                                )),
-                                      );
-                                    }
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChangeNotifierProvider.value(
+                                      value: controller,
+                                      child: SignupAddress(
+                                        name: controller.nameController.text,
+                                        email: controller.emailController.text,
+                                        password: controller.passwordController.text,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
                                   : null,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green,
@@ -304,7 +313,7 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                                   borderRadius: BorderRadius.circular(25),
                                 ),
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 13),
+                                const EdgeInsets.symmetric(vertical: 13),
                                 side: BorderSide.none,
                               ),
                               child: const Row(
@@ -321,10 +330,10 @@ class _UserSignupScreenState extends State<UserSignupScreen> {
                                     ),
                                   ),
                                   SizedBox(width: 8),
-                                  // Adjust the width as needed
                                   Icon(
-                                    Icons.arrow_forward,
+                                    Icons.arrow_forward_ios,
                                     color: Colors.white,
+                                    size: 18,
                                   ),
                                 ],
                               ),

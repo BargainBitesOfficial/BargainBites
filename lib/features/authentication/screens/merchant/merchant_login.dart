@@ -4,6 +4,9 @@ import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:bargainbites/utils/constants/sizes.dart';
 import 'package:bargainbites/utils/constants/text_strings.dart';
 import 'package:bargainbites/features/authentication/controllers/merchant/merchant_login_controller.dart';
+import 'package:bargainbites/utils/validators/validation.dart';
+
+import '../forgot_password.dart';
 
 class MerchantLogin extends StatefulWidget {
   const MerchantLogin({super.key});
@@ -17,6 +20,27 @@ class _MerchantLoginState extends State<MerchantLogin> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
+
+  String? _emailError;
+  String? _passwordError;
+  bool _emailValidated = false;
+  bool _passwordValidated = false;
+
+  void _validateEmail() {
+    setState(() {
+      _emailError = TValidator.validateEmail(_emailController.text);
+      _emailValidated = _emailError == null;
+    });
+  }
+
+  void _validatePassword() {
+    setState(() {
+      _passwordError = TValidator.validatePassword(_passwordController.text);
+      _passwordValidated = _passwordError == null;
+    });
+  }
+
+  bool get _isFormValid => _emailValidated && _passwordValidated;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +57,6 @@ class _MerchantLoginState extends State<MerchantLogin> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
-            // Implement back functionality
           },
         ),
         centerTitle: true,
@@ -74,7 +97,7 @@ class _MerchantLoginState extends State<MerchantLogin> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: TextField(
+                        child: TextFormField(
                           controller: _emailController,
                           decoration: InputDecoration(
                             hintText: "Required",
@@ -83,8 +106,18 @@ class _MerchantLoginState extends State<MerchantLogin> {
                             filled: true,
                             fillColor: Colors.grey[200],
                           ),
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          onChanged: (_) => _validateEmail(),
                         ),
                       ),
+                      if (_emailError != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            _emailError!,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ),
                       const SizedBox(height: 16),
                       const Text(
                         'Password',
@@ -120,8 +153,18 @@ class _MerchantLoginState extends State<MerchantLogin> {
                               },
                             ),
                           ),
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          onChanged: (_) => _validatePassword(),
                         ),
                       ),
+                      if (_passwordError != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            _passwordError!,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                        ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -131,7 +174,11 @@ class _MerchantLoginState extends State<MerchantLogin> {
                                   horizontal: 12, vertical: 8),
                             ),
                             onPressed: () {
-                              // Implement forgot password functionality
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                      const ForgotPassword()));
                             },
                             child: const Text(
                               TTexts.forgetPassword,
@@ -149,13 +196,17 @@ class _MerchantLoginState extends State<MerchantLogin> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: _isFormValid
+                              ? () {
                             final email = _emailController.text;
                             final password = _passwordController.text;
                             _authController.signIn(email, password, context);
-                          },
+                          }
+                              : null,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: TColors.primaryBtn,
+                            backgroundColor: _isFormValid
+                                ? TColors.primaryBtn
+                                : Colors.grey,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),

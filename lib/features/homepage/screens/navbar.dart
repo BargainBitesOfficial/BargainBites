@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:bargainbites/utils/constants/colors.dart';
 import 'package:bargainbites/features/homepage/screens/profile_info.dart';
-import '../../cart/screens/cart_list_page.dart';
+import 'package:bargainbites/features/cart/screens/cart_list_page.dart';
 import 'explore.dart';
 import 'homepage.dart';
 
@@ -37,6 +37,7 @@ class _NavBarState extends State<NavBar> {
         children: _widgetOptions,
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

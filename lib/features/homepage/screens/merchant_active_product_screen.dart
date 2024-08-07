@@ -140,7 +140,7 @@ class _ActiveProductsPageState extends State<ActiveProductsPage> {
                         },
                       ),
                     ),
-                    // const SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     const Text(
                       "All Active Products",
                       style:
