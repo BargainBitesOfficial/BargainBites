@@ -1,11 +1,14 @@
 import 'package:bargainbites/features/cart/models/cart_model.dart';
+import 'package:bargainbites/features/homepage/models/listing_item_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/constants/colors.dart';
+import '../../authentication/models/merchant_model.dart';
+import '../../homepage/screens/view_merchant_page.dart';
+import '../../order/screens/confirm_order.dart';
 import '../controllers/cart_controller.dart';
 
 class CartListPage extends StatefulWidget {
-  final String userId = "pNEZZkusrUZ3cksfmBf3S5hJabv1";
 
   @override
   _CartListPageState createState() => _CartListPageState();
@@ -19,20 +22,35 @@ class _CartListPageState extends State<CartListPage> {
   @override
   void initState() {
     super.initState();
-    carts = _cartController.fetchCartsByUserName(widget.userId);
+    carts = _cartController.fetchCartsByUser();
   }
 
   void _clearCart(String cartId) async{
     await _cartController.removeCart(cartId);
     setState(() {
-      carts = _cartController.fetchCartsByUserName(widget.userId);
+      carts = _cartController.fetchCartsByUser();
     });
   }
 
   Future<void> _refreshCarts() async {
     setState(() {
-      carts = _cartController.fetchCartsByUserName(widget.userId);
+      carts = _cartController.fetchCartsByUser();
     });
+  }
+
+  double _calculateSubtotal(CartModel cart) {
+    double subtotal = 0;
+    subtotal = cart.items.fold(0.0, (sum, item) {
+      int quantity = cart.itemQuantity[item.productId] ?? 0;
+      return sum + (item.price * quantity);
+    });
+    return subtotal;
+  }
+
+  String _formatCartSummary(CartModel cart) {
+    final itemCount = cart.itemQuantity.values.fold(0, (previousValue, element) => previousValue + element);
+    final totalPrice = _calculateSubtotal(cart);
+    return '$itemCount items · \$${totalPrice.toStringAsFixed(2)}';
   }
 
   @override
@@ -40,13 +58,6 @@ class _CartListPageState extends State<CartListPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Carts'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-
       ),
       body: RefreshIndicator(
         onRefresh: _refreshCarts,
@@ -58,7 +69,7 @@ class _CartListPageState extends State<CartListPage> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('No carts found for ${widget.userId}'));
+              return const Center(child: Text('No carts found'));
             }
 
             final carts = snapshot.data!;
@@ -104,7 +115,7 @@ class _CartListPageState extends State<CartListPage> {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          '${carts.length} items · \$${cart.total}',
+                          _formatCartSummary(cart),
                           style: const TextStyle(fontFamily: 'poppins'),
                         ),
                         Text('Pick up from ${cart.merchantAddress}'),
@@ -114,7 +125,12 @@ class _CartListPageState extends State<CartListPage> {
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                // Handle view cart
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ConfirmOrderPage(cartModel: cart),
+                                  ),
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: TColors.primary,
@@ -127,8 +143,19 @@ class _CartListPageState extends State<CartListPage> {
                             ),
                             const SizedBox(width: 10),
                             OutlinedButton(
-                              onPressed: () {
-                                // Handle view store
+                              onPressed: () async {
+                                try {
+                                  MerchantModel merchantData = await _cartController.fetchMerchantById(cart.merchantId);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ViewMerchantPage(merchantData: merchantData),
+                                    ),
+                                  );
+                                } catch (e) {
+                                  // Handle error
+                                  print('Error fetching merchant data: $e');
+                                }
                               },
                               child: const Text('View store',
                                 style: TextStyle(

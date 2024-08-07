@@ -3,31 +3,38 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
-import 'package:bargainbites/utils/constants/colors.dart';
+import '../../../utils/constants/colors.dart';
+import '../../cart/models/cart_model.dart';
+import '../../homepage/controllers/product_controller.dart';
+import '../controllers/order_controller.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final ListingItemModel product;
+  CartModel? cartModel;
 
-  const ProductDetailsPage({super.key, required this.product});
+  ProductDetailsPage({super.key, required this.product, required this.cartModel});
 
   @override
   State<ProductDetailsPage> createState() => _ProductDetailsPageState();
 }
 
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
-  int quantity = 1;
-  String des = "";
+  OrderController _orderController = OrderController();
+  String buttonText = 'Add To Cart';
+
+  int quantity = 0;
+  String des="";
 
   @override
   void initState() {
     super.initState();
-    fetchProductDetail();
+    fetchProductDetail(widget.product.productId);
   }
 
   Future<String> fetchImageUrl(String productId) async {
     var product = (await FirebaseFirestore.instance
             .collection('CatalogItems')
-            .where('productID', isEqualTo: productId)
+            .where('productId', isEqualTo: productId)
             .get())
         .docs
         .first;
@@ -41,14 +48,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     return await ref.getDownloadURL();
   }
 
-  Future<void> fetchProductDetail() async {
-    // print("product ID: " + productId);
+  Future<void> fetchProductDetail(String productId) async {
     var detail = (await FirebaseFirestore.instance
-            .collection('CatalogItems')
-            .where('productID', isEqualTo: widget.product.productId)
-            .get())
-        .docs
-        .first;
+        .collection('CatalogItems')
+        .where('productId', isEqualTo: productId)
+        .get())
+    .docs
+    .first;
 
     setState(() {
       des = detail['itemDescription'];
@@ -58,7 +64,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
@@ -70,7 +75,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         elevation: 0,
       ),
       body: Column(
-
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
@@ -82,14 +86,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   return Container(
                     height: 300,
                     color: Colors.grey[200],
-                    child: const Center(child: CircularProgressIndicator()),
+                    child: Center(child: CircularProgressIndicator()),
                   );
                 } else if (snapshot.hasError) {
                   return Container(
                     height: 300,
                     color: Colors.grey[200],
-                    child: const Center(
-                        child: Icon(Icons.error, color: Colors.red)),
+                    child: Center(child: Icon(Icons.error, color: Colors.red)),
                   );
                 } else if (!snapshot.hasData) {
                   return Container(
@@ -122,12 +125,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     icon: const Icon(Icons.remove, color: Colors.white),
                     onPressed: () {
                       setState(() {
-                        if (quantity > 1) quantity--;
+                        if (quantity > 0) quantity--;
                       });
                     },
                   ),
                   Text(
-                    '$quantity',
+                    '$quantity/${widget.product.quantity}',
                     style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -137,7 +140,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     icon: const Icon(Icons.add, color: Colors.white),
                     onPressed: () {
                       setState(() {
-                        if (quantity < widget.product.quantity) quantity++;
+                        quantity++;
                       });
                     },
                   ),
@@ -161,10 +164,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           fontWeight: FontWeight.bold,
                           fontFamily: "Poppins"),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
-                      'Quantity ${widget.product.quantity}',
-                      style: const TextStyle(
+                      'Quantity ${widget.product.quantity} Kg',
+                      style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey,
                           fontFamily: "Poppins"),
@@ -175,7 +178,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   children: [
                     Text(
                       '\$${widget.product.price}',
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 24,
                           color: Colors.green,
                           fontFamily: "Poppins"),
@@ -208,28 +211,27 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: Text(
-              des,
+            child: Text(des,
               style: const TextStyle(
                   fontSize: 14, color: Colors.grey, fontFamily: "Poppins"),
             ),
           ),
-          // Padding(
-          //   padding:
-          //       const EdgeInsets.symmetric(horizontal: 25.0, vertical: 8.0),
-          //   child: InkWell(
-          //     onTap: () {
-          //       // Handle "See More Detail" tap
-          //     },
-          //     child: const Text(
-          //       'See More Detail',
-          //       style: TextStyle(
-          //           fontSize: 14,
-          //           color: TColors.primary,
-          //           fontFamily: "Poppins"),
-          //     ),
-          //   ),
-          // ),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 8.0),
+            child: InkWell(
+              onTap: () {
+                // Handle "See More Detail" tap
+              },
+              child: const Text(
+                'See More Detail',
+                style: TextStyle(
+                    fontSize: 14,
+                    color: TColors.primary,
+                    fontFamily: "Poppins"),
+              ),
+            ),
+          ),
           const Spacer(),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -243,12 +245,60 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                onPressed: () {
-                  // Handle "Add to Cart" button press
+                onPressed: () async{
+                  print("ONPRESSED_clicked");
+                  if (quantity > 0) {
+                    // updating the quantity of selected product
+                    try {
+                      if (widget.cartModel!.itemQuantity.containsKey(widget.product.productId)) {
+                        widget.cartModel!.itemQuantity[widget.product.productId] = widget.cartModel!.itemQuantity[widget.product.productId]! + quantity;
+                      }
+                      else {
+                        widget.cartModel!.itemQuantity[widget.product.productId] = quantity;
+                        // adding the product in the list
+                        widget.cartModel?.items.add(widget.product);
+                      }
+
+                      // calculating cart total
+                      widget.cartModel?.updateTotal();
+                      setState(() {
+                        buttonText = 'Add to cart (\$${widget.cartModel?.total.toStringAsFixed(2)})';
+                      });
+                    }
+                    catch (e) {
+                      print(e.toString());
+                    }
+
+                    if (await _orderController.updateCart(widget.cartModel)) {
+                      print("cart updated successfully!");
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Added to cart'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    }
+                    else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Couldn\'t update cart. Try again!'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
+                  else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Add some quantity'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
                 },
-                child: const Text(
-                  'Add To Cart',
-                  style: TextStyle(
+                child: Text(
+                  buttonText,
+                  style: const TextStyle(
                       fontSize: 18, color: Colors.white, fontFamily: "Poppins"),
                 ),
               ),
