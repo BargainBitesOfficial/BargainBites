@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../../utils/constants/colors.dart';
-import '../../../utils/constants/text_styles.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
+import 'package:bargainbites/utils/constants/text_styles.dart';
 
 class StoreHoursPage extends StatefulWidget {
   final String merchantId;
   final String merchantName;
 
-  StoreHoursPage({required this.merchantId, required this.merchantName});
+  const StoreHoursPage({super.key, required this.merchantId, required this.merchantName});
 
   @override
-  _StoreHoursPageState createState() => _StoreHoursPageState();
+  State<StoreHoursPage> createState() => _StoreHoursPageState();
 }
 
 class _StoreHoursPageState extends State<StoreHoursPage> {
@@ -74,9 +74,9 @@ class _StoreHoursPageState extends State<StoreHoursPage> {
         'storeTiming': storeHoursData,
       });
 
-      print("Store hours updated successfully!");
+      // print("Store hours updated successfully!");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Store hours updated successfully', style: TextStyle(fontFamily: "Poppins")),
           backgroundColor: TColors.primary,
         ),
@@ -107,9 +107,9 @@ class _StoreHoursPageState extends State<StoreHoursPage> {
       return Scaffold(
         appBar: AppBar(
           backgroundColor: TColors.primary,
-          title: Text(widget.merchantName, style: TextStyles.regulartext(color: TColors.bWhite)),
+          title: Text(widget.merchantName, style: const TextStyle(fontFamily: "Poppins", color: Colors.white)),
         ),
-        body: Center(child: CircularProgressIndicator()),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -117,16 +117,16 @@ class _StoreHoursPageState extends State<StoreHoursPage> {
       return Scaffold(
         appBar: AppBar(
           backgroundColor: TColors.primary,
-          title: Text(widget.merchantName, style: TextStyles.regulartext(color: TColors.bWhite)),
+          title: Text(widget.merchantName, style: const TextStyle(fontFamily: "Poppins", color: Colors.white)),
         ),
-        body: Center(child: Text('Error: Failed to load store hours')),
+        body: const Center(child: Text('Error: Failed to load store hours')),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: TColors.primary,
-        title: Text(widget.merchantName, style: TextStyles.regulartext(color: TColors.bWhite)),
+        title: Text(widget.merchantName, style: const TextStyle(fontFamily: "Poppins", color: Colors.white)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -140,7 +140,7 @@ class _StoreHoursPageState extends State<StoreHoursPage> {
                   style: TextStyles.heading(color: TColors.bBlack),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Expanded(
                 child: ListView(
                   children: storeHours.keys.map((day) {
@@ -158,14 +158,14 @@ class _StoreHoursPageState extends State<StoreHoursPage> {
               Center(
                 child: ElevatedButton(
                   onPressed: _saveStoreHours,
-                  child: Text('Update Store Hours', style: TextStyles.button()),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
                     backgroundColor: TColors.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
                   ),
+                  child: Text('Update Store Hours', style: TextStyles.button()),
                 ),
               ),
             ],
@@ -248,15 +248,15 @@ class _StoreHourTileState extends State<StoreHourTile> {
             },
             activeColor: TColors.bGreen,
           ),
-          Text(isOpen ? 'Open' : 'Closed', style: TextStyles.regulartext(color: TColors.bBlack)),
-          SizedBox(width: 10),
+          Text(isOpen ? '' : '', style: TextStyles.regulartext(color: TColors.bBlack)),
+          const SizedBox(width: 10),
           SizedBox(
             width: 80,
             child: TextFormField(
               controller: openTimeController,
               decoration: InputDecoration(
                 hintText: '00:00 AM',
-                contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 5),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
@@ -278,9 +278,9 @@ class _StoreHourTileState extends State<StoreHourTile> {
               },
             ),
           ),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text(' - ', style: TextStyles.regulartext(color: TColors.bBlack)),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           SizedBox(
             width: 80,
             child: TextFormField(

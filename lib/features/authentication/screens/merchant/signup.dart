@@ -1,291 +1,345 @@
-import 'package:bargainbites/features/authentication/screens/merchant/signup2.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:bargainbites/utils/constants/colors.dart';
-import 'package:bargainbites/utils/constants/sizes.dart';
-import 'package:bargainbites/utils/validators/validation.dart';
-import 'package:bargainbites/features/authentication/controllers/merchant/merchant_signup_controller.dart';
+  import 'package:bargainbites/features/authentication/screens/merchant/signup2.dart';
+  import 'package:flutter/material.dart';
+  import 'package:flutter/services.dart';
+  import 'package:provider/provider.dart';
+  import 'package:bargainbites/utils/constants/colors.dart';
+  import 'package:bargainbites/utils/constants/sizes.dart';
+  import 'package:bargainbites/features/authentication/controllers/merchant/merchant_signup_controller.dart';
 
-class MerchantSignup extends StatefulWidget {
-  const MerchantSignup({super.key});
+  import '../../controllers/user/signup_controller.dart';
+  import '../user/signup_address.dart';
 
-  @override
-  State<MerchantSignup> createState() => _MerchantSignupState();
-}
+  class MerchantSignup extends StatefulWidget {
+    const MerchantSignup({super.key});
 
-class _MerchantSignupState extends State<MerchantSignup> {
-  final MerchantSignupController _signupController = MerchantSignupController();
-  bool _obscureText = true;
-
-  @override
-  void dispose() {
-    _signupController.dispose();
-    super.dispose();
+    @override
+    State<MerchantSignup> createState() => _MerchantSignupState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => _signupController,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
+  class _MerchantSignupState extends State<MerchantSignup> {
+    final MerchantSignupController _merSignupController =
+        MerchantSignupController();
+    final SignupController _signupController = SignupController();
+
+    @override
+    void dispose() {
+      _merSignupController.dispose();
+      super.dispose();
+    }
+
+    @override
+    Widget build(BuildContext context) {
+      return ChangeNotifierProvider(
+        create: (_) => _merSignupController,
+        child: Scaffold(
           backgroundColor: Colors.white,
-          title: const Text(
-            "Create Merchant Account",
-            style: TextStyle(
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            title: const Text(
+              "Create Your Account",
+              style: TextStyle(
                 fontFamily: "Poppins",
-                fontWeight: FontWeight.w600,
-                fontSize: 18),
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            centerTitle: true,
           ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          centerTitle: true,
-        ),
-
-        /// Body
-        body: Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                /// Form
-                Form(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: TSizes.spaceBtwSections),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(TSizes.defaultSpace),
+              child: Column(
+                children: [
+                  const SizedBox(height: TSizes.spaceBtwSections),
+                  Form(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        /// Name
-                        const Text(
-                          'Your Name*',
-                          style: TextStyle(
+                        // Name
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child: const Text(
+                            'Name',
+                            style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey,
                               fontFamily: "Poppins",
-                              fontWeight: FontWeight.w400),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
                         ),
-                        const SizedBox(height: 8),
-                        Consumer<MerchantSignupController>(
-                          builder: (context, controller, child) {
-                            return Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: TextFormField(
-                                controller: controller.nameController,
-                                decoration: InputDecoration(
-                                  hintText: "Required",
-                                  hintStyle: const TextStyle(color: Colors.grey),
-                                  border: InputBorder.none,
-                                  filled: true,
-                                  fillColor: Colors.grey[200],
-                                ),
-                                autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                                validator: (value) {
-                                  return controller.validateName()
-                                      ? null
-                                      : "Name must be longer than 4 characters";
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 16),
-
-                        /// Contact Number
-                        const Text(
-                          'Contact Number*',
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                              fontFamily: "Poppins",
-                              fontWeight: FontWeight.w400),
-                        ),
-                        const SizedBox(height: 8),
-                        Consumer<MerchantSignupController>(
-                          builder: (context, controller, child) {
-                            return Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: TextFormField(
-                                controller: controller.phoneNumberController,
-                                decoration: InputDecoration(
-                                  hintText: "Required",
-                                  hintStyle: const TextStyle(color: Colors.grey),
-                                  border: InputBorder.none,
-                                  filled: true,
-                                  fillColor: Colors.grey[200],
-                                ),
-                                autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                                validator: (value) {
-                                  return controller.validatePhoneNumber()
-                                      ? null
-                                      : "Invalid contact number";
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-
-                        /// Email
-                        const Text(
-                          'Email*',
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                              fontFamily: "Poppins",
-                              fontWeight: FontWeight.w400),
-                        ),
-                        const SizedBox(height: 8),
-                        Consumer<MerchantSignupController>(
-                          builder: (context, controller, child) {
-                            return Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: TextFormField(
-                                controller: controller.emailController,
-                                decoration: InputDecoration(
-                                  hintText: "Required",
-                                  hintStyle: const TextStyle(color: Colors.grey),
-                                  border: InputBorder.none,
-                                  filled: true,
-                                  fillColor: Colors.grey[200],
-                                ),
-                                autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                                validator: TValidator.validateEmail,
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 16),
-
-                        /// Password
-                        const Text(
-                          'Password*',
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                              fontFamily: "Poppins",
-                              fontWeight: FontWeight.w400),
-                        ),
-                        const SizedBox(height: 8),
-                        Consumer<MerchantSignupController>(
-                          builder: (context, controller, child) {
-                            return Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: TextFormField(
-                                controller: controller.passwordController,
-                                obscureText: _obscureText,
-                                decoration: InputDecoration(
-                                  hintText: "●●●●●●●●●●",
-                                  hintStyle: const TextStyle(color: Colors.grey),
-                                  border: InputBorder.none,
-                                  filled: true,
-                                  fillColor: Colors.grey[200],
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _obscureText
-                                          ? Icons.visibility_off
-                                          : Icons.visibility,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Consumer<MerchantSignupController>(
+                                builder: (context, controller, child) {
+                                  return TextFormField(
+                                    controller: controller.nameController,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(8.0),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      filled: true,
+                                      fillColor: TColors.backgroundContainerColor,
+                                      contentPadding: const EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 12.0),
                                     ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _obscureText = !_obscureText;
-                                      });
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                    autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                    validator: (value) {
+                                      return controller.validateName()
+                                          ? null
+                                          : "Name must be longer than 4 characters";
                                     },
-                                  ),
-                                ),
-                                autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                                validator: TValidator.validatePassword,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                        RegExp(r'[a-zA-Z]'),
+                                      ),
+                                    ],
+                                    keyboardType: TextInputType.text,
+                                  );
+                                },
                               ),
-                            );
-                          },
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-
-                        /// Confirm Password
-                        const Text(
-                          'Confirm Password*',
-                          style: TextStyle(
+                        const SizedBox(height: TSizes.spaceBtwInputFields),
+                        // Email
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child: const Text(
+                            'Email',
+                            style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey,
                               fontFamily: "Poppins",
-                              fontWeight: FontWeight.w400),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
                         ),
-                        const SizedBox(height: 8),
                         Consumer<MerchantSignupController>(
                           builder: (context, controller, child) {
-                            return Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: TextFormField(
-                                controller: controller.confirmPasswordController,
-                                obscureText: _obscureText,
-                                decoration: InputDecoration(
-                                  hintText: "●●●●●●●●●●",
-                                  hintStyle: const TextStyle(color: Colors.grey),
-                                  border: InputBorder.none,
-                                  filled: true,
-                                  fillColor: Colors.grey[200],
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _obscureText
-                                          ? Icons.visibility_off
-                                          : Icons.visibility,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _obscureText = !_obscureText;
-                                      });
-                                    },
-                                  ),
+                            return TextFormField(
+                              controller: controller.emailController,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide: BorderSide.none,
                                 ),
-                                autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                                validator: (value) {
-                                  return controller.validatePasswords()
-                                      ? null
-                                      : "Passwords do not match";
+                                filled: true,
+                                fillColor: TColors.backgroundContainerColor,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 12.0),
+                              ),
+                              style: const TextStyle(
+                                color: Colors.black,
+                              ),
+                              autovalidateMode:
+                              AutovalidateMode.onUserInteraction,
+                              validator: (value) {
+                                return controller.validateEmail()
+                                    ? null
+                                    : "Invalid email format";
+                              },
+                            );
+                          },
+                        ),
+                        const SizedBox(height: TSizes.spaceBtwInputFields),
+                        // Password
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child: const Text(
+                            'Password',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                              fontFamily: "Poppins",
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        Consumer<MerchantSignupController>(
+                          builder: (context, controller, child) {
+                            return TextFormField(
+                              obscureText: true,
+                              controller: controller.passwordController,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: TColors.backgroundContainerColor,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 12.0),
+                              ),
+                              style: const TextStyle(
+                                color: Colors.black,
+                              ),
+                              autovalidateMode:
+                              AutovalidateMode.onUserInteraction,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Password cannot be empty';
+                                } else if (value.length < 8) {
+                                  return 'Password cannot be less than 8 characters';
+                                } else if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                                  return 'Password must contain at least one uppercase letter';
+                                } else if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
+                                  return 'Password must contain at least one special character';
+                                }
+                                return null;
+                              },
+                            );
+                          },
+                        ),
+                        const SizedBox(height: TSizes.spaceBtwInputFields),
+                        // Confirm Password
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child: const Text(
+                            'Confirm Password',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                              fontFamily: "Poppins",
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        Consumer<SignupController>(
+                          builder: (context, controller, child) {
+                            return TextFormField(
+                              obscureText: true,
+                              controller: controller.confirmPasswordController,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: TColors.backgroundContainerColor,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 12.0),
+                              ),
+                              style: const TextStyle(
+                                color: Colors.black,
+                              ),
+                              autovalidateMode:
+                              AutovalidateMode.onUserInteraction,
+                              validator: (value) {
+                                return controller.validatePasswords()
+                                    ? null
+                                    : "Passwords do not match";
+                              },
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 100),
+                        // Terms & Conditions Checkbox
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'By continuing you agree to our ',
+                                      style:
+                                      Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                    TextSpan(
+                                      text: 'Terms of Use ',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .apply(
+                                        color: Colors.green,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: 'and ',
+                                      style:
+                                      Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                    TextSpan(
+                                      text: 'Privacy Policy.',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .apply(
+                                        color: Colors.green,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: TSizes.defaultSpace),
+                        // Next Page Button
+                        Consumer<MerchantSignupController>(
+                          builder: (context, controller, child) {
+                            return SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ChangeNotifierProvider.value(
+                                        value: controller,
+                                        child: MerchantSignupPageTwo(
+                                          name: controller.nameController.text,
+                                          email: controller.emailController.text,
+                                          password: controller.passwordController.text, personalNumber: '1231232',
+                                        ),
+                                      ),
+                                    ),
+                                  );
                                 },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  minimumSize: const Size(double.infinity, 50),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  padding:
+                                  const EdgeInsets.symmetric(vertical: 13),
+                                  side: BorderSide.none,
+                                ),
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Next',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.w400,
+                                        letterSpacing: 1,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           },
@@ -293,100 +347,11 @@ class _MerchantSignupState extends State<MerchantSignup> {
                       ],
                     ),
                   ),
-                ),
-
-                /// Terms & Conditions
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    text: 'By continuing you agree to our ',
-                    style: const TextStyle(
-                        color: Colors.grey, fontFamily: 'Poppins'),
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: 'Terms & Conditions',
-                        style: const TextStyle(color: TColors.primaryBtn),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            // Navigate to terms & conditions screen
-                          },
-                      ),
-                      const TextSpan(
-                        text: ' and ',
-                        style: TextStyle(
-                            color: Colors.grey, fontFamily: 'Poppins'),
-                      ),
-                      TextSpan(
-                        text: 'Privacy Policy',
-                        style: const TextStyle(color: TColors.primaryBtn),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            // Navigate to privacy policy screen
-                          },
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: TSizes.spaceBtwSections),
-
-                /// Next Page Button
-                Consumer<MerchantSignupController>(
-                  builder: (context, controller, child) {
-                    return SizedBox(
-                      height: 50,
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: true //controller.isFirstSectionValid
-                            ? () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                 MerchantSignupPageTwo(
-                                  name: controller
-                                    .nameController.text,
-                                  personalNumber: controller.phoneNumberController.text,
-                                  email: controller
-                                      .emailController.text,
-                                  password: controller
-                                      .passwordController.text,
-                                )),
-                          );
-                        }
-                            : null,
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: TColors.primaryBtn,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            side: BorderSide.none),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Next   ',
-                              style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: Colors.white,
-                                  fontSize: 16),
-                            ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: TSizes.spaceBtwSections),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
-}

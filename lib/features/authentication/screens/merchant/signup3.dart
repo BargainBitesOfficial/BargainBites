@@ -1,11 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bargainbites/features/startup/screens/new_merchant_info.dart';
-import '../../../../utils/constants/colors.dart';
-import '../../controllers/merchant/merchant_signup_controller.dart';
+import 'package:bargainbites/utils/constants/colors.dart';
+import 'package:bargainbites/features/authentication/controllers/merchant/merchant_signup_controller.dart';
 import 'package:bargainbites/features/authentication/models/merchant_model.dart';
 
 class MerchantAddressPage extends StatefulWidget {
@@ -63,6 +64,7 @@ class _MerchantAddressPageState extends State<MerchantAddressPage> {
       }
 
       final merchantModel = MerchantModel(
+        merchantID: FirebaseFirestore.instance.collection('Merchants').doc().id,
         merchantName: widget.name,
         merchantContact: widget.personalNumber,
         merchantEmail: widget.email,
@@ -393,7 +395,7 @@ class _MerchantAddressPageState extends State<MerchantAddressPage> {
                           children: [
                             Text('Next', style: TextStyle(color: Colors.white, fontSize: 16)),
                             SizedBox(width: 10),
-                            Icon(Icons.arrow_forward, color: Colors.white),
+                            Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18),
                           ],
                         ),
                       ),

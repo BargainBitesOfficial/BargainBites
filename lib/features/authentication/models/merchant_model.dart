@@ -24,7 +24,7 @@ class MerchantModel {
   double merchantRating;
 
   MerchantModel({
-    this.merchantID = "",
+    required this.merchantID,
     required this.merchantName,
     required this.merchantContact,
     required this.merchantEmail,

@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../../models/merchant_model.dart';
+import '../../screens/user/signup_address.dart';
 
 class MerchantSignupController extends ChangeNotifier {
   final nameController = TextEditingController();
@@ -50,12 +49,12 @@ class MerchantSignupController extends ChangeNotifier {
   bool get isFormValid =>
       _isNameValid &&
           _isEmailValid &&
-          _isPasswordValid &&
-          _isConfirmPasswordValid &&
-          _isPhoneNumberValid &&
-          _isStoreIdValid &&
+          // _isPhoneNumberValid &&
           _isStoreNameValid &&
           _isStoreNumberValid &&
+          _isStoreIdValid &&
+          _isPasswordValid &&
+          _isConfirmPasswordValid &&
           _isCityValid &&
           _isStreetAddressValid &&
           _isPostalCodeValid &&
@@ -114,14 +113,14 @@ class MerchantSignupController extends ChangeNotifier {
 
   bool validatePhoneNumber() {
     String phoneNumber = phoneNumberController.text;
-    String pattern = r'^\d{9}$';
+    String pattern = r'^\d{10}$';
     RegExp regExp = RegExp(pattern);
     return regExp.hasMatch(phoneNumber);
   }
 
   bool validateStoreNumber() {
     String phoneNumber = storeNumberController.text;
-    String pattern = r'^\d{9}$';
+    String pattern = r'^\d{10}$';
     RegExp regExp = RegExp(pattern);
     return regExp.hasMatch(phoneNumber);
   }
@@ -157,13 +156,18 @@ class MerchantSignupController extends ChangeNotifier {
   bool validatePasswords() {
     String password = passwordController.text;
     String confirmPassword = confirmPasswordController.text;
-    return password.isNotEmpty && confirmPassword.isNotEmpty && password == confirmPassword;
+    return password.isNotEmpty &&
+        confirmPassword.isNotEmpty &&
+        password == confirmPassword &&
+        password.length >= 8 &&
+        password.contains(RegExp(r'[A-Z]')) &&
+        password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
   }
 
-  bool validatePostalCode(){
-    String postalCode=postalCodeController.text;
-    final RegExp postalCodePattern = RegExp(r'^(?i)[A-Z]\d[A-Z]\d[A-Z]\d$');
-    return postalCodePattern.hasMatch(postalCode) && postalCode.length==6;
+  bool validatePostalCode() {
+    String postalCode = postalCodeController.text;
+    final RegExp postalCodePattern = RegExp(r'^[A-Z]\d[A-Z] ?\d[A-Z]\d$');;
+    return postalCodePattern.hasMatch(postalCode) && postalCode.length == 6;
   }
 
   void updateProvince(String? value) {
@@ -184,6 +188,7 @@ class MerchantSignupController extends ChangeNotifier {
           .collection('Merchants')
           .doc(merchantCredential.user!.uid)
           .set({
+        'merchantID': signupModel.merchantID,
         'merchantName': signupModel.merchantName,
         'merchantContact': signupModel.merchantContact,
         'merchantEmail': signupModel.merchantEmail,
@@ -201,7 +206,7 @@ class MerchantSignupController extends ChangeNotifier {
 
       reset();
     } on FirebaseAuthException {
-      // print('Error: $e'); // Don't use print in production code
+      // Handle error
     }
   }
 
@@ -246,5 +251,41 @@ class MerchantSignupController extends ChangeNotifier {
     streetAddressController.dispose();
     postalCodeController.dispose();
     super.dispose();
+  }
+
+  void submitForm(BuildContext context) {
+    if (!validateName()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Name must be longer than 4 characters."),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else if (!validateEmail()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Invalid email format. Please enter a valid email."),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else if (!validatePasswords()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("The passwords do not match. Please try again."),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SignupAddress(
+            name: nameController.text,
+            email: emailController.text,
+            password: passwordController.text,
+          ),
+        ),
+      );
+    }
   }
 }

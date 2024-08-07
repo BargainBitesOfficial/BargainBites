@@ -5,6 +5,8 @@ import 'package:bargainbites/features/homepage/models/listing_item_model.dart';
 import 'package:bargainbites/features/homepage/screens/view_merchant_page.dart';
 import 'package:bargainbites/features/order/screens/product_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bargainbites/utils/constants/colors.dart';
@@ -13,7 +15,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:bargainbites/features/authentication/models/merchant_model.dart';
 import 'package:bargainbites/features/homepage/controllers/explore_controller.dart';
 
-import '../models/merchant/catalog_item_model.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -31,6 +32,7 @@ class _HomepageState extends State<Homepage> {
   List<ListingItemModel> filteredProducts = [];
   bool isLoading = true;
   bool noResultsFound = false;
+  String postalCode = "";
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -38,6 +40,7 @@ class _HomepageState extends State<Homepage> {
     super.initState();
     _fetchMerchants();
     _fetchProducts();
+    _fetchUserPostalCode();
     _searchController.addListener(_filterResults);
   }
 
@@ -47,9 +50,12 @@ class _HomepageState extends State<Homepage> {
     _searchController.dispose();
     super.dispose();
   }
+
   Map<String, double> merchantDistances = {};
+
   Future<void> _fetchMerchants() async {
-    List<MerchantModel> fetchedMerchants = await _exploreController.fetchMerchants();
+    List<MerchantModel> fetchedMerchants =
+        await _exploreController.fetchMerchants();
     for (MerchantModel merchant in fetchedMerchants) {
       final random = Random();
       double temp = 2.0 + (10.0 - 2.0) * random.nextDouble();
@@ -65,8 +71,21 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
+  void _fetchUserPostalCode() async {
+    String user = FirebaseAuth.instance.currentUser!.email!;
+    var snapshot = (await FirebaseFirestore.instance
+            .collection('Users')
+            .where('email',
+                isEqualTo: FirebaseAuth.instance.currentUser!.email!)
+            .get())
+        .docs
+        .first;
+    postalCode = snapshot['postalCode'];
+  }
+
   Future<void> _fetchProducts() async {
-    List<ListingItemModel> fetchedProducts = await _productController.fetchProducts();
+    List<ListingItemModel> fetchedProducts =
+        await _productController.fetchProducts();
     setState(() {
       products = fetchedProducts;
       filteredProducts = fetchedProducts;
@@ -78,9 +97,7 @@ class _HomepageState extends State<Homepage> {
     String query = _searchController.text.toLowerCase();
     setState(() {
       if (query.isEmpty) {
-
-      }
-      else{
+      } else {
         filteredMerchants = merchants.where((merchant) {
           return merchant.storeName.toLowerCase().contains(query);
         }).toList();
@@ -91,14 +108,11 @@ class _HomepageState extends State<Homepage> {
       }
       noResultsFound = filteredMerchants.isEmpty && filteredProducts.isEmpty;
       if (filteredProducts.isEmpty || filteredProducts.length < 1) {
-
         filteredProducts = products;
       }
       if (filteredMerchants.isEmpty || filteredMerchants.length < 1) {
         filteredMerchants = merchants;
       }
-
-
     });
   }
 
@@ -156,29 +170,22 @@ class _HomepageState extends State<Homepage> {
                     ),
                   ],
                 ),
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(children: [
-                      Text(
-                        'University Avenue',
-                        style: TextStyle(
-                          fontFamily: "Poppins",
-                          fontSize: 12,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ]),
-                    Text(
-                      'within 10 km',
-                      style: TextStyle(
-                        fontFamily: "Poppins",
-                        fontSize: 10,
-                        color: Colors.white,
-                      ),
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Row(children: [
+                    const Icon(
+                      CupertinoIcons.location_fill,
+                      // Use any icon you prefer from the Icons class
+                      color: TColors.bWhite, // Set the icon color
+                      size: 14, // Set the icon size
                     ),
-                  ],
-                ),
+                    const SizedBox(width: 6),
+                    Text(postalCode,
+                        style: const TextStyle(
+                            fontFamily: "Poppins",
+                            fontSize: 14,
+                            color: Colors.white))
+                  ])
+                ]),
                 const SizedBox(height: 15.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -189,7 +196,8 @@ class _HomepageState extends State<Homepage> {
                         child: TextField(
                           controller: _searchController,
                           decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.search, color: Colors.black54),
+                            prefixIcon:
+                                const Icon(Icons.search, color: Colors.black54),
                             filled: true,
                             fillColor: TColors.bWhite,
                             hintText: 'Search the best discounts...',
@@ -211,31 +219,31 @@ class _HomepageState extends State<Homepage> {
         ),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 10),
-            if (noResultsFound)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    'No merchants or products found',
-                    style: TextStyle(fontSize: 18, color: Colors.red),
-                  ),
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  if (noResultsFound)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text(
+                          'No merchants or products found',
+                          style: TextStyle(fontSize: 18, color: Colors.red),
+                        ),
+                      ),
+                    ),
+                  const SectionTitle(title: "What’s in the neighborhood"),
+                  HorizontalItemList(items: filteredProducts),
+                  const SectionTitle(title: "Stores"),
+                  HorizontalItemListForStores(items: filteredMerchants),
+                  const SectionTitle(title: "Explore"),
+                  VerticalItemList(items: merchants),
+                ],
               ),
-            const SectionTitle(title: "What’s in the neighborhood"),
-            HorizontalItemList(items: filteredProducts),
-            const SectionTitle(title: "Stores"),
-            HorizontalItemListForStores(items: filteredMerchants),
-            const SectionTitle(title: "Explore"),
-            const VerticalItemList(),
-          ],
-        ),
-      ),
+            ),
     );
   }
 }
@@ -293,7 +301,8 @@ class HorizontalItemList extends StatelessWidget {
             itemCount: items.length,
             itemBuilder: (context, index) {
               final product = items[index];
-              final merchantName = merchantNames[product.merchantId] ?? 'Unknown Merchant';
+              final merchantName =
+                  merchantNames[product.merchantId] ?? 'Unknown Merchant';
 
               return DiscountCard(
                 product: product,
@@ -311,10 +320,12 @@ class HorizontalItemList extends StatelessWidget {
     Map<String, String> merchantNames = {};
 
     try {
-      List<String> merchantIds = items.map((item) => item.merchantId).toSet().toList();
+      List<String> merchantIds =
+          items.map((item) => item.merchantId).toSet().toList();
 
       for (String merchantId in merchantIds) {
-        DocumentSnapshot doc = await firestore.collection('Merchants').doc(merchantId).get();
+        DocumentSnapshot doc =
+            await firestore.collection('Merchants').doc(merchantId).get();
 
         if (doc.exists) {
           merchantNames[merchantId] = doc['storeName'] ?? 'Unknown Merchant';
@@ -352,12 +363,21 @@ class HorizontalItemListForStores extends StatelessWidget {
 }
 
 class VerticalItemList extends StatelessWidget {
-  const VerticalItemList({super.key});
+  final List<MerchantModel> items;
+
+  VerticalItemList({super.key, required this.items});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: List.generate(5, (index) => const DiscountCardVertical()),
+    return SizedBox(
+      height: 500.0, // Adjust the height as needed
+      child: ListView.builder(
+        scrollDirection: Axis.vertical,
+        itemCount: (items.length < 5) ? items.length : 5,
+        itemBuilder: (context, index) {
+          return DiscountCardVertical(merchant: items[index]);
+        },
+      ),
     );
   }
 }
@@ -374,9 +394,9 @@ class DiscountCard extends StatelessWidget {
 
   Future<String> fetchImageUrl(String productId) async {
     var product = (await FirebaseFirestore.instance
-        .collection('CatalogItems')
-        .where('productID', isEqualTo: productId)
-        .get())
+            .collection('CatalogItems')
+            .where('productID', isEqualTo: productId)
+            .get())
         .docs
         .first;
 
@@ -398,7 +418,7 @@ class DiscountCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ProductDetailsPage(product: product),
+              builder: (context) => ProductDetailsPage(product: product, cartModel: null),
             ),
           );
         },
@@ -412,14 +432,18 @@ class DiscountCard extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10.0),
                     child: FutureBuilder<String>(
-                      future: fetchImageUrl(product.productId).then((productImage) => getDownloadURL(productImage)),
-                      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                      future: fetchImageUrl(product.productId)
+                          .then((productImage) => getDownloadURL(productImage)),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<String> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return Container(
                             width: double.infinity,
                             height: 110.0,
                             color: Colors.grey[200],
-                            child: const Center(child: CircularProgressIndicator()),
+                            child: const Center(
+                                child: CircularProgressIndicator()),
                           );
                         } else if (snapshot.hasError) {
                           return Container(
@@ -470,7 +494,7 @@ class DiscountCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 10.0),
                   const Icon(Icons.location_on, color: Colors.grey, size: 16.0),
-                  Text(
+                  const Text(
                     '10 Km',
                     style: TextStyle(fontFamily: "Poppins"),
                   ),
@@ -527,14 +551,18 @@ class DiscountCardForStores extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10.0),
                     child: FutureBuilder<String>(
-                      future: fetchImageUrl(merchant.merchantID).then((merchantImage) => getDownloadURL(merchantImage)),
-                      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                      future: fetchImageUrl(merchant.merchantID).then(
+                          (merchantImage) => getDownloadURL(merchantImage)),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<String> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return Container(
                             width: double.infinity,
                             height: 110.0,
                             color: Colors.grey[200],
-                            child: const Center(child: CircularProgressIndicator()),
+                            child: const Center(
+                                child: CircularProgressIndicator()),
                           );
                         } else if (snapshot.hasError) {
                           return Container(
@@ -595,7 +623,24 @@ class DiscountCardForStores extends StatelessWidget {
 }
 
 class DiscountCardVertical extends StatelessWidget {
-  const DiscountCardVertical({super.key});
+  final MerchantModel merchant;
+
+  const DiscountCardVertical({super.key, required this.merchant});
+
+  Future<String> fetchImageUrl(String merchantId) async {
+    var merchant = (await FirebaseFirestore.instance
+        .collection('Merchants')
+        .doc(merchantId)
+        .get());
+
+    String merchantImage = merchant['imageUrl'];
+    return merchantImage;
+  }
+
+  Future<String> getDownloadURL(String gsUrl) async {
+    final ref = FirebaseStorage.instance.refFromURL(gsUrl);
+    return await ref.getDownloadURL();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -610,25 +655,56 @@ class DiscountCardVertical extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10.0),
-                  child: Image.asset(
-                    'assets/images/grocery.jpg',
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: 110.0,
+                  child: FutureBuilder<String>(
+                    future: fetchImageUrl(merchant.merchantID)
+                        .then((merchantImage) => getDownloadURL(merchantImage)),
+                    builder:
+                        (BuildContext context, AsyncSnapshot<String> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          width: double.infinity,
+                          height: 110.0,
+                          color: Colors.grey[200],
+                          child:
+                              const Center(child: CircularProgressIndicator()),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Container(
+                          width: double.infinity,
+                          height: 110.0,
+                          color: Colors.grey[200],
+                          child: const Center(child: Icon(Icons.error)),
+                        );
+                      } else if (!snapshot.hasData) {
+                        return Container(
+                          width: double.infinity,
+                          height: 110.0,
+                          color: Colors.grey[200],
+                          child: const Center(child: Icon(Icons.image)),
+                        );
+                      } else {
+                        return Image.network(
+                          snapshot.data!,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: 110.0,
+                        );
+                      }
+                    },
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8.0),
-            const Text(
-              'Subway',
-              style: TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Poppins",
-              ),
+            Text(
+              merchant.storeName,
+              style: const TextStyle(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: "Poppins"),
             ),
-            const Text('Closes at 10 PM', style: TextStyle(fontFamily: "Poppins")),
+            const Text('Closes at 10 PM',
+                style: TextStyle(fontFamily: "Poppins")),
             const Row(
               children: [
                 Icon(Icons.star, color: Colors.yellow, size: 16.0),
@@ -638,7 +714,6 @@ class DiscountCardVertical extends StatelessWidget {
                 Text('10 km', style: TextStyle(fontFamily: "Poppins")),
               ],
             ),
-            const SizedBox(height: 8.0),
           ],
         ),
       ),

@@ -1,8 +1,9 @@
 import 'package:bargainbites/features/homepage/models/listing_item_model.dart';
 import 'package:bargainbites/features/order/controllers/order_controller.dart';
 import 'package:flutter/material.dart';
-
-import '../../cart/models/cart_model.dart';
+import 'package:bargainbites/features/cart/models/cart_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ConfirmOrderPage extends StatefulWidget {
   final CartModel cartModel;
@@ -14,11 +15,9 @@ class ConfirmOrderPage extends StatefulWidget {
 }
 
 class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
-
   late List<ListingItemModel> carts;
   OrderController orderController = OrderController();
   Map<String, String> imageUrls = {};
-
 
   @override
   void initState() {
@@ -27,10 +26,27 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
     _fetchImageUrls();
   }
 
+  Future<String> fetchImageUrl(String productId) async {
+    var product = (await FirebaseFirestore.instance
+        .collection('CatalogItems')
+        .where('productID', isEqualTo: productId)
+        .get())
+        .docs
+        .first;
+
+    String productImage = product['itemImage'];
+    return productImage;
+  }
+
+  Future<String> getDownloadURL(String gsUrl) async {
+    final ref = FirebaseStorage.instance.refFromURL(gsUrl);
+    return await ref.getDownloadURL();
+  }
+
   void _fetchImageUrls() async {
     for (var item in carts) {
-      String imageUrl = await orderController.fetchProductImageUrl(item.productId);
-      print("url in screen: " + imageUrl);
+      String productImage = await fetchImageUrl(item.productId);
+      String imageUrl = await getDownloadURL(productImage);
       setState(() {
         imageUrls[item.productId] = imageUrl;
       });
@@ -49,10 +65,8 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
   @override
   Widget build(BuildContext context) {
     double subtotal = _calculateSubtotal();
-    double taxAndFees = subtotal*.13; // 13% tax and fees
+    double taxAndFees = subtotal * .13; // 13% tax and fees
     double total = subtotal + taxAndFees;
-
-    print("SUBTOTAL" + subtotal.toString());
 
     return Scaffold(
       appBar: AppBar(
@@ -78,7 +92,7 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
                 borderRadius: BorderRadius.circular(30.0),
               ),
               padding: EdgeInsets.all(16.0),
-              child:  Row(
+              child: Row(
                 children: [
                   Expanded(
                     child: Text(
@@ -100,6 +114,7 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
               itemCount: carts.length,
               itemBuilder: (context, index) {
                 final item = carts[index];
+                final imageUrl = imageUrls[item.productId];
 
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0.0),
@@ -111,14 +126,40 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(15.0),
-                          child: Image.network(
-                            "https://firebasestorage.googleapis.com/v0/b/bargainbites-f6682.appspot.com/o/ProductImages%2F1722701610692.png?alt=media&token=d3f15556-d273-4bd7-bed1-ff8f0be273de",
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                          ),
+                        FutureBuilder<String>(
+                          future: fetchImageUrl(item.productId)
+                              .then((productImage) => getDownloadURL(productImage)),
+                          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (snapshot.hasError) {
+                              return SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: Icon(Icons.error, color: Colors.red),
+                              );
+                            } else if (!snapshot.hasData) {
+                              return SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: Icon(Icons.image, color: Colors.grey[700]),
+                              );
+                            } else {
+                              return ClipRRect(
+                                borderRadius: BorderRadius.circular(15.0),
+                                child: Image.network(
+                                  snapshot.data!,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            }
+                          },
                         ),
                         SizedBox(width: 16.0),
                         Expanded(
@@ -135,10 +176,10 @@ class _ConfirmOrderPageState extends State<ConfirmOrderPage> {
                               Text(
                                 item.brandName,
                                 style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                  ),
+                                  fontSize: 14,
+                                  color: Colors.grey,
                                 ),
+                              ),
                             ],
                           ),
                         ),
