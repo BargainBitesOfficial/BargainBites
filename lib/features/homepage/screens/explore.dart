@@ -2,7 +2,6 @@ import 'package:bargainbites/features/homepage/screens/view_merchant_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
 import '../../../utils/constants/colors.dart';
@@ -17,23 +16,29 @@ class ExplorePage extends StatefulWidget {
 class _ExplorePageState extends State<ExplorePage> {
   final ExploreController _exploreController = ExploreController();
   List<MerchantModel> merchants = [];
+  List<MerchantModel> filteredMerchants = [];
   bool isLoading = true;
   String currDay = DateFormat('EEEE').format(DateTime.now());
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _fetchMerchants();
+    _searchController.addListener(_filterMerchants);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_filterMerchants);
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchMerchants() async {
     List<MerchantModel> fetchedMerchants = await _exploreController.fetchMerchants();
 
-    // calculating the distance of merchants with current location
     for (MerchantModel merchant in fetchedMerchants) {
-      //double distance = await _exploreController.getDistanceByRoad("N9B 2K9", merchant.postalCode, "");
-      //merchant.currDistance = (distance != -1.0) ? distance : -1;
-
       final random = Random();
       double temp = 2.0 + (10.0 - 2.0) * random.nextDouble();
       merchant.currDistance = double.parse(temp.toStringAsFixed(1));
@@ -41,19 +46,23 @@ class _ExplorePageState extends State<ExplorePage> {
     }
     setState(() {
       merchants = fetchedMerchants;
+      filteredMerchants = fetchedMerchants;
       isLoading = false;
     });
   }
 
+  void _filterMerchants() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      filteredMerchants = merchants.where((merchant) {
+        return merchant.storeName.toLowerCase().contains(query);
+      }).toList();
+    });
+  }
+
   Future<void> _refreshItems() async {
-    // Simulate a network call and refresh the list
     List<MerchantModel> fetchedMerchants = await _exploreController.fetchMerchants();
-
-    // calculating the distance of merchants with current location
     for (MerchantModel merchant in fetchedMerchants) {
-      //double distance = await _exploreController.getDistanceByRoad("N9B 2K9", merchant.postalCode, "");
-      //merchant.currDistance = (distance != -1.0) ? distance : -1;
-
       final random = Random();
       double temp = 2.0 + (10.0 - 2.0) * random.nextDouble();
       merchant.currDistance = double.parse(temp.toStringAsFixed(1));
@@ -62,6 +71,7 @@ class _ExplorePageState extends State<ExplorePage> {
 
     setState(() {
       merchants = fetchedMerchants;
+      filteredMerchants = fetchedMerchants;
       isLoading = false;
     });
   }
@@ -108,7 +118,6 @@ class _ExplorePageState extends State<ExplorePage> {
                                   fontSize: 20,
                                   color: TColors.bWhite,
                                   fontWeight: FontWeight.w600,
-
                                 ),
                               ),
                               Text('University Avenue, 3.2 km',
@@ -118,13 +127,6 @@ class _ExplorePageState extends State<ExplorePage> {
                                       color: Colors.white
                                   )
                               ),
-                              // Text('within 10 km',
-                              //   style: TextStyle(
-                              //     fontFamily: "Poppins",
-                              //     fontSize: 12,
-                              //     color: Colors.white
-                              //   )
-                              // ),
                             ],
                           ),
                         ),
@@ -138,7 +140,7 @@ class _ExplorePageState extends State<ExplorePage> {
                           child: Center(
                             child: IconButton(
                               icon: const Icon(Icons.notifications),
-                              color: TColors.primary, // Match the background gradient
+                              color: TColors.primary,
                               onPressed: () {
                                 // Add your onPressed code here!
                               },
@@ -147,22 +149,6 @@ class _ExplorePageState extends State<ExplorePage> {
                         ),
                       ]
                   ),
-                  // const Column(
-                  //   crossAxisAlignment: CrossAxisAlignment.start,
-                  //   children: [
-                  //     Row(children: [
-                  //       Text('University Avenue Windsor, N9B 2Y8',
-                  //           style: TextStyle(
-                  //               fontFamily: "Poppins",
-                  //               fontSize: 14,
-                  //               color: Colors.white)),
-                  //     ]),
-                  //     Text('within 10 km',
-                  //         style: TextStyle(
-                  //             fontFamily: "Poppins",
-                  //             fontSize: 14,
-                  //             color: Colors.white)),
-                  //   ]),
                   const SizedBox(height: 15),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -171,6 +157,7 @@ class _ExplorePageState extends State<ExplorePage> {
                         child: SizedBox(
                           height: 45,
                           child: TextField(
+                            controller: _searchController,
                             decoration: InputDecoration(
                               prefixIcon: const Icon(Icons.search, color: Colors.black54),
                               filled: true,
@@ -200,7 +187,6 @@ class _ExplorePageState extends State<ExplorePage> {
                           },
                         ),
                       ),
-
                     ],
                   ),
                   const SizedBox(height: 10)
@@ -211,10 +197,6 @@ class _ExplorePageState extends State<ExplorePage> {
       ),
       body: Column(
         children: [
-
-          // put padding part here..
-
-          // explore starts from here
           const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -240,14 +222,13 @@ class _ExplorePageState extends State<ExplorePage> {
               )
             ],
           ),
-
           Expanded(
             child: RefreshIndicator(
               onRefresh: _refreshItems,
               child: ListView.builder(
-                itemCount: merchants.length,
+                itemCount: filteredMerchants.length,
                 itemBuilder: (context, index) {
-                  final item = merchants[index];
+                  final item = filteredMerchants[index];
                   String openStatusMsg = "";
                   bool isGreyed = false;
                   if (item.isOpened == false || item.storeTiming?[currDay]?['openingTime'] == null || item.storeTiming?[currDay]?['openingTime'] == "") {
@@ -263,7 +244,7 @@ class _ExplorePageState extends State<ExplorePage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    elevation: 5, // This gives the depth effect
+                    elevation: 5,
                     child: InkWell(
                       onTap: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => ViewMerchantPage(merchantData: item)));
@@ -277,21 +258,21 @@ class _ExplorePageState extends State<ExplorePage> {
                               if (snapshot.connectionState == ConnectionState.waiting) {
                                 return Container(
                                   width: double.infinity,
-                                  height: 150, // Set a height for the image
+                                  height: 150,
                                   color: Colors.grey[200],
                                   child: Center(child: CircularProgressIndicator()),
                                 );
                               } else if (snapshot.hasError) {
                                 return Container(
                                   width: double.infinity,
-                                  height: 150, // Set a height for the image
+                                  height: 150,
                                   color: Colors.grey[200],
                                   child: Center(child: Icon(Icons.error)),
                                 );
                               } else if (!snapshot.hasData) {
                                 return Container(
                                   width: double.infinity,
-                                  height: 150, // Set a height for the image
+                                  height: 150,
                                   color: Colors.grey[200],
                                   child: Center(child: Icon(Icons.image)),
                                 );
@@ -301,13 +282,12 @@ class _ExplorePageState extends State<ExplorePage> {
                                       ? const ColorFilter.mode(Colors.grey, BlendMode.saturation)
                                       : const ColorFilter.mode(Colors.transparent, BlendMode.multiply),
                                   child: ClipRRect(
-                                    borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(15)),
+                                    borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
                                     child: Image.network(
                                       snapshot.data!,
                                       width: double.infinity,
-                                      height: 150, // Set a height for the image
-                                      fit: BoxFit.cover, // This makes the image expand to fill the width
+                                      height: 150,
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
                                 );
@@ -331,16 +311,14 @@ class _ExplorePageState extends State<ExplorePage> {
                                 Text(openStatusMsg,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w500,
-                                    fontSize:14,
+                                    fontSize: 14,
                                     fontFamily: 'Poppins',
                                     color: isGreyed ? TColors.greyText : TColors.greyText,
                                   ),
                                 ),
                                 Row(
                                   children: [
-                                    Icon(Icons.star,
-                                        color: isGreyed ? TColors.greyText : TColors.starIconColor ,
-                                        size: 16),
+                                    Icon(Icons.star, color: isGreyed ? TColors.greyText : TColors.starIconColor, size: 16),
                                     Text(' ${item.merchantRating}',
                                       style: TextStyle(
                                           fontWeight: FontWeight.w500,
@@ -349,9 +327,7 @@ class _ExplorePageState extends State<ExplorePage> {
                                       ),
                                     ),
                                     const SizedBox(width: 16),
-                                    Icon(Icons.location_on,
-                                        color: isGreyed ? TColors.greyText : TColors.locationIconColor,
-                                        size: 16),
+                                    Icon(Icons.location_on, color: isGreyed ? TColors.greyText : TColors.locationIconColor, size: 16),
                                     Text('${item.currDistance} km',
                                       style: TextStyle(
                                           fontWeight: FontWeight.w500,
