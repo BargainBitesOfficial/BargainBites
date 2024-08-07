@@ -25,170 +25,218 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   final ExploreController _exploreController = ExploreController();
   final ProductController _productController = ProductController();
-  // final ProductController _catalogController = ProductController();
   List<MerchantModel> merchants = [];
+  List<MerchantModel> filteredMerchants = [];
   List<ListingItemModel> products = [];
-  List<CatalogItemModel> catalogItems = [];
+  List<ListingItemModel> filteredProducts = [];
   bool isLoading = true;
+  bool noResultsFound = false;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _fetchMerchants();
     _fetchProducts();
+    _searchController.addListener(_filterResults);
   }
 
+  @override
+  void dispose() {
+    _searchController.removeListener(_filterResults);
+    _searchController.dispose();
+    super.dispose();
+  }
   Map<String, double> merchantDistances = {};
-
   Future<void> _fetchMerchants() async {
-    List<MerchantModel> fetchedMerchants =
-        await _exploreController.fetchMerchants();
-
-    // calculating the distance of merchants with current location
+    List<MerchantModel> fetchedMerchants = await _exploreController.fetchMerchants();
     for (MerchantModel merchant in fetchedMerchants) {
-      //double distance = await _exploreController.getDistanceByRoad("N9B 2K9", merchant.postalCode, "");
-      //merchant.currDistance = (distance != -1.0) ? distance : -1;
-
       final random = Random();
       double temp = 2.0 + (10.0 - 2.0) * random.nextDouble();
       merchant.currDistance = double.parse(temp.toStringAsFixed(1));
-      // merchant.merchantRating = double.parse((3.0 + (5.0 - 3.0) * random.nextDouble()).toStringAsFixed(1));
-
-      // Store the distance in the map
       merchantDistances[merchant.merchantID] = merchant.currDistance;
     }
-
-    // Sort merchants by distance
     fetchedMerchants.sort((a, b) => a.currDistance.compareTo(b.currDistance));
 
     setState(() {
       merchants = fetchedMerchants;
+      filteredMerchants = fetchedMerchants;
       isLoading = false;
     });
   }
 
   Future<void> _fetchProducts() async {
-    List<ListingItemModel> fetchedProducts =
-        await _productController.fetchProducts();
-    // List<CatalogItemModel> fetchedCatalogItems =
-    // await _catalogController.fetchCatalogItems();
-
+    List<ListingItemModel> fetchedProducts = await _productController.fetchProducts();
     setState(() {
       products = fetchedProducts;
-      // catalogItems = fetchedCatalogItems;
+      filteredProducts = fetchedProducts;
       isLoading = false;
     });
   }
 
+  void _filterResults() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      if (query.isEmpty) {
+
+      }
+      else{
+        filteredMerchants = merchants.where((merchant) {
+          return merchant.storeName.toLowerCase().contains(query);
+        }).toList();
+
+        filteredProducts = products.where((product) {
+          return product.productName.toLowerCase().contains(query);
+        }).toList();
+      }
+      noResultsFound = filteredMerchants.isEmpty && filteredProducts.isEmpty;
+      if (filteredProducts.isEmpty || filteredProducts.length < 1) {
+
+        filteredProducts = products;
+      }
+      if (filteredMerchants.isEmpty || filteredMerchants.length < 1) {
+        filteredMerchants = merchants;
+      }
+
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(160),
-          child: AppBar(
-            flexibleSpace: Container(
-                decoration: const BoxDecoration(
-                  gradient: TColors.linerGradient,
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(160),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: TColors.linerGradient,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const SizedBox(height: 40),
+                    const Row(children: [
+                      Text(
+                        'Discover Savings',
+                        style: TextStyle(
+                          fontFamily: "Poppins",
+                          fontSize: 20,
+                          color: TColors.bWhite,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ]),
                     Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Row(children: [
-                            Text(
-                              'Discover Savings',
-                              style: TextStyle(
-                                  fontFamily: "Poppins",
-                                  fontSize: 20,
-                                  color: TColors.bWhite,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ]),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Container(
-                                  height: 38,
-                                  width: 38,
-                                  decoration: const BoxDecoration(
-                                    color: TColors.bWhite,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Center(
-                                      child: IconButton(
-                                    icon: const Icon(Icons.notifications),
-                                    color: TColors.primary,
-                                    // Match the background gradient
-                                    onPressed: () {
-                                      // Add your onPressed code here!
-                                    },
-                                  )))
-                            ],
-                          ),
-                        ]),
-                    const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(children: [
-                            Text('University Avenue',
-                                style: TextStyle(
-                                    fontFamily: "Poppins",
-                                    fontSize: 12,
-                                    color: Colors.white)),
-                          ]),
-                          Text('within 10 km',
-                              style: TextStyle(
-                                  fontFamily: "Poppins",
-                                  fontSize: 10,
-                                  color: Colors.white)),
-                        ]),
-                    const SizedBox(height: 15.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Expanded(
-                            child: SizedBox(
-                                height: 45,
-                                child: TextField(
-                                    decoration: InputDecoration(
-                                        prefixIcon: const Icon(Icons.search,
-                                            color: Colors.black54),
-                                        filled: true,
-                                        fillColor: TColors.bWhite,
-                                        hintText:
-                                            'Search the best discounts...',
-                                        contentPadding: EdgeInsets.zero,
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide.none,
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ))))),
+                        Container(
+                          height: 38,
+                          width: 38,
+                          decoration: const BoxDecoration(
+                            color: TColors.bWhite,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: IconButton(
+                              icon: const Icon(Icons.notifications),
+                              color: TColors.primary,
+                              onPressed: () {
+                                // Add your onPressed code here!
+                              },
+                            ),
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 10)
                   ],
-                )),
+                ),
+                const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [
+                      Text(
+                        'University Avenue',
+                        style: TextStyle(
+                          fontFamily: "Poppins",
+                          fontSize: 12,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ]),
+                    Text(
+                      'within 10 km',
+                      style: TextStyle(
+                        fontFamily: "Poppins",
+                        fontSize: 10,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 45,
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            prefixIcon: const Icon(Icons.search, color: Colors.black54),
+                            filled: true,
+                            fillColor: TColors.bWhite,
+                            hintText: 'Search the best discounts...',
+                            contentPadding: EdgeInsets.zero,
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
         ),
-        body: SingleChildScrollView(
-            child: Column(
+      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 10),
+            if (noResultsFound)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'No merchants or products found',
+                    style: TextStyle(fontSize: 18, color: Colors.red),
+                  ),
+                ),
+              ),
             const SectionTitle(title: "What’s in the neighborhood"),
-            HorizontalItemList(items: products),
+            HorizontalItemList(items: filteredProducts),
             const SectionTitle(title: "Stores"),
-            HorizontalItemListForStores(items: merchants),
+            HorizontalItemListForStores(items: filteredMerchants),
             const SectionTitle(title: "Explore"),
-            VerticalItemList(items: merchants),
+            const VerticalItemList(),
           ],
-        )));
+        ),
+      ),
+    );
   }
 }
 
@@ -207,9 +255,10 @@ class SectionTitle extends StatelessWidget {
           Text(
             title,
             style: const TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.w600,
-                fontFamily: "Poppins"),
+              fontSize: 18.0,
+              fontWeight: FontWeight.w600,
+              fontFamily: "Poppins",
+            ),
           ),
         ],
       ),
@@ -244,8 +293,7 @@ class HorizontalItemList extends StatelessWidget {
             itemCount: items.length,
             itemBuilder: (context, index) {
               final product = items[index];
-              final merchantName =
-                  merchantNames[product.merchantId] ?? 'Unknown Merchant';
+              final merchantName = merchantNames[product.merchantId] ?? 'Unknown Merchant';
 
               return DiscountCard(
                 product: product,
@@ -263,12 +311,10 @@ class HorizontalItemList extends StatelessWidget {
     Map<String, String> merchantNames = {};
 
     try {
-      List<String> merchantIds =
-          items.map((item) => item.merchantId).toSet().toList();
+      List<String> merchantIds = items.map((item) => item.merchantId).toSet().toList();
 
       for (String merchantId in merchantIds) {
-        DocumentSnapshot doc =
-            await firestore.collection('Merchants').doc(merchantId).get();
+        DocumentSnapshot doc = await firestore.collection('Merchants').doc(merchantId).get();
 
         if (doc.exists) {
           merchantNames[merchantId] = doc['storeName'] ?? 'Unknown Merchant';
@@ -283,8 +329,6 @@ class HorizontalItemList extends StatelessWidget {
       return {};
     }
   }
-
-
 }
 
 class HorizontalItemListForStores extends StatelessWidget {
@@ -308,20 +352,12 @@ class HorizontalItemListForStores extends StatelessWidget {
 }
 
 class VerticalItemList extends StatelessWidget {
-  final List<MerchantModel> items;
-  VerticalItemList({super.key, required this.items});
+  const VerticalItemList({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 500.0,  // Adjust the height as needed
-      child: ListView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: (items.length < 5)? items.length : 5,
-        itemBuilder: (context, index) {
-          return DiscountCardVertical(merchant: items[index]);
-        },
-      ),
+    return Column(
+      children: List.generate(5, (index) => const DiscountCardVertical()),
     );
   }
 }
@@ -345,7 +381,6 @@ class DiscountCard extends StatelessWidget {
         .first;
 
     String productImage = product['itemImage'];
-    // print("Fetched productImage: $productImage");
     return productImage;
   }
 
@@ -431,9 +466,7 @@ class DiscountCard extends StatelessWidget {
                   const Icon(Icons.attach_money_sharp, size: 16.0),
                   Text(
                     '${product.price}',
-                    style: const TextStyle(
-                      fontFamily: "Poppins",
-                    ),
+                    style: const TextStyle(fontFamily: "Poppins"),
                   ),
                   const SizedBox(width: 10.0),
                   const Icon(Icons.location_on, color: Colors.grey, size: 16.0),
@@ -477,7 +510,6 @@ class DiscountCardForStores extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: GestureDetector(
         onTap: () {
-          // Navigate to merchant details page (create this page)
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -563,24 +595,7 @@ class DiscountCardForStores extends StatelessWidget {
 }
 
 class DiscountCardVertical extends StatelessWidget {
-  final MerchantModel merchant;
-
-  const DiscountCardVertical({super.key, required this.merchant});
-
-  Future<String> fetchImageUrl(String merchantId) async {
-    var merchant = (await FirebaseFirestore.instance
-        .collection('Merchants')
-        .doc(merchantId)
-        .get());
-
-    String merchantImage = merchant['imageUrl'];
-    return merchantImage;
-  }
-
-  Future<String> getDownloadURL(String gsUrl) async {
-    final ref = FirebaseStorage.instance.refFromURL(gsUrl);
-    return await ref.getDownloadURL();
-  }
+  const DiscountCardVertical({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -595,53 +610,25 @@ class DiscountCardVertical extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10.0),
-                  child: FutureBuilder<String>(
-                    future: fetchImageUrl(merchant.merchantID).then((merchantImage) => getDownloadURL(merchantImage)),
-                    builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Container(
-                          width: double.infinity,
-                          height: 110.0,
-                          color: Colors.grey[200],
-                          child: const Center(child: CircularProgressIndicator()),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Container(
-                          width: double.infinity,
-                          height: 110.0,
-                          color: Colors.grey[200],
-                          child: const Center(child: Icon(Icons.error)),
-                        );
-                      } else if (!snapshot.hasData) {
-                        return Container(
-                          width: double.infinity,
-                          height: 110.0,
-                          color: Colors.grey[200],
-                          child: const Center(child: Icon(Icons.image)),
-                        );
-                      } else {
-                        return Image.network(
-                          snapshot.data!,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: 110.0,
-                        );
-                      }
-                    },
+                  child: Image.asset(
+                    'assets/images/grocery.jpg',
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: 110.0,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8.0),
-            Text(
-              merchant.storeName,
-              style: const TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w600,
-                  fontFamily: "Poppins"),
+            const Text(
+              'Subway',
+              style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w600,
+                fontFamily: "Poppins",
+              ),
             ),
-            const Text('Closes at 10 PM',
-                style: TextStyle(fontFamily: "Poppins")),
+            const Text('Closes at 10 PM', style: TextStyle(fontFamily: "Poppins")),
             const Row(
               children: [
                 Icon(Icons.star, color: Colors.yellow, size: 16.0),
@@ -651,6 +638,7 @@ class DiscountCardVertical extends StatelessWidget {
                 Text('10 km', style: TextStyle(fontFamily: "Poppins")),
               ],
             ),
+            const SizedBox(height: 8.0),
           ],
         ),
       ),
